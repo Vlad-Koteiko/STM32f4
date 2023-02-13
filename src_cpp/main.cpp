@@ -146,6 +146,7 @@ int main()
         cout << "integet = " << integet << cout.ENDL;
         cout << "fraction = " << fraction << cout.ENDL;
         cout << "counter = " << counter << cout.ENDL;
+        cout << "Hello world = " << counter << cout.ENDL;
 
 //        LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_1);
 //        gpio_A.SetOutputPin(gpio_A.PIN_1);
