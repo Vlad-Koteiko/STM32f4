@@ -15,7 +15,6 @@
 #include <memory_resource>
 #include "main.h"
 
-
     std::uint32_t counter = 0;
 
     void foo1( std::pmr::monotonic_buffer_resource &pool,libs::Cout &cout)
@@ -45,30 +44,36 @@
          counter++;
      }
 
+     void Init_NVIC(drivers::ClockControl &clockControl)
+     {
+         drivers::nvic::NVIC nvic(clockControl);
+         nvic.NVIC_Enable(nvic.EXTI_0,nvic.syscfg.PORT_A,nvic.syscfg.EXTI_0);
+     }
+
 int main()
 {
     drivers::ClockControl clockControl;
     drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
     drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_2> usart(clockControl);
-    drivers::syscfg::SYSCFG syscfg(clockControl);
-    drivers::exti::EXIT_RTSR exitRtsr;
-    drivers::nvic::NVIC nvic;
     libs::Cout cout(usart);
 
-    gpio_A.PIN_init(gpio_A.PIN_1,gpio_A.OUTPUT);
+    Init_NVIC(clockControl);
 
+    //-----------------------------------------GPIO INIT----------------------------------
+
+    gpio_A.PIN_init(gpio_A.PIN_1,gpio_A.OUTPUT);
     gpio_A.SetPinPull(gpio_A.PIN_0,gpio_A.NO_PULL_UP_PULL_DOWN);
     gpio_A.PIN_init(gpio_A.PIN_0, gpio_A.INPUT);
-
     gpio_A.USART_init(gpio_A.USART_2);
+
+    //------------------------------------------------------------------------------------
+
+    //----------------------------------------USART INIT----------------------------------
 
     usart.uartInit(usart.RATE_115200,16000000);
 
-    syscfg.SetSourceEXTI(syscfg.PORT_A,syscfg.EXTI_0);
-    exitRtsr.SetLineTrigger(exitRtsr.LINE_0);
+    //------------------------------------------------------------------------------------
 
-//    nvic.NVIC_SetPriority(nvic.EXTI_0, 0);
-    nvic.NVIC_Enable(nvic.EXTI_0);
 
 //    std::array<std::uint8_t,64> buffer = {};
 //    std::fill_n(std::begin(buffer),buffer.size() - 1, '_');
@@ -134,10 +139,9 @@ int main()
 
     while (1)
     {
-        /* USER CODE END WHILE */
 
         volatile std::uint32_t reg_value = 0x40020000;
-//
+
         float resalt = (static_cast<float>(16000000)/static_cast<float>(16 * 115200));
         std::uint16_t integet = static_cast<std::uint16_t>(resalt);
         std::uint16_t fraction = (static_cast<float>(resalt -  static_cast<float>(integet)) * 16);
@@ -146,19 +150,12 @@ int main()
         cout << "integet = " << integet << cout.ENDL;
         cout << "fraction = " << fraction << cout.ENDL;
         cout << "counter = " << counter << cout.ENDL;
-        cout << "Hello world = " << counter << cout.ENDL;
 
-//        LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_1);
-//        gpio_A.SetOutputPin(gpio_A.PIN_1);
         gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_NO);
         clockControl.mDelay(1000);
-//        LL_mDelay(1000);
-//        LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_1);
-//        gpio_A.ResetOutputPin(gpio_A.PIN_1);
         gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_OFF);
-//        LL_mDelay(1000);
         clockControl.mDelay(1000);
-        /* USER CODE BEGIN 3 */
     }
+
    return 0;
 }

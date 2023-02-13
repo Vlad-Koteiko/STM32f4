@@ -6,4 +6,5 @@
 
 void EXTI0_IRQHandler(void);
 
-#endif //UART_MAIN_H
+
+#endif

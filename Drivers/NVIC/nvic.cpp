@@ -5,7 +5,12 @@
 
 namespace drivers::nvic {
 
-    void NVIC::NVIC_Enable(drivers::nvic::NVIC::DEVICE_ID deviceId) noexcept {
+
+    NVIC::NVIC(drivers::ClockControl &clockControl1) :  syscfg(clockControl1)
+    {}
+
+    void NVIC::NVIC_Enable(drivers::nvic::NVIC::DEVICE_ID deviceId, drivers::syscfg::SYSCFG::EXIT_PORT exitPort,
+                           drivers::syscfg::SYSCFG::EXIT_NUMBER exitNumber) noexcept {
 
         const std::uint8_t  writeLimit = 31;
 
@@ -16,6 +21,23 @@ namespace drivers::nvic {
         } else if((deviceId < 64) && (deviceId > 31)){
 
            libs::MWR::setBit(ISER + 4, 1 << (deviceId & writeLimit));
+        }
+
+        syscfg.SetSourceEXTI(exitPort, exitNumber);
+        exitRtsr.SetLineTrigger(static_cast<drivers::exti::EXIT_RTSR::LINE_NUMBER>(exitNumber));
+    }
+
+    void NVIC::NVIC_Enable(drivers::nvic::NVIC::DEVICE_ID deviceId) noexcept {
+
+        const std::uint8_t  writeLimit = 31;
+
+        if(deviceId < 32)
+        {
+            libs::MWR::setBit(ISER, 1 << (deviceId & writeLimit));
+
+        } else if((deviceId < 64) && (deviceId > 31)){
+
+            libs::MWR::setBit(ISER + 4, 1 << (deviceId & writeLimit));
         }
     }
 
