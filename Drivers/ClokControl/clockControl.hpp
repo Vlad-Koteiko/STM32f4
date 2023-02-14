@@ -123,11 +123,13 @@ namespace drivers
 
         enum  TYPE_ENABLE_CLOCK_APB_2 : std::uint8_t
         {
+            USART_1_APB_2 = 4,
             SYSCF = 14
         };
 
         enum  MODULE : std::uint8_t
         {
+            USART_1_MODULE,
             USART_2_MODULE,
             PORT_A_MODULE,
             SYSCF_MODULE,

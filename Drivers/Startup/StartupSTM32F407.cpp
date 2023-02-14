@@ -3,6 +3,7 @@
 //
 #include <cstdint>
 #include "main.h"
+#include "usart.h"
 
 // Constants from linker
 extern std::uint32_t _sidata;    // Start of init data
@@ -101,7 +102,7 @@ void Reset_Handler() {
      void I2C2_ER_IRQHandler(void)                    {Default_Handler();}  // I2C2 Error
      void SPI1_IRQHandler(void)                       {Default_Handler();}  // SPI1
      void SPI2_IRQHandler(void)                       {Default_Handler();}  // SPI2
-     void USART1_IRQHandler(void)                     {Default_Handler();}  // USART1
+//     void USART1_IRQHandler(void)                     {Default_Handler();}  // USART1
      void USART2_IRQHandler(void)                     {Default_Handler();}  // USART2
      void USART3_IRQHandler(void)                     {Default_Handler();}  // USART3
      void EXTI15_10_IRQHandler(void)                  {Default_Handler();}  // External Line[15:10]s

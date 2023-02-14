@@ -5,8 +5,6 @@
 
 namespace  libs
 {
-    Cout::Cout(drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_2> &usart_cout) : usart_cout(usart_cout)
-    {}
 
     Cout& Cout::operator << (std::string string) noexcept
     {

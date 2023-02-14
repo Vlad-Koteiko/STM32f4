@@ -46,7 +46,7 @@ namespace drivers::port
             BSRR     = baseAddress + 0x18, // GPIO port bit set/reset register,      Address offset: 0x18
             LCKR     = baseAddress + 0x1C, // GPIO port configuration lock register, Address offset: 0x1C
             AFRLOW   = baseAddress + 0x20, // GPIO port alternate function low reg,  Address offset: 0x20
-            AFRLHIGH = baseAddress + 0x20, // GPIO port alternate function high reg, Address offset: 0x24
+            AFRLHIGH = baseAddress + 0x24, // GPIO port alternate function high reg, Address offset: 0x24
         };
 
         enum PIN_SEED : std::uint8_t
@@ -203,6 +203,16 @@ namespace drivers::port
         void USART_init(USART usart) noexcept
         {
             switch (usart) {
+                case USART_1:
+                {
+                    SetPinMode(PIN_9,ALTERNATE_FUNCT);
+                    SetPinMode(PIN_10,ALTERNATE_FUNCT);
+                    SetPinSpeed(PIN_9,VERY_HIGH_SPEED);
+                    SetPinSpeed(PIN_10,VERY_HIGH_SPEED);
+                    SetAFPin(PIN_9,AF7);
+                    SetAFPin(PIN_10,AF7);
+                    break;
+                }
                 case USART_2:
                 {
                     SetPinMode(PIN_2,ALTERNATE_FUNCT);

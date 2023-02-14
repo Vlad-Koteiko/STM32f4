@@ -15,7 +15,7 @@ namespace  libs
         {
           std::uint8_t endString = '\0';
           std::array<char,11> buff {0};
-          drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_2> &usart_cout;
+
 
           inline void pritnString(char *ptr) noexcept
           {
@@ -48,8 +48,6 @@ namespace  libs
            ENDL
          };
 
-        Cout(drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_2> &usart_cout);
-
         Cout& operator << (std::string string) noexcept;
 
         Cout& operator << (std::uint32_t value) noexcept;
@@ -64,9 +62,9 @@ namespace  libs
 
         inline  void printChar(char ch) noexcept
               {
-                  while (!usart_cout.IsBusyFlag())
+                  while (!drivers::usart::USART<drivers::usart::USART_1>::IsBusyFlag())
                   {}
-                  usart_cout.TransmitData(ch);
+                  drivers::usart::USART<drivers::usart::USART_1>::TransmitData(ch);
               }
     };
 }

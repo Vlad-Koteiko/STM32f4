@@ -102,6 +102,11 @@ namespace drivers
     {
         switch (module)
         {
+            case USART_1_MODULE:
+            {
+                APB2EnableClock(USART_1_APB_2);  // Enable UARRT 1
+                break;
+            }
             case USART_2_MODULE:
             {
                 APB1EnableClock(USART2_APB_1);   // Enable UARRT 2

@@ -7,11 +7,13 @@
 
 #include "MWR.hpp"
 #include "clockControl.hpp"
+#include "nvic.h"
 
 namespace drivers::usart {
 
     enum ADDRESSES_USART : std::uintptr_t
     {
+        USART_1 = 0x40011000,
         USART_2 = 0x40004400
     };
 
@@ -31,6 +33,7 @@ namespace drivers::usart {
             GTPR  = baseAddress + 0x18  // USART Guard time and prescaler register, Address offset: 0x18
         };
     public:
+
         enum WORD_LENGTH : std::uint8_t
         {
             BIT_8 = 0,
@@ -77,8 +80,12 @@ namespace drivers::usart {
                     clockControl.module_enable(clockControl.USART_2_MODULE);
                     break;
                 }
+                case USART_1:
+                {
+                    clockControl.module_enable(clockControl.USART_1_MODULE);
+                    break;
+                }
             }
-
         }
 
         void DataWidth(WORD_LENGTH wordLength) noexcept        // This bit determines the word length. It is set or cleared by software.
@@ -114,12 +121,17 @@ namespace drivers::usart {
             libs::MWR::write_register(BRR,(integet << 4) | (fraction & 0x000F));
         }
 
-        inline void TransmitData (std::uint8_t value) noexcept
+        static inline void TransmitData(std::uint8_t value) noexcept
         {
             libs::MWR::write_register(DR,value);
         }
 
-        bool IsBusyFlag() noexcept
+       static inline std::uint8_t ReceiveData() noexcept
+        {
+            return libs::MWR::read_register<std::uint8_t>(DR);
+        }
+
+        static inline bool IsBusyFlag() noexcept
         {
             return (libs::MWR::read_register<std::uint32_t>(SR) & (1 << 7));
         }
@@ -131,6 +143,27 @@ namespace drivers::usart {
             SetTransmitter(TRANSMITTER_ON);
             SetBaudRate(baudRate,FPCLK);
             USART_ENABLE(USART_ENABLE_ON);
+        }
+
+        void uartEnableInterrupt()
+        {
+            switch (baseAddress) {
+                case USART_1:
+                {
+                    drivers::nvic::NVIC::NVIC_Enable(drivers::nvic::NVIC::DEVICE_ID::UASRT_1);
+                    break;
+                }
+
+                case USART_2:
+                {
+                    drivers::nvic::NVIC::NVIC_Enable(drivers::nvic::NVIC::DEVICE_ID::UASRT_2);
+                    break;
+                }
+            }
+
+            libs::MWR::setBit(CR1, 1 << 5); // RXNE interrupt enable
+            libs::MWR::setBit(CR1, 1 << 8);
+            libs::MWR::setBit(CR3, 1 << 0);
         }
     };
 }

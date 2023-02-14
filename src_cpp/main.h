@@ -4,7 +4,20 @@
 #ifndef UART_MAIN_H
 #define UART_MAIN_H
 
-void EXTI0_IRQHandler(void);
+#include <cstdint>
+#include "MWR.hpp"
+#include "cout.hpp"
+#include "clockControl.hpp"
+#include "gpio.h"
+#include "usart.h"
+#include "nvic.h"
+#include "syscfg.h"
+#include "exti.h"
+#include <array>
+#include <vector>
+#include <memory_resource>
 
+void EXTI0_IRQHandler();
+void USART1_IRQHandler();
 
 #endif

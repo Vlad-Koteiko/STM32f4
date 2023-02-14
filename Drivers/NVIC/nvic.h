@@ -33,17 +33,18 @@ namespace drivers::nvic {
         enum DEVICE_ID : std::uint8_t
         {
           EXTI_0    = 6,
+          UASRT_1   = 37,
           UASRT_2   = 38,
         };
 
         NVIC(ClockControl &clockControl1);
 
-        void NVIC_Enable(DEVICE_ID deviceId, drivers::syscfg::SYSCFG::EXIT_PORT exitPort,
+       void NVIC_Enable(DEVICE_ID deviceId, drivers::syscfg::SYSCFG::EXIT_PORT exitPort,
                          drivers::syscfg::SYSCFG::EXIT_NUMBER exitNumber) noexcept;
 
-        void NVIC_Enable(DEVICE_ID deviceId) noexcept;
+       static void NVIC_Enable(DEVICE_ID deviceId) noexcept;
 
-        void NVIC_SetPriority(DEVICE_ID deviceId, std::uint32_t priority) noexcept;
+       void NVIC_SetPriority(DEVICE_ID deviceId, std::uint32_t priority) noexcept;
 
     };
 }
