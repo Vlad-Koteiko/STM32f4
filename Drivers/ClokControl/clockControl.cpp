@@ -7,16 +7,16 @@ namespace drivers
 
     ClockControl::ClockControl() {
 
-            SetCalibTrimming(16);
-            Enable();
-            while (IsReady())
-            {
-            }
-            SetAHBPrescaler(AHB_OFF);
-            SetAPB1Prescaler(APB_OFF);
-            SetAPB2Prescaler(APB_OFF);
-            SetSysClkSource(0);
-            InitTickSysTick(16000000,1000);            // 1ms
+//            SetCalibTrimming(16);
+//            Enable();
+//            while (IsReady())
+//            {
+//            }
+//            SetAHBPrescaler(AHB_OFF);
+//            SetAPB1Prescaler(APB_OFF);
+//            SetAPB2Prescaler(APB_OFF);
+//            SetSysClkSource(0);
+//            InitTickSysTick(16000000,1000);            // 1ms
     }
 
     void ClockControl::SetCalibTrimming(std::uint32_t value) noexcept
@@ -117,11 +117,44 @@ namespace drivers
                 AHB1EnableClock(PORT_A_AHB_1);   // Enable PORT  A
                 break;
             }
+            case PORT_H_MODULE:
+            {
+                AHB1EnableClock(PORT_H_AHB_1);   // Enable PORT  A
+                break;
+            }
             case SYSCF_MODULE:
             {
                 APB2EnableClock(SYSCF);          // Enable SYSCF
                 break;
             }
+            case PWR_MODULE:
+            {
+                APB1EnableClock(PWR_APB_1);          // Enable SYSCF
+                break;
+            }
         }
     }
+
+    void ClockControl::ESE_Enable() noexcept {
+        libs::MWR::setBit(CR,1 << 16);
+    }
+
+    bool ClockControl::HSE_IsReady() noexcept {
+        return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << 17));
+    }
+
+    void ClockControl::PLL_Config_Sys() noexcept {
+        libs::MWR::clearBit(PLLCFGR,0x0000FFFF);
+        libs::MWR::setBit(PLLCFGR, (1 << 22) | 4 | (168 << 6));
+        libs::MWR::setBit(CR, 1 << 24);
+    }
+
+    bool ClockControl::PLL_IsReady() noexcept {
+        return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << 25));
+    }
+
+    std::uint32_t ClockControl::GetSysClkSourse() noexcept {
+        return (libs::MWR::read_register<std::uint32_t>(CFGR) & 12);
+    }
+
 }

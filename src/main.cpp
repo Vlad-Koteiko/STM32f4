@@ -37,6 +37,34 @@ std::uint8_t bufferReceve = 0;
     int main()
     {
         drivers::ClockControl clockControl;
+
+        libs::MWR::setBit(0x40023c00,5);
+        while ((libs::MWR::read_register<std::uint32_t>(0x40023c00) & 7) != 5)
+        {}
+
+        clockControl.module_enable(clockControl.SYSCF_MODULE);
+        clockControl.module_enable(clockControl.PWR_MODULE);
+
+        clockControl.ESE_Enable();
+
+        while (!clockControl.HSE_IsReady())
+        {}
+
+        clockControl.PLL_Config_Sys();
+
+        while (clockControl.PLL_IsReady())
+        {}
+
+        clockControl.SetAHBPrescaler(clockControl.AHB_OFF);
+        clockControl.SetAPB1Prescaler(clockControl.APB_DIVISOR_BY_4);
+        clockControl.SetAPB2Prescaler(clockControl.APB_DIVISOR_BY_2);
+        clockControl.SetSysClkSource(2);
+
+        while ((clockControl.GetSysClkSourse() != 8))
+        {}
+
+        clockControl.InitTickSysTick(168000000,1000);            // 1ms
+
         drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
         drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1> usart(clockControl);
         libs::Cout cout;
@@ -44,17 +72,16 @@ std::uint8_t bufferReceve = 0;
         Init_NVIC(clockControl);
 
         //-----------------------------------------GPIO INIT----------------------------------
-
+        clockControl.module_enable(clockControl.PORT_A_MODULE);
         gpio_A.PIN_init(gpio_A.PIN_1,gpio_A.OUTPUT);
         gpio_A.SetPinPull(gpio_A.PIN_0,gpio_A.NO_PULL_UP_PULL_DOWN);
         gpio_A.PIN_init(gpio_A.PIN_0, gpio_A.INPUT);
         gpio_A.USART_init(gpio_A.USART_1);
-
         //------------------------------------------------------------------------------------
 
         //----------------------------------------USART INIT----------------------------------
 
-        usart.uartInit(usart.RATE_115200,16000000);
+        usart.uartInit(usart.RATE_115200,84000000);
         usart.uartEnableInterrupt();
 
         //------------------------------------------------------------------------------------
@@ -135,7 +162,6 @@ std::uint8_t bufferReceve = 0;
             cout << "integet = " << integet << cout.ENDL;
             cout << "fraction = " << fraction << cout.ENDL;
             cout << "counter = " << counter << cout.ENDL;
-
             cout << "USART = " << bufferReceve << cout.ENDL;
 
             gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_NO);

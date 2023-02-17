@@ -132,7 +132,9 @@ namespace drivers
             USART_1_MODULE,
             USART_2_MODULE,
             PORT_A_MODULE,
+            PORT_H_MODULE,
             SYSCF_MODULE,
+            PWR_MODULE,
             EXTI_MODULE
         };
 
@@ -159,6 +161,16 @@ namespace drivers
         void APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) noexcept;
 
         void APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) noexcept;
+
+        void ESE_Enable() noexcept;
+
+        bool HSE_IsReady() noexcept;
+
+        bool PLL_IsReady() noexcept;
+
+        std::uint32_t GetSysClkSourse() noexcept;
+
+        void PLL_Config_Sys() noexcept;
 
         void mDelay(std::uint32_t Delay);
 
