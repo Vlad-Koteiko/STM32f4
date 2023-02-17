@@ -3,7 +3,6 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_VERSION 1)
 cmake_minimum_required(VERSION 3.21)
 
-
 if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set(CMAKE_C_COMPILER E:/tools/bin/arm-none-eabi-gcc.exe)
     set(CMAKE_CXX_COMPILER E:/tools/bin/arm-none-eabi-g++.exe)
@@ -13,6 +12,7 @@ if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set(CMAKE_OBJCOPY E:/tools/bin/arm-none-eabi-objcopy.exe)
     set(CMAKE_OBJDUMP E:/tools/bin/arm-none-eabi-objdump.exe)
     set(SIZE E:/tools/bin/arm-none-eabi-size.exe)
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 elseif(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Linux")
     set(CMAKE_C_COMPILER arm-none-eabi-gcc)
     set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
@@ -27,9 +27,8 @@ else()
 endif()
 
 # project settings
-project(UART C CXX ASM)
+project(STM32F4 CXX )
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_STANDARD 11)
 
 #Uncomment for hardware floating point
 #add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
@@ -57,6 +56,9 @@ elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
 elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel")
     message(STATUS "Maximum optimization for size")
     add_compile_options(-Os)
+elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "ReleaseMain")
+    message(STATUS "Release O2")
+    add_compile_options(-O2 )
 else ()
     message(STATUS "Minimal optimization, debug info included")
     add_compile_options(-Og -g)
@@ -74,7 +76,7 @@ include_directories(Core/Inc
         Drivers/NVIC
         Drivers/EXTI
         Drivers/SYSCFG
-        src_cpp/)
+        src/)
 
 add_definitions(-DDEBUG -DSTM32F407xx -DUSE_FULL_LL_DRIVER -DHSE_VALUE=25000000 -DHSE_STARTUP_TIMEOUT=100 -DLSE_STARTUP_TIMEOUT=5000 -DLSE_VALUE=32768 -DEXTERNAL_CLOCK_VALUE=12288000 -DHSI_VALUE=16000000 -DLSI_VALUE=32000 -DVDD_VALUE=3300 -DPREFETCH_ENABLE=1 -DINSTRUCTION_CACHE_ENABLE=1 -DDATA_CACHE_ENABLE=1)
 
@@ -86,21 +88,10 @@ add_link_options(-Wl,-gc-sections,--print-memory-usage,-Map=${PROJECT_BINARY_DIR
 add_link_options(-mcpu=cortex-m4 -mthumb -mthumb-interwork)
 add_link_options(-T ${LINKER_SCRIPT})
 
-add_executable(${PROJECT_NAME}.elf ${SOURCES} ${LINKER_SCRIPT})
-
-set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex)
-set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.bin)
-
-add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
-        COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${PROJECT_NAME}.elf> ${HEX_FILE}
-        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${PROJECT_NAME}.elf> ${BIN_FILE}
-        COMMENT "Building ${HEX_FILE}
-Building ${BIN_FILE}")
-
 #--------------------------------------------------------------CPP------------------------------------------------------------------------------
-set(PROJECT_NAME_CPP uart_cpp  )
+set(PROJECT_NAME_CPP stm32f4 )
 
-set(SORUCE_CPP src_cpp/main.cpp
+set(SORUCE_CPP src/main.cpp
                libs/print/cout.cpp
                Drivers/GPIO/gpio.cpp
                Drivers/USART/usart.cpp
