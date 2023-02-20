@@ -6,17 +6,8 @@ namespace drivers
 {
 
     ClockControl::ClockControl() {
-
-//            SetCalibTrimming(16);
-//            Enable();
-//            while (IsReady())
-//            {
-//            }
-//            SetAHBPrescaler(AHB_OFF);
-//            SetAPB1Prescaler(APB_OFF);
-//            SetAPB2Prescaler(APB_OFF);
-//            SetSysClkSource(0);
-//            InitTickSysTick(16000000,1000);            // 1ms
+        SetExternalClockGenerator_168MHz();
+//        SetInternalClockGenerator_16MHz();
     }
 
     void ClockControl::SetCalibTrimming(std::uint32_t value) noexcept
@@ -143,9 +134,10 @@ namespace drivers
         return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << 17));
     }
 
-    void ClockControl::PLL_Config_Sys() noexcept {
+    void ClockControl::PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM) noexcept {
         libs::MWR::clearBit(PLLCFGR,0x0000FFFF);
-        libs::MWR::setBit(PLLCFGR, (1 << 22) | 4 | (168 << 6));
+        libs::MWR::setBit(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6));
+
         libs::MWR::setBit(CR, 1 << 24);
     }
 
@@ -156,5 +148,52 @@ namespace drivers
     std::uint32_t ClockControl::GetSysClkSourse() noexcept {
         return (libs::MWR::read_register<std::uint32_t>(CFGR) & 12);
     }
+
+    void ClockControl::SetInternalClockGenerator_16MHz() noexcept {
+
+            SetCalibTrimming(16);
+            Enable();
+            while (IsReady())
+            {
+            }
+            SetAHBPrescaler(AHB_OFF);
+            SetAPB1Prescaler(APB_OFF);
+            SetAPB2Prescaler(APB_OFF);
+            SetSysClkSource(0);
+            InitTickSysTick(16000000,1000);            // 1ms
+
+    }
+
+    void ClockControl::SetExternalClockGenerator_168MHz() noexcept {
+
+        drivers::flash::Flash flash;
+
+        flash.SetLatency(5);
+        while (flash.GetLatency() != 5)
+        {}
+
+        module_enable(SYSCF_MODULE);
+        module_enable(PWR_MODULE);
+
+        ESE_Enable();
+        while (!HSE_IsReady())
+        {}
+
+        PLL_Config_Sys(168,4);
+
+        while (PLL_IsReady())
+        {}
+
+        SetAHBPrescaler(AHB_OFF);
+        SetAPB1Prescaler(APB_DIVISOR_BY_4);
+        SetAPB2Prescaler(APB_DIVISOR_BY_2);
+        SetSysClkSource(2);
+
+        while ((GetSysClkSourse() != 8))
+        {}
+
+        InitTickSysTick(168000000,1000);            // 1ms
+    }
+
 
 }

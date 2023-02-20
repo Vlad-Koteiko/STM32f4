@@ -8,6 +8,7 @@
 #include "MWR.hpp"
 #include "clockControl.hpp"
 #include "nvic.h"
+#include "gpio.h"
 
 namespace drivers::usart {
 
@@ -20,6 +21,7 @@ namespace drivers::usart {
     template<ADDRESSES_USART baseAddress>
     class USART
     {
+        using readWrite = libs::MWR;
         ClockControl &clockControl;
 
         enum RegisterGPIO : std::uintptr_t
@@ -32,6 +34,27 @@ namespace drivers::usart {
             CR3   = baseAddress + 0x14, // USART Control register 3,                Address offset: 0x14
             GTPR  = baseAddress + 0x18  // USART Guard time and prescaler register, Address offset: 0x18
         };
+
+        void SetConfig(ADDRESSES_USART addressesUsart)
+        {
+            switch (addressesUsart) {
+                case USART_2:
+                {
+                    clockControl.module_enable(clockControl.USART_2_MODULE);
+                    drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
+                    gpio.USART_init(gpio.USART_2);
+                    break;
+                }
+                case USART_1:
+                {
+                    clockControl.module_enable(clockControl.USART_1_MODULE);
+                    drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
+                    gpio.USART_init(gpio.USART_1);
+                    break;
+                }
+            }
+        }
+
     public:
 
         enum WORD_LENGTH : std::uint8_t
@@ -74,43 +97,38 @@ namespace drivers::usart {
 
         USART(ClockControl clockControl1) : clockControl(clockControl1)
         {
-            switch (baseAddress) {
-                case USART_2:
-                {
-                    clockControl.module_enable(clockControl.USART_2_MODULE);
-                    break;
-                }
-                case USART_1:
-                {
-                    clockControl.module_enable(clockControl.USART_1_MODULE);
-                    break;
-                }
-            }
+            SetConfig(baseAddress);
+        }
+
+        USART(ClockControl clockControl1, BAUD_RATE baudRate,std::uint32_t FPCLK) : clockControl(clockControl1)
+        {
+            SetConfig(baseAddress);
+            uartInit(baudRate,FPCLK);
         }
 
         void DataWidth(WORD_LENGTH wordLength) noexcept        // This bit determines the word length. It is set or cleared by software.
         {
-            libs::MWR::setBit(CR1, wordLength << 12);
+            readWrite::setBit(CR1, wordLength << 12);
         }
 
         void SetReceiver(RECEIVER receiver) noexcept           // This bit enables the receiver. It is set and cleared by software
         {
-            libs::MWR::setBit(CR1, receiver << 2);
+            readWrite::setBit(CR1, receiver << 2);
         }
 
         void SetTransmitter(TRANSMITTER transmitter) noexcept  // This bit enables the transmitter. It is set and cleared by software
         {
-            libs::MWR::setBit(CR1, transmitter << 3);
+            readWrite::setBit(CR1, transmitter << 3);
         }
 
         void USART_ENABLE(USART_ENABLE usartEnable) noexcept   // USART prescalers and outputs are stopped and the end of the current byte transfer in order to reduce power consumption
         {
-            libs::MWR::setBit(CR1, usartEnable << 13);
+            readWrite::setBit(CR1, usartEnable << 13);
         }
 
         void SetStopBitsLength(STOP_BIT stopBit) noexcept      // These bits are used for programming the stop bits.
         {
-            libs::MWR::setBit(CR2, stopBit << 12);
+            readWrite::setBit(CR2, stopBit << 12);
         }
 
         void SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept
@@ -123,17 +141,28 @@ namespace drivers::usart {
 
         static inline void TransmitData(std::uint8_t value) noexcept
         {
-            libs::MWR::write_register(DR,value);
+            readWrite::write_register(DR,value);
+        }
+
+        void TransmitString(void* value, std::size_t size) noexcept
+        {
+            std::size_t temp = 0;
+            while (size--)
+            {
+                while (!IsBusyFlag())
+                {}
+                TransmitData(*(static_cast<char *>(value) + temp++));
+            }
         }
 
        static inline std::uint8_t ReceiveData() noexcept
         {
-            return libs::MWR::read_register<std::uint8_t>(DR);
+            return readWrite::read_register<std::uint8_t>(DR);
         }
 
         static inline bool IsBusyFlag() noexcept
         {
-            return (libs::MWR::read_register<std::uint32_t>(SR) & (1 << 7));
+            return readWrite::readBit<std::uint32_t>(SR,7);
         }
 
         void uartInit(BAUD_RATE baudRate,std::uint32_t FPCLK) noexcept
@@ -161,9 +190,9 @@ namespace drivers::usart {
                 }
             }
 
-            libs::MWR::setBit(CR1, 1 << 5); // RXNE interrupt enable
-            libs::MWR::setBit(CR1, 1 << 8);
-            libs::MWR::setBit(CR3, 1 << 0);
+            libs::MWR::enableNumberBit(CR1,5);
+            libs::MWR::enableNumberBit(CR1,8);
+            libs::MWR::enableNumberBit(CR3,8);
         }
     };
 }

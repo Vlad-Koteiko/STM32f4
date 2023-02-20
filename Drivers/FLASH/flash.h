@@ -9,7 +9,7 @@
 
 namespace drivers::flash
 {
-    class FLASH {
+    class Flash {
 
         static constexpr std::uint32_t baseAddress = 0x40023c00 ;
 
@@ -24,11 +24,8 @@ namespace drivers::flash
         };
 
     public:
-
         void SetLatency(std::uint8_t latency) noexcept;
-
         std::uint8_t GetLatency() noexcept;
-
     };
 }
 

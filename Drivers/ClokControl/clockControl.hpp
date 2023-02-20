@@ -5,6 +5,7 @@
 #define CLOCKCONTROL_H
 
 #include "MWR.hpp"
+#include "flash.h"
 
 namespace drivers
 {
@@ -164,13 +165,17 @@ namespace drivers
 
         void ESE_Enable() noexcept;
 
-        bool HSE_IsReady() noexcept;
+        [[nodiscard]] bool HSE_IsReady() noexcept;
 
-        bool PLL_IsReady() noexcept;
+        [[nodiscard]] bool PLL_IsReady() noexcept;
 
         std::uint32_t GetSysClkSourse() noexcept;
 
-        void PLL_Config_Sys() noexcept;
+        void PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM) noexcept;
+
+        void SetInternalClockGenerator_16MHz() noexcept;
+
+        void SetExternalClockGenerator_168MHz() noexcept;
 
         void mDelay(std::uint32_t Delay);
 
