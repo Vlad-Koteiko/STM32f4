@@ -63,6 +63,11 @@ namespace drivers
         libs::MWR::setBit(RegisterRCC::AHB1ENR,(1 << typeEnableClock));
     }
 
+    void ClockControl::AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) noexcept
+    {
+        libs::MWR::enableNumberBit(AHB2ENR, typeEnableClock);
+    }
+
     void ClockControl::APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) noexcept
     {
         libs::MWR::setBit(RegisterRCC::APB1ENR,(1 << typeEnableClock));
@@ -110,7 +115,7 @@ namespace drivers
             }
             case PORT_H_MODULE:
             {
-                AHB1EnableClock(PORT_H_AHB_1);   // Enable PORT  A
+                AHB1EnableClock(PORT_H_AHB_1);   // Enable PORT H
                 break;
             }
             case SYSCF_MODULE:
@@ -120,7 +125,12 @@ namespace drivers
             }
             case PWR_MODULE:
             {
-                APB1EnableClock(PWR_APB_1);          // Enable SYSCF
+                APB1EnableClock(PWR_APB_1);      // Enable PWR
+                break;
+            }
+            case USB_FS_MODULE:
+            {
+                AHB2EnableClock(USB_OTG_FS_AHB_2);   // Enable USB
                 break;
             }
         }
@@ -134,9 +144,9 @@ namespace drivers
         return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << 17));
     }
 
-    void ClockControl::PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM) noexcept {
+    void ClockControl::PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM, std::uint8_t PLLQ) noexcept {
         libs::MWR::clearBit(PLLCFGR,0x0000FFFF);
-        libs::MWR::setBit(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6));
+        libs::MWR::setBit(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6) | (PLLQ << 24));
 
         libs::MWR::setBit(CR, 1 << 24);
     }
@@ -179,7 +189,7 @@ namespace drivers
         while (!HSE_IsReady())
         {}
 
-        PLL_Config_Sys(168,4);
+        PLL_Config_Sys(168,4,7);
 
         while (PLL_IsReady())
         {}

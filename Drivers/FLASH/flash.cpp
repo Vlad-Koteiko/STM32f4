@@ -14,4 +14,15 @@ namespace drivers::flash
         return (libs::MWR::read_register<std::uint32_t>(ACR) & 7);
     }
 
+    void Flash::InstructionCacheEnable() noexcept {
+        libs::MWR::enableNumberBit(ACR,9);
+    }
+
+    void Flash::DataCacheEnable() noexcept {
+        libs::MWR::enableNumberBit(ACR,10);
+    }
+
+    void Flash::PrefetchBufferEnable() noexcept {
+        libs::MWR::enableNumberBit(ACR,8);
+    }
 }

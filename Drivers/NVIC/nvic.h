@@ -32,9 +32,10 @@ namespace drivers::nvic {
 
         enum DEVICE_ID : std::uint8_t
         {
-          EXTI_0    = 6,
-          UASRT_1   = 37,
-          UASRT_2   = 38,
+          EXTI_0     = 6,
+          UASRT_1    = 37,
+          UASRT_2    = 38,
+          OTG_FS_IRQ = 67
         };
 
         NVIC(ClockControl &clockControl1);

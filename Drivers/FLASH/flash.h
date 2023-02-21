@@ -24,8 +24,12 @@ namespace drivers::flash
         };
 
     public:
+
         void SetLatency(std::uint8_t latency) noexcept;
         std::uint8_t GetLatency() noexcept;
+        void InstructionCacheEnable() noexcept;
+        void DataCacheEnable() noexcept;
+        void PrefetchBufferEnable() noexcept;
     };
 }
 

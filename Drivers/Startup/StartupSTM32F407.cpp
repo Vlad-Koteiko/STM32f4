@@ -132,7 +132,7 @@ void Reset_Handler() {
      void CAN2_RX0_IRQHandler(void)                   {Default_Handler();}  // CAN2 RX0
      void CAN2_RX1_IRQHandler(void)                   {Default_Handler();}  // CAN2 RX1
      void CAN2_SCE_IRQHandler(void)                   {Default_Handler();}  // CAN2 SCE
-     void OTG_FS_IRQHandler(void)                     {Default_Handler();}  // USB OTG FS
+//     void OTG_FS_IRQHandler(void)                     {Default_Handler();}  // USB OTG FS
      void DMA2_Stream5_IRQHandler(void)               {Default_Handler();}  // DMA2 Stream 5
      void DMA2_Stream6_IRQHandler(void)               {Default_Handler();}  // DMA2 Stream 6
      void DMA2_Stream7_IRQHandler(void)               {Default_Handler();}  // DMA2 Stream 7

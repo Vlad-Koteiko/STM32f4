@@ -27,10 +27,17 @@ std::uint8_t bufferReceve = 0;
         }
     }
 
-     void Init_NVIC(drivers::ClockControl &clockControl)
+     void Init(drivers::ClockControl &clockControl)
      {
          drivers::nvic::NVIC nvic(clockControl);
+         drivers::flash::Flash flash;
+
+         flash.PrefetchBufferEnable();
+         flash.DataCacheEnable();
+         flash.InstructionCacheEnable();
+
          nvic.NVIC_Enable(nvic.EXTI_0,nvic.syscfg.PORT_A,nvic.syscfg.EXTI_0);
+         nvic.NVIC_Enable(nvic.OTG_FS_IRQ);
      }
 
 
@@ -41,9 +48,10 @@ std::uint8_t bufferReceve = 0;
         drivers::ClockControl clockControl;
         drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
         usart_1 usart(clockControl,usart_1::RATE_115200,84000000);
+        drivers::usb::Usb usb(clockControl);
         libs::Cout cout;
 
-        Init_NVIC(clockControl);
+        Init(clockControl);
 
         //-----------------------------------------GPIO INIT----------------------------------
 
@@ -57,6 +65,10 @@ std::uint8_t bufferReceve = 0;
 
 //        usart.uartInit(usart.RATE_115200,84000000);
         usart.uartEnableInterrupt();
+
+        //------------------------------------------------------------------------------------
+
+        usb.Init();
 
         //------------------------------------------------------------------------------------
 
@@ -133,9 +145,9 @@ std::uint8_t bufferReceve = 0;
             usart.TransmitString(test,20);
 
             gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_NO);
-            clockControl.mDelay(1000);
+            clockControl.mDelay(500);
             gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_OFF);
-            clockControl.mDelay(1000);
+            clockControl.mDelay(500);
         }
 
        return 0;
@@ -153,5 +165,7 @@ std::uint8_t bufferReceve = 0;
         bufferReceve = drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
     }
 
+    void OTG_FS_IRQHandler()
+    {
 
-
+    }
