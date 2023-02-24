@@ -74,6 +74,22 @@ namespace drivers::usb {
 
         void CoreReset() noexcept;
 
+        void CoreInit();
+
+        void SetCurremtMode();
+
+        void DevInit();
+
+        void SetRxFiFo(std::uint16_t size);
+
+        void SetTxFiFo(std::uint8_t fifo, std::uint16_t size);
+
+        void RegisterClass(std::uint8_t& add);
+
+        void RegisterInterface();
+
+        void USBD_Start();
+
     };
 }
 
