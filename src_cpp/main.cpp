@@ -18,7 +18,7 @@
 
     std::uint32_t counter = 0;
 
-    void foo1( std::pmr::monotonic_buffer_resource &pool,libs::Cout &cout)
+   /* void foo1( std::pmr::monotonic_buffer_resource &pool,libs::Cout &cout)
     {
         std::pmr::vector<char> vec{ &pool};
 
@@ -36,7 +36,7 @@
         {
             vec.push_back(i);
         }
-    }
+    }*/
 
      void EXTI0_IRQHandler(void)
      {
