@@ -6,17 +6,8 @@ namespace drivers
 {
 
     ClockControl::ClockControl() {
-
-            SetCalibTrimming(16);
-            Enable();
-            while (IsReady())
-            {
-            }
-            SetAHBPrescaler(AHB_OFF);
-            SetAPB1Prescaler(APB_OFF);
-            SetAPB2Prescaler(APB_OFF);
-            SetSysClkSource(0);
-            InitTickSysTick(16000000,1000);            // 1ms
+        SetExternalClockGenerator_168MHz();
+//        SetInternalClockGenerator_16MHz();
     }
 
     void ClockControl::SetCalibTrimming(std::uint32_t value) noexcept
@@ -72,6 +63,11 @@ namespace drivers
         libs::MWR::setBit(RegisterRCC::AHB1ENR,(1 << typeEnableClock));
     }
 
+    void ClockControl::AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) noexcept
+    {
+        libs::MWR::enableNumberBit(AHB2ENR, typeEnableClock);
+    }
+
     void ClockControl::APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) noexcept
     {
         libs::MWR::setBit(RegisterRCC::APB1ENR,(1 << typeEnableClock));
@@ -102,6 +98,11 @@ namespace drivers
     {
         switch (module)
         {
+            case USART_1_MODULE:
+            {
+                APB2EnableClock(USART_1_APB_2);  // Enable UARRT 1
+                break;
+            }
             case USART_2_MODULE:
             {
                 APB1EnableClock(USART2_APB_1);   // Enable UARRT 2
@@ -112,11 +113,97 @@ namespace drivers
                 AHB1EnableClock(PORT_A_AHB_1);   // Enable PORT  A
                 break;
             }
+            case PORT_H_MODULE:
+            {
+                AHB1EnableClock(PORT_H_AHB_1);   // Enable PORT H
+                break;
+            }
             case SYSCF_MODULE:
             {
                 APB2EnableClock(SYSCF);          // Enable SYSCF
                 break;
             }
+            case PWR_MODULE:
+            {
+                APB1EnableClock(PWR_APB_1);      // Enable PWR
+                break;
+            }
+            case USB_FS_MODULE:
+            {
+                AHB2EnableClock(USB_OTG_FS_AHB_2);   // Enable USB
+                break;
+            }
         }
     }
+
+    void ClockControl::ESE_Enable() noexcept {
+        libs::MWR::setBit(CR,1 << 16);
+    }
+
+    bool ClockControl::HSE_IsReady() noexcept {
+        return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << 17));
+    }
+
+    void ClockControl::PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM, std::uint8_t PLLQ) noexcept {
+        libs::MWR::clearBit(PLLCFGR,0x0000FFFF);
+        libs::MWR::setBit(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6) | (PLLQ << 24));
+
+        libs::MWR::setBit(CR, 1 << 24);
+    }
+
+    bool ClockControl::PLL_IsReady() noexcept {
+        return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << 25));
+    }
+
+    std::uint32_t ClockControl::GetSysClkSourse() noexcept {
+        return (libs::MWR::read_register<std::uint32_t>(CFGR) & 12);
+    }
+
+    void ClockControl::SetInternalClockGenerator_16MHz() noexcept {
+
+            SetCalibTrimming(16);
+            Enable();
+            while (IsReady())
+            {
+            }
+            SetAHBPrescaler(AHB_OFF);
+            SetAPB1Prescaler(APB_OFF);
+            SetAPB2Prescaler(APB_OFF);
+            SetSysClkSource(0);
+            InitTickSysTick(16000000,1000);            // 1ms
+
+    }
+
+    void ClockControl::SetExternalClockGenerator_168MHz() noexcept {
+
+        drivers::flash::Flash flash;
+
+        flash.SetLatency(5);
+        while (flash.GetLatency() != 5)
+        {}
+
+        module_enable(SYSCF_MODULE);
+        module_enable(PWR_MODULE);
+
+        ESE_Enable();
+        while (!HSE_IsReady())
+        {}
+
+        PLL_Config_Sys(168,4,7);
+
+        while (PLL_IsReady())
+        {}
+
+        SetAHBPrescaler(AHB_OFF);
+        SetAPB1Prescaler(APB_DIVISOR_BY_4);
+        SetAPB2Prescaler(APB_DIVISOR_BY_2);
+        SetSysClkSource(2);
+
+        while ((GetSysClkSourse() != 8))
+        {}
+
+        InitTickSysTick(168000000,1000);            // 1ms
+    }
+
+
 }

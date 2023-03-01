@@ -5,6 +5,7 @@
 #define CLOCKCONTROL_H
 
 #include "MWR.hpp"
+#include "flash.h"
 
 namespace drivers
 {
@@ -92,6 +93,12 @@ namespace drivers
             DMA2_EN_AHB_1          = 22
         };
 
+        enum  TYPE_ENABLE_CLOCK_AHB_2 : std::uint8_t
+        {
+            USB_OTG_FS_AHB_2           = 7
+        };
+
+
         enum  TYPE_ENABLE_CLOCK_APB_1 : std::uint8_t
         {
             TIMER2_APB_1   = 0,
@@ -123,14 +130,19 @@ namespace drivers
 
         enum  TYPE_ENABLE_CLOCK_APB_2 : std::uint8_t
         {
+            USART_1_APB_2 = 4,
             SYSCF = 14
         };
 
         enum  MODULE : std::uint8_t
         {
+            USART_1_MODULE,
             USART_2_MODULE,
             PORT_A_MODULE,
+            PORT_H_MODULE,
             SYSCF_MODULE,
+            PWR_MODULE,
+            USB_FS_MODULE,
             EXTI_MODULE
         };
 
@@ -154,9 +166,25 @@ namespace drivers
 
         void AHB1EnableClock(TYPE_ENABLE_CLOCK_AHB_1 typeEnableClock) noexcept;
 
+        void AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) noexcept;
+
         void APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) noexcept;
 
         void APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) noexcept;
+
+        void ESE_Enable() noexcept;
+
+        [[nodiscard]] bool HSE_IsReady() noexcept;
+
+        [[nodiscard]] bool PLL_IsReady() noexcept;
+
+        std::uint32_t GetSysClkSourse() noexcept;
+
+        void PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM, std::uint8_t PLLQ) noexcept;
+
+        void SetInternalClockGenerator_16MHz() noexcept;
+
+        void SetExternalClockGenerator_168MHz() noexcept;
 
         void mDelay(std::uint32_t Delay);
 
