@@ -13,6 +13,7 @@ extern std::uint32_t _sbss;      // Start of bss
 extern std::uint32_t _ebss;      // End of bss
 extern std::uint32_t _estack;    // Top of stack
 
+using vector = std::add_pointer<void()>::type; // void (*)(void)
 
 //Static constructor initializator from libc
 //extern void __libc_init_array();
@@ -147,10 +148,12 @@ void Reset_Handler() {
      void HASH_RNG_IRQHandler(void)                   {Default_Handler();}  // Hash and Rng
      void FPU_IRQHandler(void)                        {Default_Handler();}  // FPU
 
+
+
     // Interrupt vector table
     __attribute__((section(".isr_vector")))
-     void (*VectorTable[])(void) = {
-            (void (*)(void)) &_estack,
+     vector VectorTable[] = {                       // void (*VectorTable[])(void)
+            (vector) &_estack,
               Reset_Handler,
               NMI_Handler,
               HardFault_Handler,

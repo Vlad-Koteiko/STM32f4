@@ -108,7 +108,7 @@ namespace drivers::usart {
 
         void DataWidth(WORD_LENGTH wordLength) noexcept        // This bit determines the word length. It is set or cleared by software.
         {
-            readWrite::setBit(CR1, wordLength << 12);
+            readWrite::setBit(CR1, wordLength << 12 );
         }
 
         void SetReceiver(RECEIVER receiver) noexcept           // This bit enables the receiver. It is set and cleared by software
@@ -120,6 +120,7 @@ namespace drivers::usart {
         {
             readWrite::setBit(CR1, transmitter << 3);
         }
+
 
         void USART_ENABLE(USART_ENABLE usartEnable) noexcept   // USART prescalers and outputs are stopped and the end of the current byte transfer in order to reduce power consumption
         {

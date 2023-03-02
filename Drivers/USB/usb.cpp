@@ -11,7 +11,7 @@ namespace drivers::usb {
 
         MspInit();
 
-        libs::MWR::write_register(GAHBCFG, ~0x00000001); // Disable the Interrupts
+        libs::MWR::clearBit(GAHBCFG, 0x00000001); // Disable the Interrupts
 
         CoreInit();
 
@@ -19,12 +19,16 @@ namespace drivers::usb {
 
         DevInit();
 
+        DevDisconnect();
+
         SetRxFiFo(0x80);
 
         SetTxFiFo(0, 0x40);
 
         SetTxFiFo(1, 0x80);
     }
+
+
 
     void Usb::CoreReset() noexcept {
 
@@ -67,13 +71,14 @@ namespace drivers::usb {
 
     void Usb::SetCurremtMode() {
 
-        libs::MWR::write_register(GUSBCFG,~0x60000000);
+        libs::MWR::clearBit(GUSBCFG,0x60000000);
         libs::MWR::enableNumberBit(GUSBCFG,30);
 
-        while (libs::MWR::readBit<std::uint32_t>(GINTSTS,0))
+
+        do
         {
             clockControl.mDelay(1);
-        }
+        }while (libs::MWR::readBit<std::uint32_t>(GINTSTS,0));
 
     }
 
@@ -86,31 +91,25 @@ namespace drivers::usb {
 
         libs::MWR::enableNumberBit(DCTL,1);
         libs::MWR::enableNumberBit(GCCFG,21);
-        libs::MWR::write_register(GCCFG,~0x80000);
-        libs::MWR::write_register(GCCFG,~0x40000);
-
+        libs::MWR::clearBit(GCCFG,0x80000);
+        libs::MWR::clearBit(GCCFG,0x40000);
         libs::MWR::setBit(DCFG,0);
 
-        libs::MWR::write_register(DCFG,3);
+        libs::MWR::setBit(DCFG,3);
 
         //-------------------Flush Tx FIFO--------------------
 
-        while(!libs::MWR::readBit<std::uint32_t>(GRSTCTL,31))
-        {}
 
-        libs::MWR::write_register(GRSTCTL,32 | (2 << 6));
+        libs::MWR::write_register(GRSTCTL,(32 | (16 << 6)));
 
         while(libs::MWR::readBit<std::uint32_t>(GRSTCTL,5))
         {}
 
         //-------------------Flush Rx FIFO--------------------
 
-        while(!libs::MWR::readBit<std::uint32_t>(GRSTCTL,31))
-        {}
-
         libs::MWR::write_register(GRSTCTL, 0x10);
 
-        while(libs::MWR::readBit<std::uint32_t>(GRSTCTL,2))
+        while(libs::MWR::readBit<std::uint32_t>(GRSTCTL,4))
         {}
 
         /* Clear all pending Device Interrupts */
@@ -161,13 +160,13 @@ namespace drivers::usb {
             libs::MWR::write_register(DOEPCTL + (i * 0x20),0xFB7FU);
         }
 
-        libs::MWR::write_register(DIEPMSK,~(0x100));
+        libs::MWR::clearBit(DIEPMSK,0x0100);
         libs::MWR::write_register(GINTMSK, 0);           // Disable all interrupts
         libs::MWR::write_register(GINTSTS, 0xBFFFFFFFU); // Clear any pending interrupts
 
         libs::MWR::setBit(GINTMSK,1 << 4);
         libs::MWR::setBit(GINTMSK,(1 << 11) | (1 << 12) | (1 << 13) | (1 << 18) |
-                                   (1 << 19) | (1 << 20) | (1 << 21) | (1 << 31));  //Enable interrupts matching to the Device mode ONLY
+                                  (1 << 19) | (1 << 20) | (1 << 21) | (1 << 31));  //Enable interrupts matching to the Device mode ONLY
         libs::MWR::setBit(DCTL, 2);
     }
 
@@ -199,7 +198,18 @@ namespace drivers::usb {
 
     }
 
+    void Usb::DevDisconnect()
+
+    {
+        libs::MWR::clearBit(PCGCCTL,0x0100);
+        libs::MWR::setBit(DCTL, 0x02);
+    }
+
     void Usb::RegisterClass(std::uint8_t& add ) {
 
     }
+
+
+
+
 }

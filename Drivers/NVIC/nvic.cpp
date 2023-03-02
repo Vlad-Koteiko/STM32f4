@@ -35,10 +35,15 @@ namespace drivers::nvic {
         {
             libs::MWR::setBit(ISER, 1 << (deviceId & writeLimit));
 
-        } else if((deviceId < 64) && (deviceId > 31)){
+        } else if((deviceId > 31) && (deviceId < 64)){
 
             libs::MWR::setBit(ISER + 4, 1 << (deviceId & writeLimit));
-        }
+
+        } else if( (deviceId > 63) && (deviceId < 96)){
+
+            libs::MWR::setBit(ISER + 8, 1 << (deviceId & writeLimit));
+}
+
     }
 
     void NVIC::NVIC_SetPriority(drivers::nvic::NVIC::DEVICE_ID deviceId, std::uint32_t priority) noexcept {

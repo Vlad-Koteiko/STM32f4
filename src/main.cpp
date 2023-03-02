@@ -47,9 +47,11 @@ std::uint8_t bufferReceve = 0;
 
         drivers::ClockControl clockControl;
         drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
+        drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_D> gpio_D(clockControl);
         usart_1 usart(clockControl,usart_1::RATE_115200,84000000);
         drivers::usb::Usb usb(clockControl);
         libs::Cout cout;
+
 
         Init(clockControl);
 
@@ -58,6 +60,11 @@ std::uint8_t bufferReceve = 0;
         gpio_A.PIN_init(gpio_A.PIN_1,gpio_A.OUTPUT);
         gpio_A.SetPinPull(gpio_A.PIN_0,gpio_A.NO_PULL_UP_PULL_DOWN);
         gpio_A.PIN_init(gpio_A.PIN_0, gpio_A.INPUT);
+
+
+        gpio_D.PIN_init(gpio_D.PIN_15,gpio_D.OUTPUT);
+        gpio_D.SetPinPull(gpio_D.PIN_0,gpio_D.NO_PULL_UP_PULL_DOWN);
+        gpio_D.PIN_init(gpio_D.PIN_0, gpio_D.INPUT);
 
         //------------------------------------------------------------------------------------
 
@@ -68,7 +75,7 @@ std::uint8_t bufferReceve = 0;
 
         //------------------------------------------------------------------------------------
 
-        usb.Init();
+//        usb.Init();
 
         //------------------------------------------------------------------------------------
 
@@ -145,8 +152,10 @@ std::uint8_t bufferReceve = 0;
             usart.TransmitString(test,20);
 
             gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_NO);
+            gpio_D.SetPin(gpio_D.PIN_15,gpio_D.PIN_NO);
             clockControl.mDelay(500);
             gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_OFF);
+            gpio_D.SetPin(gpio_D.PIN_15,gpio_D.PIN_OFF);
             clockControl.mDelay(500);
         }
 

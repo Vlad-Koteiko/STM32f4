@@ -113,6 +113,11 @@ namespace drivers
                 AHB1EnableClock(PORT_A_AHB_1);   // Enable PORT  A
                 break;
             }
+            case PORT_D_MODULE:
+            {
+                AHB1EnableClock(PORT_D_AHB_1);   // Enable PORT  D
+                break;
+            }
             case PORT_H_MODULE:
             {
                 AHB1EnableClock(PORT_H_AHB_1);   // Enable PORT H
