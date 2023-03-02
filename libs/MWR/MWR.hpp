@@ -9,30 +9,39 @@ namespace  libs
 {
     class MWR
     {
-
     public:
-
-        template<class T>
+        template<typename T>
               static inline void write_register(std::uintptr_t adress, volatile T value) noexcept
         {
             *reinterpret_cast<volatile T *>(adress) = value;
         }
 
-        template<class T>
+        template<typename T>
                static inline volatile T read_register(std::uintptr_t adress) noexcept
         {
             return *reinterpret_cast<volatile const T *>(adress);
         }
 
-        template<class T>
-       static void inline setBit(std::uintptr_t adress,T bit)
+        template<typename T>
+       static void inline setBit(std::uintptr_t adress,T bit) noexcept
         {
            volatile T temp = read_register<T>(adress);
            temp |= bit;
            write_register(adress,temp);
         }
 
-       static void inline clearBit(std::uintptr_t adress,std::uint32_t bit)
+        static void inline enableNumberBit(std::uintptr_t adress, std::uint8_t numberBit) noexcept
+        {
+            setBit(adress,(1 << numberBit));
+        }
+
+        template<typename T>
+        static bool inline readBit(std::uintptr_t adress, std::uint8_t numberBit) noexcept
+        {
+            return (read_register<T>(adress) & (1 << numberBit));
+        }
+
+       static void inline clearBit(std::uintptr_t adress,std::uint32_t bit) noexcept
         {
             using type = std::uint32_t;
             volatile type temp = read_register<type>(adress);

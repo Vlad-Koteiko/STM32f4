@@ -5,10 +5,15 @@
 #define UART_NVIC_H
 
 #include "MWR.hpp"
+#include "clockControl.hpp"
+#include "syscfg.h"
+#include "exti.h"
 
 namespace drivers::nvic {
 
     class NVIC {
+
+        drivers::exti::EXIT_RTSR exitRtsr;
 
         static constexpr std::uint32_t baseAddress = 0xE000E100;
 
@@ -23,16 +28,24 @@ namespace drivers::nvic {
         };
 
     public:
+        drivers::syscfg::SYSCFG syscfg;
 
         enum DEVICE_ID : std::uint8_t
         {
-          EXTI_0    = 6,
-          UASRT_2   = 38,
+          EXTI_0     = 6,
+          UASRT_1    = 37,
+          UASRT_2    = 38,
+          OTG_FS_IRQ = 67
         };
 
-        void NVIC_Enable(DEVICE_ID deviceId) noexcept;
+        NVIC(ClockControl &clockControl1);
 
-        void NVIC_SetPriority(DEVICE_ID deviceId, std::uint32_t priority) noexcept;
+       void NVIC_Enable(DEVICE_ID deviceId, drivers::syscfg::SYSCFG::EXIT_PORT exitPort,
+                         drivers::syscfg::SYSCFG::EXIT_NUMBER exitNumber) noexcept;
+
+       static void NVIC_Enable(DEVICE_ID deviceId) noexcept;
+
+       void NVIC_SetPriority(DEVICE_ID deviceId, std::uint32_t priority) noexcept;
 
     };
 }
