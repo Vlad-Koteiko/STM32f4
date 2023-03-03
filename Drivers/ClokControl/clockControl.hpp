@@ -139,6 +139,7 @@ namespace drivers
             USART_1_MODULE,
             USART_2_MODULE,
             PORT_A_MODULE,
+            PORT_D_MODULE,
             PORT_H_MODULE,
             SYSCF_MODULE,
             PWR_MODULE,

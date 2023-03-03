@@ -138,6 +138,11 @@ namespace drivers::port
                     clockControl.module_enable(clockControl.PORT_A_MODULE);
                     break;
                 }
+                case PORT_D:
+                {
+                    clockControl.module_enable(clockControl.PORT_D_MODULE);
+                    break;
+                }
             }
         }
 

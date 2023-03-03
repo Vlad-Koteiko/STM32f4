@@ -14,6 +14,7 @@
 #include "syscfg.h"
 #include "exti.h"
 #include "usb.h"
+#include "iwdg.h"
 #include <array>
 #include <vector>
 #include <memory_resource>

@@ -3,6 +3,7 @@
 //
 
 #include "main.h"
+#include "../Drivers/IWDG/iwdg.h"
 
 std::uint32_t counter = 0;
 std::uint8_t bufferReceve = 0;
@@ -47,6 +48,7 @@ std::uint8_t bufferReceve = 0;
 
         drivers::ClockControl clockControl;
         drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
+        drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_D> gpioD(clockControl);
         usart_1 usart(clockControl,usart_1::RATE_115200,84000000);
         drivers::usb::Usb usb(clockControl);
         libs::Cout cout;
@@ -59,6 +61,15 @@ std::uint8_t bufferReceve = 0;
         gpio_A.SetPinPull(gpio_A.PIN_0,gpio_A.NO_PULL_UP_PULL_DOWN);
         gpio_A.PIN_init(gpio_A.PIN_0, gpio_A.INPUT);
 
+        gpioD.PIN_init(gpioD.PIN_12, gpioD.OUTPUT);
+        gpioD.PIN_init(gpioD.PIN_13, gpioD.OUTPUT);
+        gpioD.PIN_init(gpioD.PIN_14, gpioD.OUTPUT);
+        gpioD.PIN_init(gpioD.PIN_15, gpioD.OUTPUT);
+
+        gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_NO);
+        gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_NO);
+        gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_NO);
+        gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_NO);
         //------------------------------------------------------------------------------------
 
         //----------------------------------------USART INIT----------------------------------
@@ -72,7 +83,13 @@ std::uint8_t bufferReceve = 0;
 
         //------------------------------------------------------------------------------------
 
+        //----------------------------------------IWDG INIT-----------------------------------
 
+        //drivers::iwdg::IWDG wathdog(drivers::iwdg::PrescalerIWDG::IWDG_PRESCALER_32, 0xFFF);
+        drivers::iwdg::IWDG wathdog(std::chrono::milliseconds(5000));
+        wathdog.Refresh();
+
+        //------------------------------------------------------------------------------------
     //    std::array<std::uint8_t,64> buffer = {};
     //    std::fill_n(std::begin(buffer),buffer.size() - 1, '_');
     //
@@ -139,15 +156,35 @@ std::uint8_t bufferReceve = 0;
 
         while (1)
         {
-            cout << "counter = " << counter << cout.ENDL;
-            cout << "USART = " << bufferReceve << cout.ENDL;
+//            cout << "counter = " << counter << cout.ENDL;
+//            cout << "USART = " << bufferReceve << cout.ENDL;
+//
+//            usart.TransmitString(test,20);
 
-            usart.TransmitString(test,20);
+//            gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_NO);
+//            clockControl.mDelay(500);
+//            gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_OFF);
+//            clockControl.mDelay(500);
 
-            gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_NO);
+            gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_NO);
             clockControl.mDelay(500);
-            gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_OFF);
+            gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_NO);
             clockControl.mDelay(500);
+            gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_NO);
+            clockControl.mDelay(500);
+            gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_NO);
+            clockControl.mDelay(500);
+
+            gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_OFF);
+            clockControl.mDelay(500);
+            gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_OFF);
+            clockControl.mDelay(500);
+            gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_OFF);
+            clockControl.mDelay(500);
+            gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_OFF);
+            clockControl.mDelay(500);
+
+            //wathdog.Refresh();
         }
 
        return 0;
