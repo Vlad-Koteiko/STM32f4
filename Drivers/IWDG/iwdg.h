@@ -9,8 +9,17 @@
 
 #include "MWR.hpp"
 
+/**
+namespace drivers::iwdg
+@brief Драйвер Watchdog-таймера
+*/
+
 namespace drivers::iwdg
 {
+    /**
+     @brief Перечисление делителей для Watchdog-таймера
+     */
+
     enum PrescalerIWDG : std::uint8_t
     {
         IWDG_PRESCALER_4    = 0b000,    //divider /4
@@ -23,6 +32,9 @@ namespace drivers::iwdg
         //IWDH_PRESCALER_256  = 0b111    //divider /256
     };
 
+    /**
+     @brief Класс реализующий функционал Watchdog-таймера
+     */
     class IWDG {
 
         static constexpr std::uint32_t baseAddress = 0x40003000;
@@ -49,16 +61,43 @@ namespace drivers::iwdg
         };
 
     public:
-
-
-
+        /**
+         * @brief Конструктор
+         * @param prescaller Значение делителя
+         * @param reloadValue Значение перезагрузки
+         */
         IWDG(PrescalerIWDG prescaller, std::int16_t reloadValue);
+        /**
+         * @brief Конструктор
+         * @param period Время периода Watchdog-таймера
+         */
         IWDG(std::chrono::milliseconds period);
+        /**
+         * Обновить обратный отсчет watchdog-таймера
+         */
         void Refresh();
+        /**
+         * Включение разрешение записи в регистры
+         */
         void EnableWriteAccess();
+        /**
+         * Отключение разрешения записи в регистры
+         */
         void DisableWriteAccess();
+        /**
+         * Установка делителя
+         * @param pres Значение делителя
+         */
         void SetPrescaler(PrescalerIWDG pres);
+        /**
+         * Получение значение делителя из регистра
+         * @return значение делителя (bin)
+         */
         std::uint32_t GetPrescaler();
+        /**
+         * Установка значения перезагрузки
+         * @param counter
+         */
         void SetReloadCounter(std::uint32_t counter);
         std::uint32_t GetReloadCounter();
         bool IsActiveFlagPVU();

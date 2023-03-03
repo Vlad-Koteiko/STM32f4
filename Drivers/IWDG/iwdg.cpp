@@ -4,6 +4,10 @@
 
 #include "iwdg.h"
 
+/**
+namespace drivers::iwdg
+@brief Драйвер Watchdog-таймера
+*/
 namespace drivers::iwdg {
 
     IWDG::IWDG(PrescalerIWDG prescaller, std::int16_t reloadValue) {
