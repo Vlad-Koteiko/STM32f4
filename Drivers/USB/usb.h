@@ -96,6 +96,11 @@ namespace drivers::usb {
 
         void DevDisconnect();
 
+        void StartUSB();
+
+        void DevConnect();
+
+        void PCD_Start();
     };
 }
 

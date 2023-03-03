@@ -209,6 +209,29 @@ namespace drivers::usb {
 
     }
 
+    void Usb::DevConnect() {
+        libs::MWR::clearBit(PCGCCTL, 3);
+        libs::MWR::clearBit(DCTL, 2);
+    }
+
+    void Usb::PCD_Start() {
+
+        //--------------LOCK-------------------------
+
+
+        //-------------------------------------------
+
+        libs::MWR::setBit(GAHBCFG,1);
+        Usb::DevConnect();
+
+    }
+
+
+    void Usb::StartUSB()
+    {
+        PCD_Start();
+    }
+
 
 
 
