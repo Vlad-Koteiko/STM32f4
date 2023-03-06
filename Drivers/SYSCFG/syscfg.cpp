@@ -5,8 +5,8 @@
 
 namespace drivers::syscfg {
 
-    SYSCFG::SYSCFG(ClockControl &clockControl1) : clockControl(clockControl1) {
-        clockControl.module_enable(clockControl.SYSCF_MODULE);
+    SYSCFG::SYSCFG(drivers::clock::ClockControl &clockControl1) : clockControl(clockControl1) {
+        clockControl.module_enable(drivers::clock::SYSCF_MODULE);
     }
 
     void SYSCFG::SetSourceEXTI(drivers::syscfg::SYSCFG::EXIT_PORT exitPort,
@@ -14,19 +14,19 @@ namespace drivers::syscfg {
 
         if (exitNumber < 4)
         {
-            libs::MWR::setBit(EXTICR, exitPort << (exitNumber * 4));
+            libs::MWR::modifySetRegister(EXTICR, exitPort << (exitNumber * 4));
 
         } else if((exitNumber < 8) && (exitNumber > 3))
         {
-            libs::MWR::setBit(EXTICR_2, (exitPort << ((exitNumber - 4) * 4)));
+            libs::MWR::modifySetRegister(EXTICR_2, (exitPort << ((exitNumber - 4) * 4)));
 
         } else if((exitNumber < 12) && (exitNumber > 7))
         {
-            libs::MWR::setBit(EXTICR + 8, exitPort << ((exitNumber - 8) * 4));
+            libs::MWR::modifySetRegister(EXTICR + 8, exitPort << ((exitNumber - 8) * 4));
 
         } else if((exitNumber < 16) && (exitNumber > 11))
         {
-            libs::MWR::setBit(EXTICR + 12, exitPort << ((exitNumber - 12) * 4));
+            libs::MWR::modifySetRegister(EXTICR + 12, exitPort << ((exitNumber - 12) * 4));
         }
     }
 

@@ -7,12 +7,120 @@
 #include "MWR.hpp"
 #include "flash.h"
 
-namespace drivers
+namespace drivers :: clock
 {
+    enum Frequency : std::uint32_t
+    {
+        FREQ_168000000 = 168000000,
+        FREQ_100000000 = 100000000,
+        FREQ_50000000  = 50000000,
+        FREQ_32000000  = 32000000,
+        FREQ_16000000  = 16000000,
+        FREQ_8000000   = 8000000
+    };
+
+    enum PrescalerAHB : std::uint8_t
+    {
+        AHB_OFF            = 0,      // system clock not divided
+        AHB_DIVISOR_BY_2   = 0b1000, // system clock divided by 2
+        AHB_DIVISOR_BY_4   = 0b1001, // system clock divided by 4
+        AHB_DIVISOR_BY_8   = 0b1010, // system clock divided by 8
+        AHB_DIVISOR_BY_16  = 0b1011, // system clock divided by 16
+        AHB_DIVISOR_BY_64  = 0b1100, // system clock divided by 64
+        AHB_DIVISOR_BY_128 = 0b1101, // system clock divided by 128
+        AHB_DIVISOR_BY_256 = 0b1110, // system clock divided by 256
+        AHB_DIVISOR_BY_512 = 0b1111, // system clock divided by 512
+    };
+
+    enum PrescalerAPB : const std::uint8_t
+    {
+            APB_OFF            = 0,     // system clock not divided
+            APB_DIVISOR_BY_2   = 0b100, // system clock divided by 2
+            APB_DIVISOR_BY_4   = 0b101, // system clock divided by 4
+            APB_DIVISOR_BY_8   = 0b110, // system clock divided by 8
+            APB_DIVISOR_BY_16  = 0b111, // system clock divided by 16
+    };
+
+    enum  TYPE_ENABLE_CLOCK_AHB_1 : std::uint8_t
+    {
+        PORT_A_AHB_1           = 0,
+        PORT_B_AHB_1           = 1,
+        PORT_C_AHB_1           = 2,
+        PORT_D_AHB_1           = 3,
+        PORT_E_AHB_1           = 4,
+        PORT_F_AHB_1           = 5,
+        PORT_G_AHB_1           = 6,
+        PORT_H_AHB_1           = 7,
+        PORT_I_AHB_1           = 8,
+        PORT_J_AHB_1           = 9,
+        PORT_K_AHB_1           = 10,
+        CRC_CLOCK_ENABLE_AHB_1 = 12,
+        BACKUP_SRAM_AHB_1      = 18,
+        CCM_DATA_RAM_AHB_1     = 20,
+        DMA1_EN_AHB_1          = 21,
+        DMA2_EN_AHB_1          = 22
+    };
+
+    enum  TYPE_ENABLE_CLOCK_AHB_2 : std::uint8_t
+    {
+        USB_OTG_FS_AHB_2           = 7
+    };
+
+
+    enum  TYPE_ENABLE_CLOCK_APB_1 : std::uint8_t
+    {
+        TIMER2_APB_1   = 0,
+        TIMER3_APB_1   = 1,
+        TIMER4_APB_1   = 2,
+        TIMER5_APB_1   = 3,
+        TIMER6_APB_1   = 4,
+        TIMER7_APB_1   = 5,
+        TIMER12_APB_1  = 6,
+        TIMER13_APB_1  = 7,
+        TIMER14_APB_1  = 8,
+        WWDGEN_APB_1   = 11,
+        SPI2_APB_1     = 14,
+        SPI3_APB_1     = 15,
+        USART2_APB_1   = 17,
+        USART3_APB_1   = 18,
+        USART4_APB_1   = 19,
+        USART5_APB_1   = 20,
+        I2C1_APB_1     = 21,
+        I2C2_APB_1     = 22,
+        I2C3_APB_1     = 23,
+        CAN1_APB_1     = 25,
+        CAN2_APB_1     = 26,
+        PWR_APB_1      = 28,
+        DAC_APB_1      = 29,
+        USART7_APB_1   = 30,
+        USART8_APB_1   = 31
+    };
+
+    enum  TYPE_ENABLE_CLOCK_APB_2 : std::uint8_t
+    {
+        USART_1_APB_2 = 4,
+        SYSCF = 14
+    };
+
+    enum  MODULE : std::uint8_t
+    {
+        USART_1_MODULE,
+        USART_2_MODULE,
+        PORT_A_MODULE,
+        PORT_D_MODULE,
+        PORT_H_MODULE,
+        SYSCF_MODULE,
+        PWR_MODULE,
+        USB_FS_MODULE,
+        EXTI_MODULE
+    };
+
     class ClockControl
     {
         static constexpr std::uintptr_t baseRegisterRCC = 0x40023800;
         static constexpr std::uintptr_t baseRegisterSysTick = 0xE000E010;
+        std::uint32_t  systemCoreClock;
+
 
         enum RegisterRCC : std::uintptr_t
         {
@@ -41,6 +149,11 @@ namespace drivers
             PLLI2SCFGR = baseRegisterRCC + 0x84   // RCC PLLI2S configuration register, Address offset: 0x84
         };
 
+        enum CRregister : std::uint8_t
+        {
+            HSION = 0,
+        };
+
         enum RegisterSysTick : const std::uintptr_t
         {
               CTRL  = baseRegisterSysTick,          // Offset: 0x000 (R/W)  SysTick Control and Status Register
@@ -50,104 +163,9 @@ namespace drivers
         };
 
     public:
-
-        enum PrescalerAHB : std::uint8_t
-        {
-            AHB_OFF            = 0,      // system clock not divided
-            AHB_DIVISOR_BY_2   = 0b1000, // system clock divided by 2
-            AHB_DIVISOR_BY_4   = 0b1001, // system clock divided by 4
-            AHB_DIVISOR_BY_8   = 0b1010, // system clock divided by 8
-            AHB_DIVISOR_BY_16  = 0b1011, // system clock divided by 16
-            AHB_DIVISOR_BY_64  = 0b1100, // system clock divided by 64
-            AHB_DIVISOR_BY_128 = 0b1101, // system clock divided by 128
-            AHB_DIVISOR_BY_256 = 0b1110, // system clock divided by 256
-            AHB_DIVISOR_BY_512 = 0b1111, // system clock divided by 512
-        };
-
-        enum PrescalerAPB : const std::uint8_t
-        {
-            APB_OFF            = 0,     // system clock not divided
-            APB_DIVISOR_BY_2   = 0b100, // system clock divided by 2
-            APB_DIVISOR_BY_4   = 0b101, // system clock divided by 4
-            APB_DIVISOR_BY_8   = 0b110, // system clock divided by 8
-            APB_DIVISOR_BY_16  = 0b111, // system clock divided by 16
-        };
-
-        enum  TYPE_ENABLE_CLOCK_AHB_1 : std::uint8_t
-        {
-            PORT_A_AHB_1           = 0,
-            PORT_B_AHB_1           = 1,
-            PORT_C_AHB_1           = 2,
-            PORT_D_AHB_1           = 3,
-            PORT_E_AHB_1           = 4,
-            PORT_F_AHB_1           = 5,
-            PORT_G_AHB_1           = 6,
-            PORT_H_AHB_1           = 7,
-            PORT_I_AHB_1           = 8,
-            PORT_J_AHB_1           = 9,
-            PORT_K_AHB_1           = 10,
-            CRC_CLOCK_ENABLE_AHB_1 = 12,
-            BACKUP_SRAM_AHB_1      = 18,
-            CCM_DATA_RAM_AHB_1     = 20,
-            DMA1_EN_AHB_1          = 21,
-            DMA2_EN_AHB_1          = 22
-        };
-
-        enum  TYPE_ENABLE_CLOCK_AHB_2 : std::uint8_t
-        {
-            USB_OTG_FS_AHB_2           = 7
-        };
-
-
-        enum  TYPE_ENABLE_CLOCK_APB_1 : std::uint8_t
-        {
-            TIMER2_APB_1   = 0,
-            TIMER3_APB_1   = 1,
-            TIMER4_APB_1   = 2,
-            TIMER5_APB_1   = 3,
-            TIMER6_APB_1   = 4,
-            TIMER7_APB_1   = 5,
-            TIMER12_APB_1  = 6,
-            TIMER13_APB_1  = 7,
-            TIMER14_APB_1  = 8,
-            WWDGEN_APB_1   = 11,
-            SPI2_APB_1     = 14,
-            SPI3_APB_1     = 15,
-            USART2_APB_1   = 17,
-            USART3_APB_1   = 18,
-            USART4_APB_1   = 19,
-            USART5_APB_1   = 20,
-            I2C1_APB_1     = 21,
-            I2C2_APB_1     = 22,
-            I2C3_APB_1     = 23,
-            CAN1_APB_1     = 25,
-            CAN2_APB_1     = 26,
-            PWR_APB_1      = 28,
-            DAC_APB_1      = 29,
-            USART7_APB_1   = 30,
-            USART8_APB_1   = 31
-        };
-
-        enum  TYPE_ENABLE_CLOCK_APB_2 : std::uint8_t
-        {
-            USART_1_APB_2 = 4,
-            SYSCF = 14
-        };
-
-        enum  MODULE : std::uint8_t
-        {
-            USART_1_MODULE,
-            USART_2_MODULE,
-            PORT_A_MODULE,
-            PORT_D_MODULE,
-            PORT_H_MODULE,
-            SYSCF_MODULE,
-            PWR_MODULE,
-            USB_FS_MODULE,
-            EXTI_MODULE
-        };
-
         ClockControl();
+        ClockControl(Frequency f);
+        ClockControl(Frequency f, std::uint32_t freqExternOscillator);
 
         void SetCalibTrimming(std::uint32_t value) noexcept;
 
@@ -190,6 +208,9 @@ namespace drivers
         void mDelay(std::uint32_t Delay);
 
         void module_enable(MODULE module) noexcept;
+
+        void HSIEnable() noexcept;
+        void HSIDisable() noexcept;
     };
 
 }    // namespace drivers

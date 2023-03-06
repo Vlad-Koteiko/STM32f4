@@ -38,7 +38,7 @@ namespace drivers::nvic {
           OTG_FS_IRQ = 67
         };
 
-        NVIC(ClockControl &clockControl1);
+        NVIC(drivers::clock::ClockControl &clockControl1);
 
        void NVIC_Enable(DEVICE_ID deviceId, drivers::syscfg::SYSCFG::EXIT_PORT exitPort,
                          drivers::syscfg::SYSCFG::EXIT_NUMBER exitNumber) noexcept;

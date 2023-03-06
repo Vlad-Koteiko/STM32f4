@@ -15,7 +15,7 @@ namespace drivers::usb {
     class Usb
     {
         static constexpr std::uintptr_t baseAddress = 0x50000000;
-        ClockControl &clockControl;
+        drivers::clock::ClockControl &clockControl;
 
         enum Register : std::uintptr_t
         {
@@ -68,7 +68,7 @@ namespace drivers::usb {
         void MspInit();
 
     public:
-        Usb(ClockControl &clockControl1);
+        Usb(drivers::clock::ClockControl &clockControl1);
 
         void Init() noexcept;
 

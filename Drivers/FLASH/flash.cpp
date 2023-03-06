@@ -7,7 +7,7 @@
 namespace drivers::flash
 {
     void Flash::SetLatency(std::uint8_t latency) noexcept {
-        libs::MWR::setBit(ACR,latency);
+        libs::MWR::modifySetRegister(ACR,latency);
     }
 
     std::uint8_t Flash::GetLatency() noexcept {
@@ -15,14 +15,14 @@ namespace drivers::flash
     }
 
     void Flash::InstructionCacheEnable() noexcept {
-        libs::MWR::enableNumberBit(ACR,9);
+        libs::MWR::setBit(ACR,9);
     }
 
     void Flash::DataCacheEnable() noexcept {
-        libs::MWR::enableNumberBit(ACR,10);
+        libs::MWR::setBit(ACR,10);
     }
 
     void Flash::PrefetchBufferEnable() noexcept {
-        libs::MWR::enableNumberBit(ACR,8);
+        libs::MWR::setBit(ACR,8);
     }
 }

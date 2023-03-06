@@ -28,7 +28,7 @@ std::uint8_t bufferReceve = 0;
         }
     }
 
-     void Init(drivers::ClockControl &clockControl)
+     void Init(drivers::clock::ClockControl &clockControl)
      {
          drivers::nvic::NVIC nvic(clockControl);
          drivers::flash::Flash flash;
@@ -46,11 +46,10 @@ std::uint8_t bufferReceve = 0;
     {
         using usart_1 =  drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>;
 
-        drivers::ClockControl clockControl;
+        drivers::clock::ClockControl clockControl;
         drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
         drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_D> gpioD(clockControl);
         usart_1 usart(clockControl,usart_1::RATE_115200,84000000);
-        drivers::usb::Usb usb(clockControl);
         libs::Cout cout;
 
         Init(clockControl);
@@ -79,7 +78,6 @@ std::uint8_t bufferReceve = 0;
 
         //------------------------------------------------------------------------------------
 
-        usb.Init();
 
         //------------------------------------------------------------------------------------
 

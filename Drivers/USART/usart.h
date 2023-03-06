@@ -22,7 +22,7 @@ namespace drivers::usart {
     class USART
     {
         using readWrite = libs::MWR;
-        ClockControl &clockControl;
+        drivers::clock::ClockControl &clockControl;
 
         enum RegisterGPIO : std::uintptr_t
         {
@@ -40,14 +40,14 @@ namespace drivers::usart {
             switch (addressesUsart) {
                 case USART_2:
                 {
-                    clockControl.module_enable(clockControl.USART_2_MODULE);
+                    clockControl.module_enable(drivers::clock::USART_2_MODULE);
                     drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
                     gpio.USART_init(gpio.USART_2);
                     break;
                 }
                 case USART_1:
                 {
-                    clockControl.module_enable(clockControl.USART_1_MODULE);
+                    clockControl.module_enable(drivers::clock::USART_1_MODULE);
                     drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
                     gpio.USART_init(gpio.USART_1);
                     break;
@@ -95,12 +95,12 @@ namespace drivers::usart {
             RATE_9600   = 9600
         };
 
-        USART(ClockControl clockControl1) : clockControl(clockControl1)
+        USART(drivers::clock::ClockControl clockControl1) : clockControl(clockControl1)
         {
             SetConfig(baseAddress);
         }
 
-        USART(ClockControl clockControl1, BAUD_RATE baudRate,std::uint32_t FPCLK) : clockControl(clockControl1)
+        USART(drivers::clock::ClockControl clockControl1, BAUD_RATE baudRate,std::uint32_t FPCLK) : clockControl(clockControl1)
         {
             SetConfig(baseAddress);
             uartInit(baudRate,FPCLK);
@@ -108,27 +108,27 @@ namespace drivers::usart {
 
         void DataWidth(WORD_LENGTH wordLength) noexcept        // This bit determines the word length. It is set or cleared by software.
         {
-            readWrite::setBit(CR1, wordLength << 12);
+            readWrite::modifySetRegister(CR1, wordLength << 12);
         }
 
         void SetReceiver(RECEIVER receiver) noexcept           // This bit enables the receiver. It is set and cleared by software
         {
-            readWrite::setBit(CR1, receiver << 2);
+            readWrite::modifySetRegister(CR1, receiver << 2);
         }
 
         void SetTransmitter(TRANSMITTER transmitter) noexcept  // This bit enables the transmitter. It is set and cleared by software
         {
-            readWrite::setBit(CR1, transmitter << 3);
+            readWrite::modifySetRegister(CR1, transmitter << 3);
         }
 
         void USART_ENABLE(USART_ENABLE usartEnable) noexcept   // USART prescalers and outputs are stopped and the end of the current byte transfer in order to reduce power consumption
         {
-            readWrite::setBit(CR1, usartEnable << 13);
+            readWrite::modifySetRegister(CR1, usartEnable << 13);
         }
 
         void SetStopBitsLength(STOP_BIT stopBit) noexcept      // These bits are used for programming the stop bits.
         {
-            readWrite::setBit(CR2, stopBit << 12);
+            readWrite::modifySetRegister(CR2, stopBit << 12);
         }
 
         void SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept
@@ -190,9 +190,9 @@ namespace drivers::usart {
                 }
             }
 
-            libs::MWR::enableNumberBit(CR1,5);
-            libs::MWR::enableNumberBit(CR1,8);
-            libs::MWR::enableNumberBit(CR3,8);
+            libs::MWR::setBit(CR1,5);
+            libs::MWR::setBit(CR1,8);
+            libs::MWR::setBit(CR3,8);
         }
     };
 }

@@ -26,7 +26,7 @@ namespace drivers::port
     template<ADDRESSES_PORT baseAddress>
     class GPIO
     {
-        ClockControl &clockControl;
+        drivers::clock::ClockControl &clockControl;
 
         [[nodiscard]] std::uint16_t pin (std::uint8_t numberPin)
         {
@@ -130,17 +130,17 @@ namespace drivers::port
             USART_2
         };
 
-        GPIO(ClockControl clockControl) : clockControl(clockControl)
+        GPIO(drivers::clock::ClockControl clockControl) : clockControl(clockControl)
         {
             switch (baseAddress) {
                 case PORT_A:
                 {
-                    clockControl.module_enable(clockControl.PORT_A_MODULE);
+                    clockControl.module_enable(drivers::clock::PORT_A_MODULE);
                     break;
                 }
                 case PORT_D:
                 {
-                    clockControl.module_enable(clockControl.PORT_D_MODULE);
+                    clockControl.module_enable(drivers::clock::PORT_D_MODULE);
                     break;
                 }
             }

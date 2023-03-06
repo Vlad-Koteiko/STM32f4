@@ -11,7 +11,7 @@ namespace drivers::syscfg {
 
     class SYSCFG {
         static constexpr std::uint32_t baseAddress = 0x40013800;
-        ClockControl &clockControl;
+        drivers::clock::ClockControl &clockControl;
 
         enum RegisterNVIC : std::uintptr_t {
             MEMRMP   = baseAddress,        // SYSCFG memory remap register,                      Address offset: 0x00
@@ -54,7 +54,7 @@ namespace drivers::syscfg {
             EXTI_16 = 16
         };
 
-        SYSCFG(ClockControl &clockControl1);
+        SYSCFG(drivers::clock::ClockControl &clockControl1);
 
         void SetSourceEXTI(EXIT_PORT exitPort, EXIT_NUMBER exitNumber) noexcept;
     };

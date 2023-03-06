@@ -2,7 +2,7 @@
 // Created by koteiko_vv on 02.12.2022.
 //
 #include "clockControl.hpp"
-namespace drivers
+namespace drivers::clock
 {
 
     ClockControl::ClockControl() {
@@ -10,15 +10,24 @@ namespace drivers
 //        SetInternalClockGenerator_16MHz();
     }
 
+    ClockControl::ClockControl(Frequency f)
+    {
+        switch (f) {
+            case Frequency::FREQ_16000000:
+
+                break;
+        }
+    }
+
     void ClockControl::SetCalibTrimming(std::uint32_t value) noexcept
     {
-        libs::MWR::clearBit(RegisterRCC::CR,0xF8);              // clear internal high-speed clock trimming
-        libs::MWR::setBit(RegisterRCC::CR,(value << 3));
+        libs::MWR::modifyResetRegister(RegisterRCC::CR,0xF8);              // clear internal high-speed clock trimming
+        libs::MWR::modifySetRegister(RegisterRCC::CR,(value << 3));
     }
 
     void ClockControl::Enable() noexcept
     {
-        libs::MWR::setBit(RegisterRCC::CR,1);                   // internal high-speed clock enable
+        libs::MWR::modifySetRegister(RegisterRCC::CR,1);                   // internal high-speed clock enable
     }
 
     [[nodiscard]] bool ClockControl::IsReady() noexcept
@@ -29,26 +38,26 @@ namespace drivers
 
     void ClockControl::SetAHBPrescaler(PrescalerAHB prescaler) noexcept
     {
-        libs::MWR::clearBit(RegisterRCC::CFGR,0xF0);            // AHB prescaler clear
-        libs::MWR::setBit(RegisterRCC::CFGR,(prescaler << 4));
+        libs::MWR::modifyResetRegister(RegisterRCC::CFGR,0xF0);            // AHB prescaler clear
+        libs::MWR::modifySetRegister(RegisterRCC::CFGR,(prescaler << 4));
     }
 
     void ClockControl::SetAPB1Prescaler(PrescalerAPB prescaler) noexcept
     {
-        libs::MWR::clearBit(RegisterRCC::CFGR,(0x7 << 10));      // APB prescaler clear
-        libs::MWR::setBit(RegisterRCC::CFGR,(prescaler << 10));
+        libs::MWR::modifyResetRegister(RegisterRCC::CFGR,(0x7 << 10));      // APB prescaler clear
+        libs::MWR::modifySetRegister(RegisterRCC::CFGR,(prescaler << 10));
     }
 
     void ClockControl::SetAPB2Prescaler(PrescalerAPB prescaler) noexcept
     {
-        libs::MWR::clearBit(RegisterRCC::CFGR,(0x7 << 13));      // APB prescaler clear
-        libs::MWR::setBit(RegisterRCC::CFGR,(prescaler << 13));
+        libs::MWR::modifyResetRegister(RegisterRCC::CFGR,(0x7 << 13));      // APB prescaler clear
+        libs::MWR::modifySetRegister(RegisterRCC::CFGR,(prescaler << 13));
     }
 
     void ClockControl::SetSysClkSource(std::uint32_t value) noexcept
     {
-        libs::MWR::clearBit(RegisterRCC::CFGR,3);                // clear SWS SW
-        libs::MWR::setBit(RegisterRCC::CFGR,value);
+        libs::MWR::modifyResetRegister(RegisterRCC::CFGR,3);                // clear SWS SW
+        libs::MWR::modifySetRegister(RegisterRCC::CFGR,value);
     }
 
     void ClockControl::InitTickSysTick(std::uint32_t HCLKFrequency, std::uint32_t ticks) noexcept
@@ -60,22 +69,22 @@ namespace drivers
 
     void ClockControl::AHB1EnableClock(TYPE_ENABLE_CLOCK_AHB_1 typeEnableClock) noexcept
     {
-        libs::MWR::setBit(RegisterRCC::AHB1ENR,(1 << typeEnableClock));
+        libs::MWR::modifySetRegister(RegisterRCC::AHB1ENR,(1 << typeEnableClock));
     }
 
     void ClockControl::AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) noexcept
     {
-        libs::MWR::enableNumberBit(AHB2ENR, typeEnableClock);
+        libs::MWR::setBit(AHB2ENR, typeEnableClock);
     }
 
     void ClockControl::APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) noexcept
     {
-        libs::MWR::setBit(RegisterRCC::APB1ENR,(1 << typeEnableClock));
+        libs::MWR::modifySetRegister(RegisterRCC::APB1ENR,(1 << typeEnableClock));
     }
 
     void ClockControl::APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) noexcept
     {
-        libs::MWR::setBit(RegisterRCC::APB2ENR,(1 << typeEnableClock));
+        libs::MWR::modifySetRegister(RegisterRCC::APB2ENR,(1 << typeEnableClock));
     }
 
     void ClockControl::mDelay(std::uint32_t Delay)
@@ -142,7 +151,7 @@ namespace drivers
     }
 
     void ClockControl::ESE_Enable() noexcept {
-        libs::MWR::setBit(CR,1 << 16);
+        libs::MWR::modifySetRegister(CR,1 << 16);
     }
 
     bool ClockControl::HSE_IsReady() noexcept {
@@ -150,10 +159,10 @@ namespace drivers
     }
 
     void ClockControl::PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM, std::uint8_t PLLQ) noexcept {
-        libs::MWR::clearBit(PLLCFGR,0x0000FFFF);
-        libs::MWR::setBit(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6) | (PLLQ << 24));
+        libs::MWR::modifyResetRegister(PLLCFGR,0x0000FFFF);
+        libs::MWR::modifySetRegister(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6) | (PLLQ << 24));
 
-        libs::MWR::setBit(CR, 1 << 24);
+        libs::MWR::modifySetRegister(CR, 1 << 24);
     }
 
     bool ClockControl::PLL_IsReady() noexcept {
@@ -210,5 +219,12 @@ namespace drivers
         InitTickSysTick(168000000,1000);            // 1ms
     }
 
+    void ClockControl::HSIEnable() noexcept {
+        libs::MWR::setBit(CR, CRregister::HSION);
+    }
 
+    void ClockControl::HSIDisable() noexcept
+    {
+        libs::MWR::resetBit(CR, CRregister::HSION);
+    }
 }

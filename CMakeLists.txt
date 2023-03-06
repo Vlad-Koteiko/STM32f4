@@ -77,7 +77,6 @@ include_directories(Core/Inc
         Drivers/EXTI
         Drivers/SYSCFG
         Drivers/FLASH
-        Drivers/USB
         Drivers/IWDG
         src/)
 
@@ -106,7 +105,6 @@ set(SORUCE_CPP src/main.cpp
                Drivers/ClokControl/clockControl.cpp
                Drivers/EXTI/exti.cpp
                Drivers/FLASH/flash.cpp
-               Drivers/USB/usb.cpp
                Drivers/IWDG/iwdg.cpp
         )
 
