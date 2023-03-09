@@ -14,9 +14,7 @@ namespace drivers :: clock
         FREQ_168000000 = 168000000,
         FREQ_100000000 = 100000000,
         FREQ_50000000  = 50000000,
-        FREQ_32000000  = 32000000,
-        FREQ_16000000  = 16000000,
-        FREQ_8000000   = 8000000
+        FREQ_48000000  = 48000000,
     };
 
     enum PrescalerAHB : std::uint8_t
@@ -102,7 +100,7 @@ namespace drivers :: clock
         SYSCF = 14
     };
 
-    enum  MODULE : std::uint8_t
+    enum  PERIPHERALS : std::uint8_t
     {
         USART_1_MODULE,
         USART_2_MODULE,
@@ -119,7 +117,10 @@ namespace drivers :: clock
     {
         static constexpr std::uintptr_t baseRegisterRCC = 0x40023800;
         static constexpr std::uintptr_t baseRegisterSysTick = 0xE000E010;
-        std::uint32_t  systemCoreClock;
+        std::uint32_t  systemCoreClock; //Hz
+        std::uint32_t  freqAPB1;        //Hz
+        std::uint32_t  freqAPB2;        //Hz
+        std::uint32_t  freqHCLK;        //Hz
 
 
         enum RegisterRCC : std::uintptr_t
@@ -149,9 +150,23 @@ namespace drivers :: clock
             PLLI2SCFGR = baseRegisterRCC + 0x84   // RCC PLLI2S configuration register, Address offset: 0x84
         };
 
-        enum CRregister : std::uint8_t
+        enum CR_register : std::uint8_t
         {
             HSION = 0,
+            HSIRDY = 1,
+            HSEON = 16,
+            HSERDY = 17,
+            PLLON = 24,
+            PLLRDY = 25
+        };
+
+        enum PLLCFGR_register : std::uint8_t
+        {
+            PLLM_poz = 0,
+            PLLN_poz = 6,
+            PLLP_poz = 16,
+            PLLSRC_poz = 22,
+            PLLQ_poz = 24
         };
 
         enum RegisterSysTick : const std::uintptr_t
@@ -165,13 +180,12 @@ namespace drivers :: clock
     public:
         ClockControl();
         ClockControl(Frequency f);
-        ClockControl(Frequency f, std::uint32_t freqExternOscillator);
+        std::uint32_t GetFreqHCLK();
+        std::uint32_t GetFreqSystemCoreClock();
+        std::uint32_t GetFreqAPB1();
+        std::uint32_t GetFreqAPB2();
 
         void SetCalibTrimming(std::uint32_t value) noexcept;
-
-        void Enable() noexcept;
-
-        [[nodiscard]] bool IsReady() noexcept;
 
         void SetAHBPrescaler(PrescalerAHB prescaler) noexcept;
 
@@ -191,15 +205,40 @@ namespace drivers :: clock
 
         void APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) noexcept;
 
-        void ESE_Enable() noexcept;
-
+        /**
+         * Включить итсочник внешнего тактирования
+         */
+        void HSE_Enable() noexcept;
+        /**
+         * Отключить источник внешнего тактирования
+         */
+        void HSE_Disable() noexcept;
+        /**
+         * Получить статус работы внешнего тактирование
+         * @return true - включен, false - выключен
+         */
+        bool HSE_Status() noexcept;
+        /**
+         * Готовность внешнего источника тактирования
+         * @return true - готов, false - неготов
+         */
         [[nodiscard]] bool HSE_IsReady() noexcept;
 
-        [[nodiscard]] bool PLL_IsReady() noexcept;
-
         std::uint32_t GetSysClkSourse() noexcept;
+        /**
+         * Конфигурирование блока умножения PLL
+         * @param setPLLN Множитель PLLN (192 <= setPLLN <= 432)
+         * @param setPLLM Множитель PLLM (2 <= setPLLM <= 63)
+         * @param setPLLP Множитель PLLP (0 <= setPLLP <= 3)
+         * @param setPLLQ Множитель PLLQ (2 = setPLLQ <= 15)
+         */
+        void PLL_Config_Sys(std::uint16_t setPLLN, std::uint16_t setPLLM , std::uint16_t  setPLLP, std::uint16_t setPLLQ);
 
-        void PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM, std::uint8_t PLLQ) noexcept;
+        /**
+         * Выбор источника тактирования
+         * @param bit bit=0 - HSI, bit=1 - HSE
+         */
+        void PLL_SetSource(std::uint8_t bit);
 
         void SetInternalClockGenerator_16MHz() noexcept;
 
@@ -207,10 +246,39 @@ namespace drivers :: clock
 
         void mDelay(std::uint32_t Delay);
 
-        void module_enable(MODULE module) noexcept;
+        void EnablePeripherals(PERIPHERALS name) noexcept;
 
-        void HSIEnable() noexcept;
-        void HSIDisable() noexcept;
+        /**
+         * Включить внутренний генератор
+         */
+        void HSI_Enable() noexcept;
+        /**
+         * Отключить внутренний генератор
+         */
+        void HSI_Disable() noexcept;
+        /**
+         * Статус работы от внутреннего источника тактирования
+         * @return
+         */
+        bool HSI_Status() noexcept;
+        /**
+         * Проверка готовности внутреннего источника тактирования
+         * @return  true - готов, false - неготов
+         */
+        bool  HSI_IsReady() noexcept;
+        /**
+         * Включить умножитель тактов
+         */
+        void PLL_Enable() noexcept;
+        /**
+         * Отключить умножитель тактов
+         */
+        void PLL_Disable() noexcept;
+        /**
+         * Готовность умножителя
+         * @return true - locked, false - unlocked
+         */
+        [[nodiscard]] bool PLL_IsReady() noexcept;
     };
 
 }    // namespace drivers

@@ -6,34 +6,106 @@ namespace drivers::clock
 {
 
     ClockControl::ClockControl() {
-        SetExternalClockGenerator_168MHz();
-//        SetInternalClockGenerator_16MHz();
+        //SetExternalClockGenerator_168MHz();
+        SetInternalClockGenerator_16MHz();
     }
 
     ClockControl::ClockControl(Frequency f)
     {
+        drivers::flash::Flash flash;
+
+        flash.SetLatency(5);
+        while (flash.GetLatency() != 5)
+        {}
+
+        EnablePeripherals(SYSCF_MODULE);
+        EnablePeripherals(PWR_MODULE);
+
+        HSE_Enable();
+        while (!HSE_IsReady())
+        {}
+
         switch (f) {
-            case Frequency::FREQ_16000000:
+            case FREQ_48000000:
+                freqHCLK = FREQ_48000000;
+                PLL_Config_Sys(96,4,0,4);
+
+                while (PLL_IsReady())
+                {}
+
+                SetAHBPrescaler(AHB_DIVISOR_BY_2);
+                SetAPB1Prescaler(APB_DIVISOR_BY_2);
+                SetAPB2Prescaler(APB_OFF);
+                SetSysClkSource(2);
+
+                systemCoreClock = freqHCLK;
+                freqAPB1 = freqHCLK / 2;
+                freqAPB2 = freqHCLK / 2;
 
                 break;
+
+            case FREQ_50000000:
+                freqHCLK = FREQ_50000000;
+                PLL_Config_Sys(50,4,0,4);
+
+                while (PLL_IsReady())
+                {}
+
+                SetAHBPrescaler(AHB_OFF);
+                SetAPB1Prescaler(APB_DIVISOR_BY_2);
+                SetAPB2Prescaler(APB_DIVISOR_BY_2);
+                SetSysClkSource(2);
+
+                systemCoreClock = freqHCLK;
+                freqAPB1 = freqHCLK / 2;
+                freqAPB2 = freqHCLK / 2;
+                break;
+
+            case FREQ_100000000:
+                freqHCLK = FREQ_100000000;
+                PLL_Config_Sys(100,4,0,4);
+
+                while (PLL_IsReady())
+                {}
+
+                SetAHBPrescaler(AHB_OFF);
+                SetAPB1Prescaler(APB_DIVISOR_BY_4);
+                SetAPB2Prescaler(APB_DIVISOR_BY_2);
+                SetSysClkSource(2);
+
+                systemCoreClock = freqHCLK;
+                freqAPB1 = freqHCLK / 4;
+                freqAPB2 = freqHCLK / 2;
+                break;
+
+            case FREQ_168000000:
+                freqHCLK = FREQ_168000000;
+                SetExternalClockGenerator_168MHz();
+                break;
         }
+        InitTickSysTick(freqHCLK,1000);
+    }
+
+    std::uint32_t ClockControl::GetFreqSystemCoreClock() {
+        return systemCoreClock;
+    }
+
+    std::uint32_t ClockControl::GetFreqHCLK() {
+        return freqHCLK;
+    }
+
+    std::uint32_t ClockControl::GetFreqAPB1() {
+        return freqAPB1;
+    }
+
+    std::uint32_t ClockControl::GetFreqAPB2() {
+        return freqAPB2;
     }
 
     void ClockControl::SetCalibTrimming(std::uint32_t value) noexcept
     {
         libs::MWR::modifyResetRegister(RegisterRCC::CR,0xF8);              // clear internal high-speed clock trimming
         libs::MWR::modifySetRegister(RegisterRCC::CR,(value << 3));
-    }
-
-    void ClockControl::Enable() noexcept
-    {
-        libs::MWR::modifySetRegister(RegisterRCC::CR,1);                   // internal high-speed clock enable
-    }
-
-    [[nodiscard]] bool ClockControl::IsReady() noexcept
-    {
-        std::uint32_t flag = (1 << 1);                          // internal high-speed clock ready flag
-        return (libs::MWR::read_register<std::uint32_t>(RegisterRCC::CR) == flag);
     }
 
     void ClockControl::SetAHBPrescaler(PrescalerAHB prescaler) noexcept
@@ -103,9 +175,9 @@ namespace drivers::clock
         }
     }
 
-    void ClockControl::module_enable(MODULE module) noexcept
+    void ClockControl::EnablePeripherals(PERIPHERALS name) noexcept
     {
-        switch (module)
+        switch (name)
         {
             case USART_1_MODULE:
             {
@@ -150,23 +222,41 @@ namespace drivers::clock
         }
     }
 
-    void ClockControl::ESE_Enable() noexcept {
-        libs::MWR::modifySetRegister(CR,1 << 16);
+    void ClockControl::HSE_Enable() noexcept {
+        libs::MWR::modifySetRegister(CR,1 << HSEON);
+    }
+
+    void ClockControl::HSE_Disable() noexcept {
+        libs::MWR::resetBit(CR, HSEON);
+    }
+
+    bool ClockControl::HSE_Status() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CR, HSEON);
     }
 
     bool ClockControl::HSE_IsReady() noexcept {
-        return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << 17));
+        return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << HSERDY));
     }
 
-    void ClockControl::PLL_Config_Sys(std::uint8_t PLLN, std::uint16_t PLLM, std::uint8_t PLLQ) noexcept {
+    bool ClockControl::HSI_Status() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CR, HSION);
+    }
+
+    void ClockControl::PLL_Config_Sys(std::uint16_t  setPLLN, std::uint16_t setPLLM, std::uint16_t setPLLP, std::uint16_t setPLLQ) {
+
         libs::MWR::modifyResetRegister(PLLCFGR,0x0000FFFF);
-        libs::MWR::modifySetRegister(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6) | (PLLQ << 24));
 
-        libs::MWR::modifySetRegister(CR, 1 << 24);
+        //libs::MWR::setBit(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6) | (PLLQ << 24)); котейко
+        libs::MWR::modifySetRegister(PLLCFGR, static_cast<std::uint32_t>((1 << PLLSRC_poz) | setPLLM | (setPLLN << PLLN_poz) | (setPLLQ << PLLQ_poz) | (setPLLP << PLLP_poz)));
+
+        PLL_Enable();
     }
 
-    bool ClockControl::PLL_IsReady() noexcept {
-        return (libs::MWR::read_register<std::uint32_t>(CR) & (1 << 25));
+    void ClockControl::PLL_SetSource(std::uint8_t bit) {
+        if(bit == 0)
+            libs::MWR::resetBit(PLLCFGR, PLLSRC_poz);
+        else
+            libs::MWR::setBit(PLLCFGR, PLLSRC_poz);
     }
 
     std::uint32_t ClockControl::GetSysClkSourse() noexcept {
@@ -176,8 +266,8 @@ namespace drivers::clock
     void ClockControl::SetInternalClockGenerator_16MHz() noexcept {
 
             SetCalibTrimming(16);
-            Enable();
-            while (IsReady())
+            HSI_Enable();
+            while (HSI_IsReady())
             {
             }
             SetAHBPrescaler(AHB_OFF);
@@ -185,7 +275,6 @@ namespace drivers::clock
             SetAPB2Prescaler(APB_OFF);
             SetSysClkSource(0);
             InitTickSysTick(16000000,1000);            // 1ms
-
     }
 
     void ClockControl::SetExternalClockGenerator_168MHz() noexcept {
@@ -196,14 +285,14 @@ namespace drivers::clock
         while (flash.GetLatency() != 5)
         {}
 
-        module_enable(SYSCF_MODULE);
-        module_enable(PWR_MODULE);
+        EnablePeripherals(SYSCF_MODULE);
+        EnablePeripherals(PWR_MODULE);
 
-        ESE_Enable();
+        HSE_Enable();
         while (!HSE_IsReady())
         {}
 
-        PLL_Config_Sys(168,4,7);
+        PLL_Config_Sys(168,4,0,7);
 
         while (PLL_IsReady())
         {}
@@ -213,18 +302,39 @@ namespace drivers::clock
         SetAPB2Prescaler(APB_DIVISOR_BY_2);
         SetSysClkSource(2);
 
+        freqHCLK = FREQ_168000000;
+        systemCoreClock = freqHCLK;
+        freqAPB1 = freqHCLK / 4;
+        freqAPB2 = freqHCLK / 2;
+
         while ((GetSysClkSourse() != 8))
         {}
 
         InitTickSysTick(168000000,1000);            // 1ms
     }
 
-    void ClockControl::HSIEnable() noexcept {
-        libs::MWR::setBit(CR, CRregister::HSION);
+    void ClockControl::HSI_Enable() noexcept {
+        libs::MWR::setBit(CR, HSION);
     }
 
-    void ClockControl::HSIDisable() noexcept
+    void ClockControl::HSI_Disable() noexcept
     {
-        libs::MWR::resetBit(CR, CRregister::HSION);
+        libs::MWR::resetBit(CR, HSION);
+    }
+
+    bool ClockControl::HSI_IsReady() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CR, HSIRDY);
+    }
+
+    void ClockControl::PLL_Enable() noexcept {
+        libs::MWR::setBit(CR, PLLON);
+    }
+
+    void ClockControl::PLL_Disable() noexcept {
+        libs::MWR::resetBit(CR, PLLON);
+    }
+
+    bool ClockControl::PLL_IsReady() noexcept {
+        return (libs::MWR::readBit<std::uint32_t>(CR, PLLRDY));
     }
 }

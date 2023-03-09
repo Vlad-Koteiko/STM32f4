@@ -103,6 +103,7 @@ set(SORUCE_CPP src/main.cpp
                Drivers/EXTI/exti.cpp
                Drivers/SYSCFG/syscfg.cpp
                Drivers/ClokControl/clockControl.cpp
+               Drivers/ClokControl/systick.cpp
                Drivers/EXTI/exti.cpp
                Drivers/FLASH/flash.cpp
                Drivers/IWDG/iwdg.cpp

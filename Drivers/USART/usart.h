@@ -40,14 +40,14 @@ namespace drivers::usart {
             switch (addressesUsart) {
                 case USART_2:
                 {
-                    clockControl.module_enable(drivers::clock::USART_2_MODULE);
+                    clockControl.EnablePeripherals(drivers::clock::USART_2_MODULE);
                     drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
                     gpio.USART_init(gpio.USART_2);
                     break;
                 }
                 case USART_1:
                 {
-                    clockControl.module_enable(drivers::clock::USART_1_MODULE);
+                    clockControl.EnablePeripherals(drivers::clock::USART_1_MODULE);
                     drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
                     gpio.USART_init(gpio.USART_1);
                     break;

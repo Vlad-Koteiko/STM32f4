@@ -6,7 +6,7 @@
 namespace drivers::syscfg {
 
     SYSCFG::SYSCFG(drivers::clock::ClockControl &clockControl1) : clockControl(clockControl1) {
-        clockControl.module_enable(drivers::clock::SYSCF_MODULE);
+        clockControl.EnablePeripherals(drivers::clock::SYSCF_MODULE);
     }
 
     void SYSCFG::SetSourceEXTI(drivers::syscfg::SYSCFG::EXIT_PORT exitPort,

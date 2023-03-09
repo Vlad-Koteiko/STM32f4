@@ -135,12 +135,12 @@ namespace drivers::port
             switch (baseAddress) {
                 case PORT_A:
                 {
-                    clockControl.module_enable(drivers::clock::PORT_A_MODULE);
+                    clockControl.EnablePeripherals(drivers::clock::PORT_A_MODULE);
                     break;
                 }
                 case PORT_D:
                 {
-                    clockControl.module_enable(drivers::clock::PORT_D_MODULE);
+                    clockControl.EnablePeripherals(drivers::clock::PORT_D_MODULE);
                     break;
                 }
             }
