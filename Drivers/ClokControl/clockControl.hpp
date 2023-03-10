@@ -105,7 +105,10 @@ namespace drivers :: clock
         USART_1_MODULE,
         USART_2_MODULE,
         PORT_A_MODULE,
+        PORT_B_MODULE,
+        PORT_C_MODULE,
         PORT_D_MODULE,
+        PORT_E_MODULE,
         PORT_H_MODULE,
         SYSCF_MODULE,
         PWR_MODULE,
@@ -197,13 +200,13 @@ namespace drivers :: clock
 
         void InitTickSysTick(std::uint32_t HCLKFrequency, std::uint32_t ticks) noexcept;
 
-        void AHB1EnableClock(TYPE_ENABLE_CLOCK_AHB_1 typeEnableClock) noexcept;
+        void AHB1EnableClock(TYPE_ENABLE_CLOCK_AHB_1 typeEnableClock) const noexcept;
 
-        void AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) noexcept;
+        void AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) const noexcept;
 
-        void APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) noexcept;
+        void APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) const noexcept;
 
-        void APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) noexcept;
+        void APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) const noexcept;
 
         /**
          * Включить итсочник внешнего тактирования
@@ -244,9 +247,9 @@ namespace drivers :: clock
 
         void SetExternalClockGenerator_168MHz() noexcept;
 
-        void mDelay(std::uint32_t Delay);
+        void mDelay(std::uint32_t Delay)const;
 
-        void EnablePeripherals(PERIPHERALS name) noexcept;
+        void EnablePeripherals(PERIPHERALS name) const noexcept;
 
         /**
          * Включить внутренний генератор

@@ -21,33 +21,19 @@ namespace drivers::port
         PORT_G = 0x40021800,
         PORT_H = 0x40021C00,
         PORT_I = 0x40022000,
+        PORT_J = 0x40022400,
+        PORT_K = 0x40022800
     };
 
     template<ADDRESSES_PORT baseAddress>
     class GPIO
     {
-        drivers::clock::ClockControl &clockControl;
+        const drivers::clock::ClockControl &clockControl;
 
-        [[nodiscard]] std::uint16_t pin (std::uint8_t numberPin)
+        [[nodiscard]] static constexpr  std::uint16_t pin (std::uint8_t numberPin)
         {
           return (1 << numberPin);
         }
-
-    public:
-
-        enum RegisterGPIO : std::uintptr_t
-        {
-            MODER    = baseAddress,        // GPIO port mode register,               Address offset: 0x00
-            OTYPER   = baseAddress + 0x04, // GPIO port output type register,        Address offset: 0x04
-            OSPEEDR  = baseAddress + 0x08, // GPIO port output speed register,       Address offset: 0x08
-            PUPDR    = baseAddress + 0x0C, // GPIO port pull-up/pull-down register,  Address offset: 0x0C
-            IDR      = baseAddress + 0x10, // GPIO port input data register,         Address offset: 0x10
-            ODR      = baseAddress + 0x14, // GPIO port output data register,        Address offset: 0x14
-            BSRR     = baseAddress + 0x18, // GPIO port bit set/reset register,      Address offset: 0x18
-            LCKR     = baseAddress + 0x1C, // GPIO port configuration lock register, Address offset: 0x1C
-            AFRLOW   = baseAddress + 0x20, // GPIO port alternate function low reg,  Address offset: 0x20
-            AFRLHIGH = baseAddress + 0x24, // GPIO port alternate function high reg, Address offset: 0x24
-        };
 
         enum PIN_SEED : std::uint8_t
         {
@@ -89,7 +75,7 @@ namespace drivers::port
             AF14 = 0b00001110,
             AF15 = 0b00001111,
         };
-
+    public:
         enum PIN_NUMBER : std::uint8_t
         {
             PIN_0  = 0,
@@ -109,7 +95,6 @@ namespace drivers::port
             PIN_14 = 14,
             PIN_15 = 15
         };
-
         enum PORT_MODER : std::uint8_t
         {
             INPUT           = 0,
@@ -118,10 +103,10 @@ namespace drivers::port
             ANALOG_MODE     = 3
         };
 
-        enum MODE_PIN : std::uint8_t
+        enum STATUS_PIN : std::uint8_t
         {
-            PIN_NO,
-            PIN_OFF
+            PIN_RESET,
+            PIN_SET
         };
 
         enum USART : std::uint8_t
@@ -130,7 +115,25 @@ namespace drivers::port
             USART_2
         };
 
-        GPIO(drivers::clock::ClockControl clockControl) : clockControl(clockControl)
+    public:
+
+        enum RegisterGPIO : std::uintptr_t
+        {
+            MODER    = baseAddress,        // GPIO port mode register,               Address offset: 0x00
+            OTYPER   = baseAddress + 0x04, // GPIO port output type register,        Address offset: 0x04
+            OSPEEDR  = baseAddress + 0x08, // GPIO port output speed register,       Address offset: 0x08
+            PUPDR    = baseAddress + 0x0C, // GPIO port pull-up/pull-down register,  Address offset: 0x0C
+            IDR      = baseAddress + 0x10, // GPIO port input data register,         Address offset: 0x10
+            ODR      = baseAddress + 0x14, // GPIO port output data register,        Address offset: 0x14
+            BSRR     = baseAddress + 0x18, // GPIO port bit set/reset register,      Address offset: 0x18
+            LCKR     = baseAddress + 0x1C, // GPIO port configuration lock register, Address offset: 0x1C
+            AFRLOW   = baseAddress + 0x20, // GPIO port alternate function low reg,  Address offset: 0x20
+            AFRLHIGH = baseAddress + 0x24, // GPIO port alternate function high reg, Address offset: 0x24
+        };
+
+
+
+        GPIO(const drivers::clock::ClockControl& clockControl) : clockControl(clockControl)
         {
             switch (baseAddress) {
                 case PORT_A:
@@ -138,30 +141,48 @@ namespace drivers::port
                     clockControl.EnablePeripherals(drivers::clock::PORT_A_MODULE);
                     break;
                 }
+                case PORT_B:
+                {
+                    clockControl.EnablePeripherals(drivers::clock::PORT_B_MODULE);
+                }
+                case PORT_C:
+                {
+                    clockControl.EnablePeripherals(drivers::clock::PORT_C_MODULE);
+                }
                 case PORT_D:
                 {
                     clockControl.EnablePeripherals(drivers::clock::PORT_D_MODULE);
                     break;
                 }
+                case PORT_E:
+                {
+                    clockControl.EnablePeripherals(drivers::clock::PORT_E_MODULE);
+                    break;
+                }
+                case PORT_H:
+                {
+                    clockControl.EnablePeripherals(drivers::clock::PORT_H_MODULE);
+                    break;
+                }
             }
         }
 
-        void SetPinSpeed(PIN_NUMBER numberPin, PIN_SEED pinSeed) noexcept
+        void SetPinSpeed(PIN_NUMBER numberPin, PIN_SEED pinSeed) const  noexcept
         {
             libs::MWR::modifySetRegister(OSPEEDR, pinSeed << (numberPin * 2));
         }
 
-        void SetPinOutputType(PIN_NUMBER numberPin, OUTPUT_TYPE outputType) noexcept
+        void SetPinOutputType(PIN_NUMBER numberPin, OUTPUT_TYPE outputType) const noexcept
         {
             libs::MWR::modifySetRegister(OTYPER,outputType << numberPin);
         }
 
-        void SetPinPull(PIN_NUMBER numberPin, TYPE_PUPDR typePupdr) noexcept
+        void SetPinPull(PIN_NUMBER numberPin, TYPE_PUPDR typePupdr) const noexcept
         {
             libs::MWR::modifySetRegister(PUPDR, typePupdr << (numberPin*2));
         }
 
-        void SetAFPin(PIN_NUMBER numberPin,ALTERNATE_FUNCTION alternateFunction) noexcept
+        void SetAFPin(PIN_NUMBER numberPin,ALTERNATE_FUNCTION alternateFunction) const noexcept
         {
 
             if(numberPin <= 7)
@@ -174,30 +195,30 @@ namespace drivers::port
             }
         }
 
-        void SetPinMode(PIN_NUMBER numberPin, PORT_MODER portModer) noexcept
+        void SetPinMode(PIN_NUMBER numberPin, PORT_MODER portModer) const noexcept
         {
             libs::MWR::modifySetRegister(MODER, static_cast<std::uint32_t>((portModer << numberPin * 2)));
         }
 
-        void  SetOutputPin(PIN_NUMBER pinNumber) noexcept
+        void  SetOutputPin(PIN_NUMBER pinNumber) const noexcept
         {
             libs::MWR::modifySetRegister(BSRR,pin(pinNumber));
         }
 
-        void ResetOutputPin(PIN_NUMBER pinNumber) noexcept
+        void ResetOutputPin(PIN_NUMBER pinNumber) const noexcept
         {
             libs::MWR::modifySetRegister(BSRR, pin(pinNumber) << 16);
         }
 
-        void SetPin(PIN_NUMBER pinNumber, MODE_PIN modePin) noexcept
+        void SetPin(PIN_NUMBER pinNumber, STATUS_PIN modePin) const noexcept
         {
             switch (modePin) {
-                case PIN_NO:
+                case PIN_SET:
                 {
                     SetOutputPin(pinNumber);
                     break;
                 }
-                case PIN_OFF:
+                case PIN_RESET:
                 {
                     ResetOutputPin(pinNumber);
                     break;
@@ -205,7 +226,7 @@ namespace drivers::port
             }
         }
 
-        void USART_init(USART usart) noexcept
+        /*void USART_init(USART usart) noexcept
         {
             switch (usart) {
                 case USART_1:
@@ -229,15 +250,24 @@ namespace drivers::port
                     break;
                 }
             }
-        }
+        }*/
 
-        void PIN_init(PIN_NUMBER pinNumber,PORT_MODER portModer) noexcept
+        void InitPin(PIN_NUMBER pinNumber,PORT_MODER portModer) const noexcept
         {
             SetPinMode(pinNumber,portModer);
             ResetOutputPin(pinNumber);
             SetPinSpeed(pinNumber,VERY_HIGH_SPEED);
             SetPinOutputType(pinNumber,PUSH_PULL);
             SetPinPull(pinNumber,NO_PULL_UP_PULL_DOWN);
+        }
+
+        void TogglePin(PIN_NUMBER pinNumber) const
+        {
+            bool statusBit = libs::MWR::readBit<uint32_t>(ODR, pinNumber);
+            if (statusBit)
+                SetPin(pinNumber, PIN_RESET);
+            else
+                SetPin(pinNumber, PIN_SET);
         }
     };
 

@@ -141,27 +141,27 @@ namespace drivers::clock
         libs::MWR::write_register(RegisterSysTick::CTRL, static_cast<std::uint32_t>(5));                          // Enable the Systick Timer
     }
 
-    void ClockControl::AHB1EnableClock(TYPE_ENABLE_CLOCK_AHB_1 typeEnableClock) noexcept
+    void ClockControl::AHB1EnableClock(TYPE_ENABLE_CLOCK_AHB_1 typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::AHB1ENR,(1 << typeEnableClock));
     }
 
-    void ClockControl::AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) noexcept
+    void ClockControl::AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) const noexcept
     {
         libs::MWR::setBit(AHB2ENR, typeEnableClock);
     }
 
-    void ClockControl::APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) noexcept
+    void ClockControl::APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB1ENR,(1 << typeEnableClock));
     }
 
-    void ClockControl::APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) noexcept
+    void ClockControl::APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB2ENR,(1 << typeEnableClock));
     }
 
-    void ClockControl::mDelay(std::uint32_t Delay)
+    void ClockControl::mDelay(std::uint32_t Delay) const
     {
         if(Delay < 0xFFFFFFFFU)
         {
@@ -177,7 +177,7 @@ namespace drivers::clock
         }
     }
 
-    void ClockControl::EnablePeripherals(PERIPHERALS name) noexcept
+    void ClockControl::EnablePeripherals(PERIPHERALS name) const noexcept
     {
         switch (name)
         {
@@ -196,9 +196,24 @@ namespace drivers::clock
                 AHB1EnableClock(PORT_A_AHB_1);   // Enable PORT  A
                 break;
             }
+            case PORT_B_MODULE:
+            {
+                AHB1EnableClock(PORT_B_AHB_1);   // Enable PORT  A
+                break;
+            }
+            case PORT_C_MODULE:
+            {
+                AHB1EnableClock(PORT_C_AHB_1);   // Enable PORT  A
+                break;
+            }
             case PORT_D_MODULE:
             {
                 AHB1EnableClock(PORT_D_AHB_1);   // Enable PORT  D
+                break;
+            }
+            case PORT_E_MODULE:
+            {
+                AHB1EnableClock(PORT_E_AHB_1);   // Enable PORT  A
                 break;
             }
             case PORT_H_MODULE:
