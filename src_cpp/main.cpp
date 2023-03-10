@@ -10,9 +10,6 @@
 #include "nvic.h"
 #include "syscfg.h"
 #include "exti.h"
-#include "array"
-#include <vector>
-#include <memory_resource>
 #include "main.h"
 
 
@@ -47,10 +44,11 @@
 
 int main()
 {
-    drivers::ClockControl clockControl;
+    //drivers :: clock::ClockControl clockControl;
+    drivers :: clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
 
-    drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
-    drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_D> gpioD(clockControl);
+//    drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
+//    drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_D> gpioD(clockControl);
 
 //    drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_2> usart(clockControl);
 //    drivers::syscfg::SYSCFG syscfg(clockControl);
@@ -76,39 +74,39 @@ int main()
 
 
 
-    gpio_A.PIN_init(gpio_A.PIN_1, gpio_A.OUTPUT);
-    gpioD.PIN_init(gpioD.PIN_12, gpioD.OUTPUT);
-    gpioD.PIN_init(gpioD.PIN_13, gpioD.OUTPUT);
-    gpioD.PIN_init(gpioD.PIN_14, gpioD.OUTPUT);
-    gpioD.PIN_init(gpioD.PIN_15, gpioD.OUTPUT);
-
-    gpio_A.SetPin(gpio_A.PIN_1, gpio_A.PIN_NO);
-    gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_NO);
-    gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_NO);
-    gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_NO);
-    gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_NO);
-
-
-    while (true) {
-
-        gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_OFF);
-        clockControl.mDelay(1000);
-        gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_OFF);
-        clockControl.mDelay(1000);
-        gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_OFF);
-        clockControl.mDelay(1000);
-        gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_OFF);
-        clockControl.mDelay(1000);
-
-        gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_NO);
-        clockControl.mDelay(1000);
-        gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_NO);
-        clockControl.mDelay(1000);
-        gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_NO);
-        clockControl.mDelay(1000);
-        gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_NO);
-        clockControl.mDelay(1000);
-    }
+//    gpio_A.PIN_init(gpio_A.PIN_1, gpio_A.OUTPUT);
+//    gpioD.PIN_init(gpioD.PIN_12, gpioD.OUTPUT);
+//    gpioD.PIN_init(gpioD.PIN_13, gpioD.OUTPUT);
+//    gpioD.PIN_init(gpioD.PIN_14, gpioD.OUTPUT);
+//    gpioD.PIN_init(gpioD.PIN_15, gpioD.OUTPUT);
+//
+//    gpio_A.SetPin(gpio_A.PIN_1, gpio_A.PIN_NO);
+//    gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_NO);
+//    gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_NO);
+//    gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_NO);
+//    gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_NO);
+//
+//
+//    while (true) {
+//
+//        gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_OFF);
+//        clockControl.mDelay(1000);
+//        gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_OFF);
+//        clockControl.mDelay(1000);
+//        gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_OFF);
+//        clockControl.mDelay(1000);
+//        gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_OFF);
+//        clockControl.mDelay(1000);
+//
+//        gpioD.SetPin(gpioD.PIN_12, gpioD.PIN_NO);
+//        clockControl.mDelay(1000);
+//        gpioD.SetPin(gpioD.PIN_13, gpioD.PIN_NO);
+//        clockControl.mDelay(1000);
+//        gpioD.SetPin(gpioD.PIN_14, gpioD.PIN_NO);
+//        clockControl.mDelay(1000);
+//        gpioD.SetPin(gpioD.PIN_15, gpioD.PIN_NO);
+//        clockControl.mDelay(1000);
+//    }
         /* USER CODE END WHILE */
 
 //        volatile std::uint32_t reg_value = 0x40020000;

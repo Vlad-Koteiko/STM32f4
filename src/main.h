@@ -14,9 +14,6 @@
 #include "syscfg.h"
 #include "exti.h"
 #include "iwdg.h"
-#include <array>
-#include <vector>
-#include <memory_resource>
 
 void EXTI0_IRQHandler();
 void USART1_IRQHandler();

@@ -148,17 +148,17 @@ namespace drivers::port
 
         void SetPinSpeed(PIN_NUMBER numberPin, PIN_SEED pinSeed) noexcept
         {
-            libs::MWR::setBit(OSPEEDR, pinSeed << (numberPin * 2));
+            libs::MWR::modifySetRegister(OSPEEDR, pinSeed << (numberPin * 2));
         }
 
         void SetPinOutputType(PIN_NUMBER numberPin, OUTPUT_TYPE outputType) noexcept
         {
-            libs::MWR::setBit(OTYPER,outputType << numberPin);
+            libs::MWR::modifySetRegister(OTYPER,outputType << numberPin);
         }
 
         void SetPinPull(PIN_NUMBER numberPin, TYPE_PUPDR typePupdr) noexcept
         {
-            libs::MWR::setBit(PUPDR, typePupdr << (numberPin*2));
+            libs::MWR::modifySetRegister(PUPDR, typePupdr << (numberPin*2));
         }
 
         void SetAFPin(PIN_NUMBER numberPin,ALTERNATE_FUNCTION alternateFunction) noexcept
@@ -166,27 +166,27 @@ namespace drivers::port
 
             if(numberPin <= 7)
             {
-                libs::MWR::setBit(AFRLOW, alternateFunction << (numberPin * 4));
+                libs::MWR::modifySetRegister(AFRLOW, alternateFunction << (numberPin * 4));
 
             } else
             {
-                libs::MWR::setBit(AFRLHIGH,alternateFunction << ((numberPin - 8) * 4));
+                libs::MWR::modifySetRegister(AFRLHIGH,alternateFunction << ((numberPin - 8) * 4));
             }
         }
 
         void SetPinMode(PIN_NUMBER numberPin, PORT_MODER portModer) noexcept
         {
-            libs::MWR::setBit(MODER, static_cast<std::uint32_t>((portModer << numberPin * 2)));
+            libs::MWR::modifySetRegister(MODER, static_cast<std::uint32_t>((portModer << numberPin * 2)));
         }
 
         void  SetOutputPin(PIN_NUMBER pinNumber) noexcept
         {
-            libs::MWR::setBit(BSRR,pin(pinNumber));
+            libs::MWR::modifySetRegister(BSRR,pin(pinNumber));
         }
 
         void ResetOutputPin(PIN_NUMBER pinNumber) noexcept
         {
-            libs::MWR::setBit(BSRR, pin(pinNumber) << 16);
+            libs::MWR::modifySetRegister(BSRR, pin(pinNumber) << 16);
         }
 
         void SetPin(PIN_NUMBER pinNumber, MODE_PIN modePin) noexcept

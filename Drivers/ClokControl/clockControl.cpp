@@ -6,8 +6,8 @@ namespace drivers::clock
 {
 
     ClockControl::ClockControl() {
-        //SetExternalClockGenerator_168MHz();
-        SetInternalClockGenerator_16MHz();
+        SetExternalClockGenerator_168MHz();
+        //SetInternalClockGenerator_16MHz();
     }
 
     ClockControl::ClockControl(Frequency f)
@@ -24,6 +24,8 @@ namespace drivers::clock
         HSE_Enable();
         while (!HSE_IsReady())
         {}
+
+        HSI_Disable();
 
         switch (f) {
             case FREQ_48000000:
@@ -223,7 +225,7 @@ namespace drivers::clock
     }
 
     void ClockControl::HSE_Enable() noexcept {
-        libs::MWR::modifySetRegister(CR,1 << HSEON);
+        libs::MWR::setBit(CR,HSEON);
     }
 
     void ClockControl::HSE_Disable() noexcept {
@@ -309,6 +311,8 @@ namespace drivers::clock
 
         while ((GetSysClkSourse() != 8))
         {}
+
+        HSI_Disable();
 
         InitTickSysTick(168000000,1000);            // 1ms
     }
