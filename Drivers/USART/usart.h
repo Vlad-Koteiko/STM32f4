@@ -8,7 +8,7 @@
 #include "MWR.hpp"
 #include "clockControl.hpp"
 #include "nvic.h"
-#include "gpio.h"
+//#include "gpio.h"
 
 namespace drivers::usart {
 
@@ -41,14 +41,14 @@ namespace drivers::usart {
                 case USART_2:
                 {
                     clockControl.EnablePeripherals(drivers::clock::USART_2_MODULE);
-                    drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
+                    //drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
                     //gpio.USART_init(gpio.USART_2);
                     break;
                 }
                 case USART_1:
                 {
                     clockControl.EnablePeripherals(drivers::clock::USART_1_MODULE);
-                    drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
+                    //drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio(clockControl);
                     //gpio.USART_init(gpio.USART_1);
                     break;
                 }
