@@ -33,7 +33,9 @@ set(CMAKE_CXX_STANDARD 17)
 #Uncomment for hardware floating point
 #add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
 add_compile_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
+#add_compile_options(-mfloat-abi=soft -mfpu=fpv4-sp-d16)
 add_link_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs)
+#add_link_options(-mfloat-abi=soft -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs)
 
 #Uncomment for software floating point
 #add_compile_options(-mfloat-abi=soft)

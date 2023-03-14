@@ -25,7 +25,7 @@ namespace drivers::clock
         while (!HSE_IsReady())
         {}
 
-        HSI_Disable();
+        //HSI_Disable();
 
         switch (f) {
             case FREQ_48000000:
@@ -88,19 +88,19 @@ namespace drivers::clock
         InitTickSysTick(freqHCLK,1000);
     }
 
-    std::uint32_t ClockControl::GetFreqSystemCoreClock() {
+    volatile std::uint32_t ClockControl::GetFreqSystemCoreClock() {
         return systemCoreClock;
     }
 
-    std::uint32_t ClockControl::GetFreqHCLK() {
+    volatile std::uint32_t ClockControl::GetFreqHCLK() {
         return freqHCLK;
     }
 
-    std::uint32_t ClockControl::GetFreqAPB1() {
+    volatile std::uint32_t ClockControl::GetFreqAPB1() {
         return freqAPB1;
     }
 
-    std::uint32_t ClockControl::GetFreqAPB2() {
+    volatile std::uint32_t ClockControl::GetFreqAPB2() {
         return freqAPB2;
     }
 
@@ -183,42 +183,42 @@ namespace drivers::clock
         {
             case USART_1_MODULE:
             {
-                APB2EnableClock(USART_1_APB_2);  // Enable UARRT 1
+                APB2EnableClock(USART1);  // Enable USART 1
                 break;
             }
             case USART_2_MODULE:
             {
-                APB1EnableClock(USART2_APB_1);   // Enable UARRT 2
+                APB1EnableClock(USART2);   // Enable USART 2
                 break;
             }
             case PORT_A_MODULE:
             {
-                AHB1EnableClock(PORT_A_AHB_1);   // Enable PORT  A
+                  // Enable PORT  A
                 break;
             }
             case PORT_B_MODULE:
             {
-                AHB1EnableClock(PORT_B_AHB_1);   // Enable PORT  A
+                AHB1EnableClock(PORTB);   // Enable PORT  A
                 break;
             }
             case PORT_C_MODULE:
             {
-                AHB1EnableClock(PORT_C_AHB_1);   // Enable PORT  A
+                AHB1EnableClock(PORTC);   // Enable PORT  A
                 break;
             }
             case PORT_D_MODULE:
             {
-                AHB1EnableClock(PORT_D_AHB_1);   // Enable PORT  D
+                AHB1EnableClock(PORTD);   // Enable PORT  D
                 break;
             }
             case PORT_E_MODULE:
             {
-                AHB1EnableClock(PORT_E_AHB_1);   // Enable PORT  A
+                AHB1EnableClock(PORTE);   // Enable PORT  A
                 break;
             }
             case PORT_H_MODULE:
             {
-                AHB1EnableClock(PORT_H_AHB_1);   // Enable PORT H
+                AHB1EnableClock(PORTH);   // Enable PORT H
                 break;
             }
             case SYSCF_MODULE:
@@ -228,7 +228,7 @@ namespace drivers::clock
             }
             case PWR_MODULE:
             {
-                APB1EnableClock(PWR_APB_1);      // Enable PWR
+                APB1EnableClock(PWR);      // Enable PWR
                 break;
             }
             case USB_FS_MODULE:
@@ -327,7 +327,7 @@ namespace drivers::clock
         while ((GetSysClkSourse() != 8))
         {}
 
-        HSI_Disable();
+        //HSI_Disable();
 
         InitTickSysTick(168000000,1000);            // 1ms
     }

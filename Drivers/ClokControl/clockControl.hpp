@@ -41,22 +41,22 @@ namespace drivers :: clock
 
     enum  TYPE_ENABLE_CLOCK_AHB_1 : std::uint8_t
     {
-        PORT_A_AHB_1           = 0,
-        PORT_B_AHB_1           = 1,
-        PORT_C_AHB_1           = 2,
-        PORT_D_AHB_1           = 3,
-        PORT_E_AHB_1           = 4,
-        PORT_F_AHB_1           = 5,
-        PORT_G_AHB_1           = 6,
-        PORT_H_AHB_1           = 7,
-        PORT_I_AHB_1           = 8,
-        PORT_J_AHB_1           = 9,
-        PORT_K_AHB_1           = 10,
-        CRC_CLOCK_ENABLE_AHB_1 = 12,
-        BACKUP_SRAM_AHB_1      = 18,
-        CCM_DATA_RAM_AHB_1     = 20,
-        DMA1_EN_AHB_1          = 21,
-        DMA2_EN_AHB_1          = 22
+        PORTA           = 0,
+        PORTB           = 1,
+        PORTC           = 2,
+        PORTD          = 3,
+        PORTE          = 4,
+        PORTF          = 5,
+        PORTG         = 6,
+        PORTH           = 7,
+        PORTI          = 8,
+        PORTJ          = 9,
+        PORTK1           = 10,
+        CRC_CLOCK = 12,
+        BACKUP_SRAM      = 18,
+        CCM_DATA_RAM     = 20,
+        DMA1         = 21,
+        DMA2          = 22
     };
 
     enum  TYPE_ENABLE_CLOCK_AHB_2 : std::uint8_t
@@ -67,43 +67,65 @@ namespace drivers :: clock
 
     enum  TYPE_ENABLE_CLOCK_APB_1 : std::uint8_t
     {
-        TIMER2_APB_1   = 0,
-        TIMER3_APB_1   = 1,
-        TIMER4_APB_1   = 2,
-        TIMER5_APB_1   = 3,
-        TIMER6_APB_1   = 4,
-        TIMER7_APB_1   = 5,
-        TIMER12_APB_1  = 6,
-        TIMER13_APB_1  = 7,
-        TIMER14_APB_1  = 8,
-        WWDGEN_APB_1   = 11,
-        SPI2_APB_1     = 14,
-        SPI3_APB_1     = 15,
-        USART2_APB_1   = 17,
-        USART3_APB_1   = 18,
-        USART4_APB_1   = 19,
-        USART5_APB_1   = 20,
-        I2C1_APB_1     = 21,
-        I2C2_APB_1     = 22,
-        I2C3_APB_1     = 23,
-        CAN1_APB_1     = 25,
-        CAN2_APB_1     = 26,
-        PWR_APB_1      = 28,
-        DAC_APB_1      = 29,
-        USART7_APB_1   = 30,
-        USART8_APB_1   = 31
+        TIM2   = 0,
+        TIM3   = 1,
+        TIM4   = 2,
+        TIM5   = 3,
+        TIM6   = 4,
+        TIM7   = 5,
+        TIM12  = 6,
+        TIM13  = 7,
+        TIM14  = 8,
+        WWDG   = 11,
+        SPI2   = 14,
+        SPI3   = 15,
+        USART2 = 17,
+        USART3 = 18,
+        UART4  = 19,
+        UART5  = 20,
+        I2C1   = 21,
+        I2C2   = 22,
+        I2C3   = 23,
+        CAN1   = 25,
+        CAN2   = 26,
+        PWR    = 28,
+        DAC    = 29,
+        UART7  = 30,
+        UART8  = 31
     };
 
     enum  TYPE_ENABLE_CLOCK_APB_2 : std::uint8_t
     {
-        USART_1_APB_2 = 4,
-        SYSCF = 14
+        TIM1   = 0,
+        TIM8   = 1,
+        USART1 = 4,
+        USART6 = 5,
+        ADC1   = 8,
+        ADC2   = 9,
+        ADC3   = 10,
+        SDIO   = 11,
+        SPI1   = 12,
+        SPI4   = 13,
+        SYSCF  = 14,
+        TIM9   = 16,
+        TIM10  = 17,
+        TIM11  = 18,
+        SPI5   = 20,
+        SPI6   = 21,
+        SAI1   = 22,
+        LTDC   = 26
     };
 
     enum  PERIPHERALS : std::uint8_t
     {
         USART_1_MODULE,
         USART_2_MODULE,
+        USART_3_MODULE,
+        UART_4_MODULE,
+        UART_5_MODULE,
+        USART_6_MODULE,
+        UART_7_MODULE,
+        UART_8_MODULE,
         PORT_A_MODULE,
         PORT_B_MODULE,
         PORT_C_MODULE,
@@ -120,10 +142,10 @@ namespace drivers :: clock
     {
         static constexpr std::uintptr_t baseRegisterRCC = 0x40023800;
         static constexpr std::uintptr_t baseRegisterSysTick = 0xE000E010;
-        std::uint32_t  systemCoreClock; //Hz
-        std::uint32_t  freqAPB1;        //Hz
-        std::uint32_t  freqAPB2;        //Hz
-        std::uint32_t  freqHCLK;        //Hz
+        volatile std::uint32_t  systemCoreClock; //Hz
+        volatile std::uint32_t  freqAPB1;        //Hz
+        volatile std::uint32_t  freqAPB2;        //Hz
+        volatile std::uint32_t  freqHCLK;        //Hz
 
 
         enum RegisterRCC : std::uintptr_t
@@ -183,10 +205,10 @@ namespace drivers :: clock
     public:
         ClockControl();
         ClockControl(Frequency f);
-        std::uint32_t GetFreqHCLK();
-        std::uint32_t GetFreqSystemCoreClock();
-        std::uint32_t GetFreqAPB1();
-        std::uint32_t GetFreqAPB2();
+        volatile std::uint32_t GetFreqHCLK();
+        volatile std::uint32_t GetFreqSystemCoreClock();
+        volatile std::uint32_t GetFreqAPB1();
+        volatile std::uint32_t GetFreqAPB2();
 
         void SetCalibTrimming(std::uint32_t value) noexcept;
 

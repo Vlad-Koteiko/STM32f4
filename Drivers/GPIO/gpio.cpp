@@ -12,30 +12,35 @@ namespace drivers::port
         switch (port) {
             case PORT_A:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_A_MODULE);
+                clockControl.AHB1EnableClock(drivers::clock::PORTA);
                 break;
             }
             case PORT_B:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_B_MODULE);
+                clockControl.AHB1EnableClock(drivers::clock::PORTB);
             }
             case PORT_C:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_C_MODULE);
+                clockControl.AHB1EnableClock(drivers::clock::PORTC);
             }
             case PORT_D:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_D_MODULE);
+                clockControl.AHB1EnableClock(drivers::clock::PORTD);
                 break;
             }
             case PORT_E:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_E_MODULE);
+                clockControl.AHB1EnableClock(drivers::clock::PORTE);
+                break;
+            }
+            case PORT_F:
+            {
+                clockControl.AHB1EnableClock(drivers::clock::PORTF);
                 break;
             }
             case PORT_H:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_H_MODULE);
+                clockControl.AHB1EnableClock(drivers::clock::PORTH);
                 break;
             }
         }

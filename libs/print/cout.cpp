@@ -6,6 +6,9 @@
 namespace  libs
 {
 
+    Cout::Cout(drivers::usart::USART &msgUart) : debugUart(msgUart){
+    }
+
     Cout& Cout::operator << (std::string string) noexcept
     {
         pritnString(string.data());

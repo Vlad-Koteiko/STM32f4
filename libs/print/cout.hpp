@@ -11,29 +11,29 @@
 
 namespace  libs
 {
-      class Cout
+        class Cout
         {
-          std::uint8_t endString = '\0';
-          std::array<char,11> buff {0};
+            std::uint8_t endString = '\0';
+            std::array<char,11> buff {0};
+            drivers::usart::USART &debugUart;
 
+            inline void pritnString(char *ptr) noexcept
+            {
+                while (*ptr != endString)
+                {
+                    printChar(*ptr);
+                    ptr++;
+                }
+            }
 
-          inline void pritnString(char *ptr) noexcept
-          {
-              while (*ptr != endString)
-              {
-                  printChar(*ptr);
-                  ptr++;
-              }
-          }
-
-          inline void pritnValue() noexcept
-          {
-              for(std::size_t i = 0; i < buff.size();)
-              {
-                  printChar(buff[i]);
-                  i++;
-              }
-          }
+            inline void pritnValue() noexcept
+            {
+                for(std::size_t i = 0; i < buff.size();)
+                {
+                    printChar(buff[i]);
+                    i++;
+                }
+            }
 
           void endlString() noexcept
           {
@@ -42,6 +42,8 @@ namespace  libs
           }
 
     public:
+
+        Cout(drivers::usart::USART &msgUart);
 
         enum Commands
          {
@@ -61,11 +63,11 @@ namespace  libs
         Cout& operator << (Commands command) noexcept;
 
         inline  void printChar(char ch) noexcept
-              {
-                  while (!drivers::usart::USART<drivers::usart::USART_1>::IsBusyFlag())
-                  {}
-                  drivers::usart::USART<drivers::usart::USART_1>::TransmitData(ch);
-              }
+        {
+          while (!debugUart.IsBusyFlag())
+          {}
+            debugUart.TransmitData(ch);
+        }
     };
 }
 #endif //UART_COUT_H
