@@ -23,8 +23,9 @@ void SetBaudRate1(std::uint32_t baudRate, std::uint32_t FPCLK, std::uint16_t &fr
        // using usart_1 =  drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>;
 
         drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
+        libs::MWR::write_register(0xE000ED88, 0xF00000);
         //drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
-        drivers::port::GPIO gpioD(clockControl, drivers::port::PORT_D);
+        drivers::port::GPIO gpioD(clockControl, drivers::port::PORTD);
         //using GPIO_D = drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_D>;
         //using GPIO_A = drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A>;
         //usart_1 usart(clockControl,usart_1::RATE_115200,84000000);
@@ -32,7 +33,7 @@ void SetBaudRate1(std::uint32_t baudRate, std::uint32_t FPCLK, std::uint16_t &fr
 
         //Init(clockControl);
         //-----------------------------------------USART INIT---------------------------------
-        drivers::usart::USART usart2(clockControl, drivers::usart::USART2);
+        drivers::usart::USART usart2(clockControl, drivers::usart::USART2, drivers::usart::USART2_Remap::U2_TX_PA2_RX_PA3);
         char test[20] = "Test UART main\n\r";
         usart2.TransmitString(test, 16);
         libs::Cout cout(usart2);
@@ -43,7 +44,7 @@ void SetBaudRate1(std::uint32_t baudRate, std::uint32_t FPCLK, std::uint16_t &fr
         cout<<clockControl.GetFreqAPB2()<<cout.ENDL;
         cout<<clockControl.GetFreqHCLK()<<cout.ENDL;
 
-        libs::MWR::write_register(0xE000ED88, 0xF00000);
+
         float a = static_cast<float>(clockControl.GetFreqAPB2());
         float b = 1000.0;
         float c = a / b;
@@ -82,7 +83,6 @@ void SetBaudRate1(std::uint32_t baudRate, std::uint32_t FPCLK, std::uint16_t &fr
 
         while (1)
         {
-
             gpioD.TogglePin(drivers::port::PIN_12);
             clockControl.mDelay(500);
             gpioD.TogglePin(drivers::port::PIN_13);

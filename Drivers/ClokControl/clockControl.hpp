@@ -39,7 +39,7 @@ namespace drivers :: clock
             APB_DIVISOR_BY_16  = 0b111, // system clock divided by 16
     };
 
-    enum  TYPE_ENABLE_CLOCK_AHB_1 : std::uint8_t
+    enum  CLOCK_AHB_1 : std::uint8_t
     {
         PORTA           = 0,
         PORTB           = 1,
@@ -51,7 +51,7 @@ namespace drivers :: clock
         PORTH           = 7,
         PORTI          = 8,
         PORTJ          = 9,
-        PORTK1           = 10,
+        PORTK           = 10,
         CRC_CLOCK = 12,
         BACKUP_SRAM      = 18,
         CCM_DATA_RAM     = 20,
@@ -59,13 +59,13 @@ namespace drivers :: clock
         DMA2          = 22
     };
 
-    enum  TYPE_ENABLE_CLOCK_AHB_2 : std::uint8_t
+    enum  CLOCK_AHB_2 : std::uint8_t
     {
         USB_OTG_FS_AHB_2           = 7
     };
 
 
-    enum  TYPE_ENABLE_CLOCK_APB_1 : std::uint8_t
+    enum  CLOCK_APB_1 : std::uint8_t
     {
         TIM2   = 0,
         TIM3   = 1,
@@ -94,7 +94,7 @@ namespace drivers :: clock
         UART8  = 31
     };
 
-    enum  TYPE_ENABLE_CLOCK_APB_2 : std::uint8_t
+    enum  CLOCK_APB_2 : std::uint8_t
     {
         TIM1   = 0,
         TIM8   = 1,
@@ -222,13 +222,14 @@ namespace drivers :: clock
 
         void InitTickSysTick(std::uint32_t HCLKFrequency, std::uint32_t ticks) noexcept;
 
-        void AHB1EnableClock(TYPE_ENABLE_CLOCK_AHB_1 typeEnableClock) const noexcept;
-
-        void AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) const noexcept;
-
-        void APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) const noexcept;
-
-        void APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) const noexcept;
+        void AHB1EnableClock(CLOCK_AHB_1 typeEnableClock) const noexcept;
+        void AHB1DisableClock(CLOCK_AHB_1 disableClock) const noexcept;
+        void AHB2EnableClock(CLOCK_AHB_2 typeEnableClock) const noexcept;
+        void AHB2DisableCloack(CLOCK_AHB_2 disableClock) const noexcept;
+        void APB1EnableClock(CLOCK_APB_1 typeEnableClock) const noexcept;
+        void APB1DisableClock(CLOCK_APB_1 disableClock) const noexcept;
+        void APB2EnableClock(CLOCK_APB_2 typeEnableClock) const noexcept;
+        void APB2DisableClock(CLOCK_APB_2 disableClock) const noexcept;
 
         /**
          * Включить итсочник внешнего тактирования

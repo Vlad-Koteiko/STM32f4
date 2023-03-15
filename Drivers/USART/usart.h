@@ -62,6 +62,52 @@ namespace drivers::usart {
         RATE_9600   = 9600
     };
 
+    enum USART1_Remap : std::uint8_t
+    {
+        U1_TX_PA9_RX_PA10,
+        U1_TX_PA9_RX_PB7,
+        U1_TX_PB6_RX_PA10,
+        U1_TX_PB6_RX_PB7
+    };
+
+    enum USART2_Remap : std::uint8_t
+    {
+        U2_TX_PA2_RX_PA3,
+        U2_TX_PA2_RX_PD6,
+        U2_TX_PD5_RX_PA3,
+        U2_TX_PD5_RX_PD6
+    };
+
+    enum USART3_Remap : std::uint8_t
+    {
+        U3_TX_PB10_RX_PB11,
+        U3_TX_PB10_RX_PC11,
+        U3_TX_PB10_RX_PD9,
+        U3_TX_PC10_RX_PB11,
+        U3_TX_PC10_RX_PC11,
+        U3_TX_PC10_RX_PD9,
+        U3_TX_PD8_RX_PB11,
+        U3_TX_PD8_RX_PC11,
+        U3_TX_PD8_RX_PD9
+    };
+
+    enum UART4_Remap : std::uint8_t
+    {
+        U4_TX_PA0_RX_PA1,
+        U4_TX_PA0_RX_PC11,
+        U4_TX_PC10_RX_PA1,
+        U4_TX_PC10_RX_PC11
+    };
+
+    enum USART6_Remap : std::uint8_t
+    {
+        U6_TX_PC6_RX_PC7,
+        U6_TX_PC6_RX_PG9,
+        U6_TX_PG14_RX_PC7,
+        U6_TX_PG14_RX_PG_9
+    };
+
+
     enum SR_poz
     {
         PE   = 0,   //Parity error
@@ -153,8 +199,18 @@ namespace drivers::usart {
             GTPR  = 0x18        // USART Guard time and prescaler register, Address offset: 0x18
         };
 
+
+
     public:
-        USART(drivers::clock::ClockControl &clockControl, ADDRESSES_USART adr);
+        USART(drivers::clock::ClockControl &clockControl, ADDRESSES_USART adr, std::uint8_t remap = 0);
+
+        void RemapUsart1(std::uint8_t remap);
+        void RemapUsart2(std::uint8_t remap);
+        void RemapUsart3(std::uint8_t remap);
+        void RemapUart4(std::uint8_t remap);
+        void RemapUsart6(std::uint8_t remap);
+
+        void ConfigGpioForUart(drivers::port::ADDRESSES_PORT portTX, drivers::port::ADDRESSES_PORT portRX, drivers::port::PIN_NUMBER pinTX, drivers::port::PIN_NUMBER pinRX, drivers::port::ALTERNATE_FUNCTION af) noexcept;
 
         void DataWidth(WORD_LENGTH wordLength) noexcept  ;      // This bit determines the word length. It is set or cleared by software.
 
@@ -167,7 +223,7 @@ namespace drivers::usart {
 
         void SetStopBitsLength(STOP_BIT stopBit) noexcept;      // These bits are used for programming the stop bits.
 
-        void SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK);
+        void SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept;
 
         void TransmitData(std::uint8_t value) noexcept;
 
@@ -176,6 +232,8 @@ namespace drivers::usart {
         std::uint8_t ReceiveData() noexcept;
 
         bool IsBusyFlag() noexcept;
+
+        void DeInit() noexcept;
 
         void uartInit(BAUD_RATE baudRate,std::uint32_t FPCLK) noexcept;
 

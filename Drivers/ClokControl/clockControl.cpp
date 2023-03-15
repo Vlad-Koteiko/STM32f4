@@ -25,7 +25,7 @@ namespace drivers::clock
         while (!HSE_IsReady())
         {}
 
-        //HSI_Disable();
+        HSI_Disable();
 
         switch (f) {
             case FREQ_48000000:
@@ -141,22 +141,27 @@ namespace drivers::clock
         libs::MWR::write_register(RegisterSysTick::CTRL, static_cast<std::uint32_t>(5));                          // Enable the Systick Timer
     }
 
-    void ClockControl::AHB1EnableClock(TYPE_ENABLE_CLOCK_AHB_1 typeEnableClock) const noexcept
+    void ClockControl::AHB1EnableClock(CLOCK_AHB_1 typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::AHB1ENR,(1 << typeEnableClock));
     }
 
-    void ClockControl::AHB2EnableClock(TYPE_ENABLE_CLOCK_AHB_2 typeEnableClock) const noexcept
+    void ClockControl::AHB1DisableClock(CLOCK_AHB_1 disableClock) const noexcept
+    {
+        libs::MWR::modifyResetRegister()
+    }
+
+    void ClockControl::AHB2EnableClock(CLOCK_AHB_2 typeEnableClock) const noexcept
     {
         libs::MWR::setBit(AHB2ENR, typeEnableClock);
     }
 
-    void ClockControl::APB1EnableClock(TYPE_ENABLE_CLOCK_APB_1 typeEnableClock) const noexcept
+    void ClockControl::APB1EnableClock(CLOCK_APB_1 typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB1ENR,(1 << typeEnableClock));
     }
 
-    void ClockControl::APB2EnableClock(TYPE_ENABLE_CLOCK_APB_2 typeEnableClock) const noexcept
+    void ClockControl::APB2EnableClock(CLOCK_APB_2 typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB2ENR,(1 << typeEnableClock));
     }

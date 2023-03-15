@@ -5,65 +5,164 @@
 
 namespace drivers::usart {
 
-    USART::USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr) : clockControl(_clockControl), baseAddress(adr)
+    USART::USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr, std::uint8_t remap) : clockControl(_clockControl), baseAddress(adr)
     {
         switch (adr)
         {
             case USART1:
             {
-                drivers::port::GPIO portA(clockControl, drivers::port::PORT_A);
                 clockControl.APB2EnableClock(drivers::clock::USART1);
-
-                portA.SetPinMode(drivers::port::PIN_9,drivers::port::ALTERNATE_FUNCT);
-                portA.SetPinMode(drivers::port::PIN_10, drivers::port::ALTERNATE_FUNCT);
-                portA.SetPinSpeed(drivers::port::PIN_9, drivers::port::VERY_HIGH_SPEED);
-                portA.SetPinSpeed(drivers::port::PIN_10, drivers::port::VERY_HIGH_SPEED);
-                portA.SetAFPin(drivers::port::PIN_9, drivers::port::AF7);
-                portA.SetAFPin(drivers::port::PIN_10, drivers::port::AF7);
-
-                DataWidth(BIT_8);
-                SetReceiver(RECEIVER_ON);
-                SetTransmitter(TRANSMITTER_ON);
+                RemapUsart1(remap);
                 SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
-                UsartEnable(ON);
-
                 break;
             }
             case USART2:
             {
-                drivers::port::GPIO portA(clockControl, drivers::port::PORT_A);
                 clockControl.APB1EnableClock(drivers::clock::USART2);
+                RemapUsart2(remap);
+                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
+                break;
+            }
+            case USART3:
+            {
+                clockControl.APB1EnableClock(drivers::clock::USART3);
+                RemapUsart3(remap);
+                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
+                break;
+            }
+            case UART4:
+            {
+                clockControl.APB1EnableClock(drivers::clock::UART4);
+                RemapUart4(remap);
+                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
+                break;
+            }
 
-                portA.SetPinMode(drivers::port::PIN_2,drivers::port::ALTERNATE_FUNCT);
-                portA.SetPinMode(drivers::port::PIN_3, drivers::port::ALTERNATE_FUNCT);
-                portA.SetPinSpeed(drivers::port::PIN_2, drivers::port::VERY_HIGH_SPEED);
-                portA.SetPinSpeed(drivers::port::PIN_3, drivers::port::VERY_HIGH_SPEED);
-                portA.SetAFPin(drivers::port::PIN_2, drivers::port::AF7);
-                portA.SetAFPin(drivers::port::PIN_3, drivers::port::AF7);
+            case UART5:
+            {
+                clockControl.APB1EnableClock(drivers::clock::UART5);
+                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTD, drivers::port::PIN_12, drivers::port::PIN_2, drivers::port::AF8);
+                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
+                break;
+            }
 
-                DataWidth(BIT_8);
-                SetReceiver(RECEIVER_ON);
-                SetTransmitter(TRANSMITTER_ON);
-                std::uint32_t  f = clockControl.GetFreqAPB1();
-                SetBaudRate(RATE_115200, 42000000);
-                //SetBaudRate(RATE_115200, 42000000);
-                UsartEnable(ON);
-
+            case USART6:
+            {
+                clockControl.APB2EnableClock(drivers::clock::USART6);
+                RemapUsart6(remap);
+                SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
                 break;
             }
         }
+        DataWidth(BIT_8);
+        SetReceiver(RECEIVER_ON);
+        SetTransmitter(TRANSMITTER_ON);
+        UsartEnable(ON);
+    }
+
+    void USART::RemapUsart1(std::uint8_t remap)
+    {
+        switch (remap) {
+            case U1_TX_PA9_RX_PA10:
+                ConfigGpioForUart(drivers::port::PORTA, drivers::port::PORTA, drivers::port::PIN_9, drivers::port::PIN_10, drivers::port::AF7); break;
+            case U1_TX_PA9_RX_PB7:
+                ConfigGpioForUart(drivers::port::PORTA, drivers::port::PORTB, drivers::port::PIN_9, drivers::port::PIN_7, drivers::port::AF7); break;
+            case U1_TX_PB6_RX_PA10:
+                ConfigGpioForUart(drivers::port::PORTB, drivers::port::PORTA, drivers::port::PIN_6, drivers::port::PIN_10, drivers::port::AF7); break;
+            case U1_TX_PB6_RX_PB7:
+                ConfigGpioForUart(drivers::port::PORTB, drivers::port::PORTB, drivers::port::PIN_6, drivers::port::PIN_7, drivers::port::AF7); break;
+        }
+    }
+
+    void USART::RemapUsart2(std::uint8_t remap)
+    {
+        switch (remap)
+        {
+            case U2_TX_PA2_RX_PA3:
+                ConfigGpioForUart(drivers::port::PORTA, drivers::port::PORTA, drivers::port::PIN_2, drivers::port::PIN_3, drivers::port::AF7); break;
+            case U2_TX_PA2_RX_PD6:
+                ConfigGpioForUart(drivers::port::PORTA, drivers::port::PORTD, drivers::port::PIN_2, drivers::port::PIN_6, drivers::port::AF7); break;
+            case U2_TX_PD5_RX_PA3:
+                ConfigGpioForUart(drivers::port::PORTD, drivers::port::PORTA, drivers::port::PIN_5, drivers::port::PIN_3, drivers::port::AF7); break;
+            case U2_TX_PD5_RX_PD6:
+                ConfigGpioForUart(drivers::port::PORTD, drivers::port::PORTD, drivers::port::PIN_5, drivers::port::PIN_6, drivers::port::AF7); break;
+        }
+    }
+
+    void USART::RemapUsart3(std::uint8_t remap) {
+        switch (remap) {
+            case U3_TX_PB10_RX_PB11:
+                ConfigGpioForUart(drivers::port::PORTB, drivers::port::PORTB, drivers::port::PIN_10, drivers::port::PIN_11, drivers::port::AF7); break;
+            case U3_TX_PB10_RX_PC11:
+                ConfigGpioForUart(drivers::port::PORTB, drivers::port::PORTC, drivers::port::PIN_10, drivers::port::PIN_11, drivers::port::AF7); break;
+            case U3_TX_PB10_RX_PD9:
+                ConfigGpioForUart(drivers::port::PORTB, drivers::port::PORTD, drivers::port::PIN_10, drivers::port::PIN_9, drivers::port::AF7); break;
+            case U3_TX_PC10_RX_PB11:
+                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTB, drivers::port::PIN_10, drivers::port::PIN_11, drivers::port::AF7); break;
+            case U3_TX_PC10_RX_PC11:
+                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTC, drivers::port::PIN_10, drivers::port::PIN_11, drivers::port::AF7); break;
+            case U3_TX_PC10_RX_PD9:
+                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTD, drivers::port::PIN_10, drivers::port::PIN_9, drivers::port::AF7); break;
+            case U3_TX_PD8_RX_PB11:
+                ConfigGpioForUart(drivers::port::PORTD, drivers::port::PORTB, drivers::port::PIN_8, drivers::port::PIN_11, drivers::port::AF7); break;
+            case U3_TX_PD8_RX_PC11:
+                ConfigGpioForUart(drivers::port::PORTD, drivers::port::PORTC, drivers::port::PIN_8, drivers::port::PIN_11, drivers::port::AF7); break;
+            case U3_TX_PD8_RX_PD9:
+                ConfigGpioForUart(drivers::port::PORTD, drivers::port::PORTC, drivers::port::PIN_8, drivers::port::PIN_9, drivers::port::AF7); break;
+        }
+    }
+
+    void USART::RemapUart4(std::uint8_t remap)
+    {
+        switch (remap) {
+            case U4_TX_PA0_RX_PA1:
+                ConfigGpioForUart(drivers::port::PORTA, drivers::port::PORTA, drivers::port::PIN_0, drivers::port::PIN_1, drivers::port::AF8); break;
+            case U4_TX_PA0_RX_PC11:
+                ConfigGpioForUart(drivers::port::PORTA, drivers::port::PORTC, drivers::port::PIN_0, drivers::port::PIN_11, drivers::port::AF8); break;
+            case U4_TX_PC10_RX_PA1:
+                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTA, drivers::port::PIN_10, drivers::port::PIN_1, drivers::port::AF8); break;
+            case U4_TX_PC10_RX_PC11:
+                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTC, drivers::port::PIN_10, drivers::port::PIN_11, drivers::port::AF8); break;
+        }
+    }
+
+    void USART::RemapUsart6(std::uint8_t remap)
+    {
+        switch (remap) {
+            case U6_TX_PC6_RX_PC7:
+                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTC, drivers::port::PIN_6, drivers::port::PIN_7, drivers::port::AF8); break;
+            case U6_TX_PC6_RX_PG9:
+                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTG, drivers::port::PIN_6, drivers::port::PIN_9, drivers::port::AF8); break;
+            case U6_TX_PG14_RX_PC7:
+                ConfigGpioForUart(drivers::port::PORTG, drivers::port::PORTC, drivers::port::PIN_14, drivers::port::PIN_7, drivers::port::AF8); break;
+            case U6_TX_PG14_RX_PG_9:
+                ConfigGpioForUart(drivers::port::PORTG, drivers::port::PORTG, drivers::port::PIN_14, drivers::port::PIN_9, drivers::port::AF8); break;
+        }
+    }
+
+    void USART::ConfigGpioForUart(drivers::port::ADDRESSES_PORT portTX, drivers::port::ADDRESSES_PORT portRX, drivers::port::PIN_NUMBER pinTX, drivers::port::PIN_NUMBER pinRX, drivers::port::ALTERNATE_FUNCTION af) noexcept
+    {
+        //init GPIO TX
+        drivers::port::GPIO port_tx(clockControl, portTX);
+        port_tx.SetPinMode(pinTX, drivers::port::ALTERNATE_FUNCT);
+        port_tx.SetPinSpeed(pinTX, drivers::port::VERY_HIGH_SPEED);
+        port_tx.SetAFPin(pinTX, af);
+
+        //init GPIO RX
+        drivers::port::GPIO port_rx(clockControl, portRX);
+        port_rx.SetPinMode(pinRX, drivers::port::ALTERNATE_FUNCT);
+        port_rx.SetPinSpeed(pinRX, drivers::port::VERY_HIGH_SPEED);
+        port_rx.SetAFPin(pinRX, af);
     }
 
     void USART::DataWidth(WORD_LENGTH wordLength) noexcept     // This bit determines the word length. It is set or cleared by software.
     {
         readWrite::modifySetRegister(baseAddress + CR1, wordLength << M);
-        //libs::MWR::setBit(0x4001100C, M);
     }
 
     void USART::SetReceiver(RECEIVER receiver) noexcept           // This bit enables the receiver. It is set and cleared by software
     {
         readWrite::modifySetRegister(baseAddress + CR1, receiver << RE);
-        //readWrite::modifySetRegister(0x4001100C, receiver << RE);
     }
 
     void USART::SetTransmitter(TRANSMITTER transmitter) noexcept  // This bit enables the transmitter. It is set and cleared by software
@@ -81,7 +180,7 @@ namespace drivers::usart {
         readWrite::modifySetRegister(baseAddress + CR2, stopBit << STOP);
     }
 
-     void USART::SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK)
+     void USART::SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept
     {
         float resalt = (static_cast<float>(FPCLK)/static_cast<float>(16 * baudRate));
         std::uint16_t integet = static_cast<std::uint16_t>(resalt);
@@ -114,6 +213,11 @@ namespace drivers::usart {
     bool USART::IsBusyFlag() noexcept
     {
         return readWrite::readBit<std::uint32_t>(baseAddress + SR,TXE);
+    }
+
+    void USART::DeInit() noexcept
+    {
+        
     }
 
     void USART::uartInit(BAUD_RATE baudRate,std::uint32_t FPCLK) noexcept

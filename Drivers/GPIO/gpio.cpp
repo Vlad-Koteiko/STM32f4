@@ -10,39 +10,60 @@ namespace drivers::port
     {
         baseAddress = port;
         switch (port) {
-            case PORT_A:
+            case PORTA:
             {
                 clockControl.AHB1EnableClock(drivers::clock::PORTA);
                 break;
             }
-            case PORT_B:
+            case PORTB:
             {
                 clockControl.AHB1EnableClock(drivers::clock::PORTB);
             }
-            case PORT_C:
+            case PORTC:
             {
                 clockControl.AHB1EnableClock(drivers::clock::PORTC);
             }
-            case PORT_D:
+            case PORTD:
             {
                 clockControl.AHB1EnableClock(drivers::clock::PORTD);
                 break;
             }
-            case PORT_E:
+            case PORTE:
             {
                 clockControl.AHB1EnableClock(drivers::clock::PORTE);
                 break;
             }
-            case PORT_F:
+            case PORTF:
             {
                 clockControl.AHB1EnableClock(drivers::clock::PORTF);
                 break;
             }
-            case PORT_H:
+            case PORTG:
+            {
+                clockControl.AHB1EnableClock(drivers::clock::PORTG);
+                break;
+            }
+            case PORTH:
             {
                 clockControl.AHB1EnableClock(drivers::clock::PORTH);
                 break;
             }
+            case PORTI:
+            {
+                clockControl.AHB1EnableClock(drivers::clock::PORTI);
+                break;
+            }
+            case PORTJ:
+            {
+                clockControl.AHB1EnableClock(drivers::clock::PORTJ);
+                break;
+            }
+            case PORTK:
+            {
+                clockControl.AHB1EnableClock(drivers::clock::PORTK);
+                break;
+            }
+
         }
     }
 
@@ -123,6 +144,15 @@ namespace drivers::port
             SetPin(pinNumber, PIN_SET);
     }
 
+    void GPIO::DeinitPin(PIN_NUMBER pinNumber) const
+    {
+        ResetOutputPin(pinNumber);
+        SetPinPull(pinNumber, NO_PULL_UP_PULL_DOWN);
+        SetAFPin(pinNumber, AF0);
+        SetPinSpeed(pinNumber, LOW_SPEED);
+        SetPinOutputType(pinNumber, PUSH_PULL);
+        SetPinMode(pinNumber, INPUT);
+    }
 }
 
 

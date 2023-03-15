@@ -12,17 +12,17 @@ namespace drivers::port
 {
     enum ADDRESSES_PORT : std::uintptr_t
     {
-        PORT_A = 0x40020000,
-        PORT_B = 0x40020400,
-        PORT_C = 0x40020800,
-        PORT_D = 0x40020C00,
-        PORT_E = 0x40021000,
-        PORT_F = 0x40021400,
-        PORT_G = 0x40021800,
-        PORT_H = 0x40021C00,
-        PORT_I = 0x40022000,
-        PORT_J = 0x40022400,
-        PORT_K = 0x40022800
+        PORTA = 0x40020000,
+        PORTB = 0x40020400,
+        PORTC = 0x40020800,
+        PORTD = 0x40020C00,
+        PORTE = 0x40021000,
+        PORTF = 0x40021400,
+        PORTG = 0x40021800,
+        PORTH = 0x40021C00,
+        PORTI = 0x40022000,
+        PORTJ = 0x40022400,
+        PORTK = 0x40022800
     };
 
     enum PIN_SEED : std::uint8_t
@@ -134,6 +134,7 @@ namespace drivers::port
         void SetPin(PIN_NUMBER pinNumber, STATUS_PIN modePin) const noexcept;
         void InitPin(PIN_NUMBER pinNumber,PORT_MODER portModer) const noexcept;
         void TogglePin(PIN_NUMBER pinNumber) const;
+        void DeinitPin(PIN_NUMBER pinNumber) const;
 
         /*void USART_init(USART usart) noexcept
         {
