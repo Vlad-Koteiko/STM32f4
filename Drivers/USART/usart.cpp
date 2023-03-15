@@ -217,16 +217,24 @@ namespace drivers::usart {
 
     void USART::DeInit() noexcept
     {
-        
-    }
-
-    void USART::uartInit(BAUD_RATE baudRate,std::uint32_t FPCLK) noexcept
-    {
-        DataWidth(BIT_8);
-        SetReceiver(RECEIVER_ON);
-        SetTransmitter(TRANSMITTER_ON);
-        SetBaudRate(baudRate,FPCLK);
-        USART_ENABLE(USART_ENABLE_ON);
+        switch (baseAddress) {
+            case USART1:
+                clockControl.DisablePeripherals(drivers::clock::USART_1_MODULE); break;
+            case USART2:
+                clockControl.DisablePeripherals(drivers::clock::USART_2_MODULE); break;
+            case USART3:
+                clockControl.DisablePeripherals(drivers::clock::USART_3_MODULE); break;
+            case UART4:
+                clockControl.DisablePeripherals(drivers::clock::UART_4_MODULE); break;
+            case UART5:
+                clockControl.DisablePeripherals(drivers::clock::UART_5_MODULE); break;
+            case USART6:
+                clockControl.DisablePeripherals(drivers::clock::USART_6_MODULE); break;
+            case UART7:
+                clockControl.DisablePeripherals(drivers::clock::UART_7_MODULE); break;
+            case UART8:
+                clockControl.DisablePeripherals(drivers::clock::UART_8_MODULE); break;
+        }
     }
 
     void USART::EnableInterrupt()
@@ -248,5 +256,61 @@ namespace drivers::usart {
         libs::MWR::setBit(baseAddress + CR1,5);
         libs::MWR::setBit(baseAddress + CR1,8);
         libs::MWR::setBit(baseAddress + CR3,8);
+    }
+
+    bool USART::ReadFlag_CTS() {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, CTS);
+    }
+
+    void USART::ClearFlag_CTS() {
+        libs::MWR::resetBit(baseAddress + SR, CTS);
+    }
+
+    bool USART::ReadFlag_LBD() {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, LBD);
+    }
+
+    void USART::ClearFlag_LBD(){
+        return libs::MWR::resetBit(baseAddress + SR, LBD);
+    }
+
+    bool USART::ReadFlag_TXE(){
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, TXE);
+    }
+
+    bool USART::ReadFlag_TC() {
+        return  libs::MWR::readBit<std::uint32_t>(baseAddress + SR, TC);
+    }
+
+    void USART::ClearFlag_TC() {
+        libs::MWR::resetBit(baseAddress + SR, TC);
+    }
+
+    bool USART::ReadFlag_RXNE() {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, RXNE);
+    }
+
+    void USART::ClearFlag_RXNE() {
+        return libs::MWR::resetBit(baseAddress + SR, RXNE);
+    }
+
+    bool USART::ReadFlag_IDLE() {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, IDLE);
+    }
+
+    bool USART::ReadFlag_ORE() {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, ORE);
+    }
+
+    bool USART::ReadFlag_NF() {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, NF);
+    }
+
+    bool USART::ReadFlag_FE() {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, FE);
+    }
+
+    bool USART::ReadFlag_PE() {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, PE);
     }
 }

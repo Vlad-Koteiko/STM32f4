@@ -211,33 +211,33 @@ namespace drivers::usart {
         void RemapUsart6(std::uint8_t remap);
 
         void ConfigGpioForUart(drivers::port::ADDRESSES_PORT portTX, drivers::port::ADDRESSES_PORT portRX, drivers::port::PIN_NUMBER pinTX, drivers::port::PIN_NUMBER pinRX, drivers::port::ALTERNATE_FUNCTION af) noexcept;
-
-        void DataWidth(WORD_LENGTH wordLength) noexcept  ;      // This bit determines the word length. It is set or cleared by software.
-
-        void SetReceiver(RECEIVER receiver) noexcept ;          // This bit enables the receiver. It is set and cleared by software
-
+        void DataWidth(WORD_LENGTH wordLength) noexcept;      // This bit determines the word length. It is set or cleared by software.
+        void SetReceiver(RECEIVER receiver) noexcept;          // This bit enables the receiver. It is set and cleared by software
         void SetTransmitter(TRANSMITTER transmitter) noexcept;  // This bit enables the transmitter. It is set and cleared by software
-
-
         void UsartEnable(USART_ENABLE usartEnable) noexcept;   // USART prescalers and outputs are stopped and the end of the current byte transfer in order to reduce power consumption
-
         void SetStopBitsLength(STOP_BIT stopBit) noexcept;      // These bits are used for programming the stop bits.
-
         void SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept;
-
         void TransmitData(std::uint8_t value) noexcept;
-
         void TransmitString(void* value, std::size_t size) noexcept;
-
         std::uint8_t ReceiveData() noexcept;
-
         bool IsBusyFlag() noexcept;
-
         void DeInit() noexcept;
-
-        void uartInit(BAUD_RATE baudRate,std::uint32_t FPCLK) noexcept;
-
         void EnableInterrupt();
+
+        bool ReadFlag_CTS();
+        void ClearFlag_CTS();
+        bool ReadFlag_LBD();
+        void ClearFlag_LBD();
+        bool ReadFlag_TXE();
+        bool ReadFlag_TC();
+        void ClearFlag_TC();
+        bool ReadFlag_RXNE();
+        void ClearFlag_RXNE();
+        bool ReadFlag_IDLE();
+        bool ReadFlag_ORE();
+        bool ReadFlag_NF();
+        bool ReadFlag_FE();
+        bool ReadFlag_PE();
     };
 }
 #endif //UART_USART_H

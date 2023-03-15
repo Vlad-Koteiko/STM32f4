@@ -211,21 +211,16 @@ namespace drivers :: clock
         volatile std::uint32_t GetFreqAPB2();
 
         void SetCalibTrimming(std::uint32_t value) noexcept;
-
         void SetAHBPrescaler(PrescalerAHB prescaler) noexcept;
-
         void SetAPB1Prescaler(PrescalerAPB prescaler) noexcept;
-
         void SetAPB2Prescaler(PrescalerAPB prescaler) noexcept;
-
         void SetSysClkSource(std::uint32_t value) noexcept;
-
         void InitTickSysTick(std::uint32_t HCLKFrequency, std::uint32_t ticks) noexcept;
 
         void AHB1EnableClock(CLOCK_AHB_1 typeEnableClock) const noexcept;
         void AHB1DisableClock(CLOCK_AHB_1 disableClock) const noexcept;
         void AHB2EnableClock(CLOCK_AHB_2 typeEnableClock) const noexcept;
-        void AHB2DisableCloack(CLOCK_AHB_2 disableClock) const noexcept;
+        void AHB2DisableClock(CLOCK_AHB_2 disableClock) const noexcept;
         void APB1EnableClock(CLOCK_APB_1 typeEnableClock) const noexcept;
         void APB1DisableClock(CLOCK_APB_1 disableClock) const noexcept;
         void APB2EnableClock(CLOCK_APB_2 typeEnableClock) const noexcept;
@@ -265,14 +260,13 @@ namespace drivers :: clock
          * @param bit bit=0 - HSI, bit=1 - HSE
          */
         void PLL_SetSource(std::uint8_t bit);
-
         void SetInternalClockGenerator_16MHz() noexcept;
-
         void SetExternalClockGenerator_168MHz() noexcept;
 
         void mDelay(std::uint32_t Delay)const;
 
         void EnablePeripherals(PERIPHERALS name) const noexcept;
+        void DisablePeripherals(PERIPHERALS name) const noexcept;
 
         /**
          * Включить внутренний генератор

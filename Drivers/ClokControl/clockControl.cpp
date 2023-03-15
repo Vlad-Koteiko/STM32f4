@@ -148,7 +148,7 @@ namespace drivers::clock
 
     void ClockControl::AHB1DisableClock(CLOCK_AHB_1 disableClock) const noexcept
     {
-        libs::MWR::modifyResetRegister()
+        libs::MWR::modifySetRegister(RegisterRCC::AHB1RSTR, (1 << disableClock));
     }
 
     void ClockControl::AHB2EnableClock(CLOCK_AHB_2 typeEnableClock) const noexcept
@@ -156,14 +156,29 @@ namespace drivers::clock
         libs::MWR::setBit(AHB2ENR, typeEnableClock);
     }
 
+    void ClockControl::AHB2DisableClock(CLOCK_AHB_2 disableClock) const noexcept
+    {
+        libs::MWR::setBit(AHB2RSTR, disableClock);
+    }
+
     void ClockControl::APB1EnableClock(CLOCK_APB_1 typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB1ENR,(1 << typeEnableClock));
     }
 
+    void ClockControl::APB1DisableClock(CLOCK_APB_1 disableClock) const noexcept
+    {
+        libs::MWR::modifySetRegister(RegisterRCC::APB1RSTR, (1 << disableClock));
+    }
+
     void ClockControl::APB2EnableClock(CLOCK_APB_2 typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB2ENR,(1 << typeEnableClock));
+    }
+
+    void ClockControl::APB2DisableClock(CLOCK_APB_2 disableClock) const noexcept
+    {
+        libs::MWR::modifySetRegister(RegisterRCC::APB2RSTR , (1 << disableClock));
     }
 
     void ClockControl::mDelay(std::uint32_t Delay) const
@@ -187,60 +202,88 @@ namespace drivers::clock
         switch (name)
         {
             case USART_1_MODULE:
-            {
-                APB2EnableClock(USART1);  // Enable USART 1
-                break;
-            }
+                APB2EnableClock(USART1); break;  // Enable USART 1
             case USART_2_MODULE:
-            {
-                APB1EnableClock(USART2);   // Enable USART 2
-                break;
-            }
+                APB1EnableClock(USART2); break;  // Enable USART 2
+            case USART_3_MODULE:
+                APB1EnableClock(USART3); break;
+            case UART_4_MODULE:
+                APB1EnableClock(UART4); break;
+            case UART_5_MODULE:
+                APB1EnableClock(UART5); break;
+            case USART_6_MODULE:
+                APB2EnableClock(USART6); break;
+            case UART_7_MODULE:
+                APB1EnableClock(UART7); break;
+            case UART_8_MODULE:
+                APB1EnableClock(UART8); break;
+
             case PORT_A_MODULE:
-            {
-                  // Enable PORT  A
-                break;
-            }
+                AHB1EnableClock(PORTA); break; // Enable PORT  A
             case PORT_B_MODULE:
-            {
-                AHB1EnableClock(PORTB);   // Enable PORT  A
-                break;
-            }
+                AHB1EnableClock(PORTB); break;  // Enable PORT  B
             case PORT_C_MODULE:
-            {
-                AHB1EnableClock(PORTC);   // Enable PORT  A
-                break;
-            }
+                AHB1EnableClock(PORTC); break;  // Enable PORT  C
             case PORT_D_MODULE:
-            {
-                AHB1EnableClock(PORTD);   // Enable PORT  D
-                break;
-            }
+                AHB1EnableClock(PORTD); break;  // Enable PORT  D
             case PORT_E_MODULE:
-            {
-                AHB1EnableClock(PORTE);   // Enable PORT  A
-                break;
-            }
+                AHB1EnableClock(PORTE); break;  // Enable PORT  A
             case PORT_H_MODULE:
-            {
-                AHB1EnableClock(PORTH);   // Enable PORT H
-                break;
-            }
+                AHB1EnableClock(PORTH); break;  // Enable PORT H
+
             case SYSCF_MODULE:
-            {
-                APB2EnableClock(SYSCF);          // Enable SYSCF
-                break;
-            }
+                APB2EnableClock(SYSCF); break;  // Enable SYSCF
             case PWR_MODULE:
-            {
-                APB1EnableClock(PWR);      // Enable PWR
-                break;
-            }
+                APB1EnableClock(PWR); break;    // Enable PWR
             case USB_FS_MODULE:
-            {
-                AHB2EnableClock(USB_OTG_FS_AHB_2);   // Enable USB
-                break;
-            }
+                AHB2EnableClock(USB_OTG_FS_AHB_2); break;  // Enable USB
+
+            /* To be continued... */
+        }
+    }
+
+    void ClockControl::DisablePeripherals(PERIPHERALS name) const noexcept
+    {
+        switch (name)
+        {
+            case USART_1_MODULE:
+                APB2DisableClock(USART1); break;
+            case USART_2_MODULE:
+                APB1DisableClock(USART2); break;
+            case USART_3_MODULE:
+                APB1DisableClock(USART3); break;
+            case UART_4_MODULE:
+                APB1DisableClock(UART4); break;
+            case UART_5_MODULE:
+                APB1DisableClock(UART5); break;
+            case USART_6_MODULE:
+                APB2DisableClock(USART6); break;
+            case UART_7_MODULE:
+                APB1DisableClock(UART7); break;
+            case UART_8_MODULE:
+                APB1DisableClock(UART8); break;
+
+            case PORT_A_MODULE:
+                AHB1DisableClock(PORTA); break; // Disable PORT  A
+            case PORT_B_MODULE:
+                AHB1DisableClock(PORTB); break;  // Disable PORT  B
+            case PORT_C_MODULE:
+                AHB1DisableClock(PORTC); break;  // Disable PORT  C
+            case PORT_D_MODULE:
+                AHB1DisableClock(PORTD); break;  // Disable PORT  D
+            case PORT_E_MODULE:
+                AHB1DisableClock(PORTE); break;  // Disable PORT  A
+            case PORT_H_MODULE:
+                AHB1DisableClock(PORTH); break;  // Disable PORT H
+
+            case SYSCF_MODULE:
+                APB2DisableClock(SYSCF); break;  // Disable SYSCF
+            case PWR_MODULE:
+                APB1DisableClock(PWR); break;    // Disable PWR
+            case USB_FS_MODULE:
+                AHB2DisableClock(USB_OTG_FS_AHB_2); break;  // Disable USB
+
+                /* To be continued... */
         }
     }
 
