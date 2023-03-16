@@ -30,24 +30,6 @@ namespace drivers::usart {
         BIT_9 = 1
     };
 
-    enum RECEIVER : std::uint8_t
-    {
-        RECEIVER_OFF = 0,
-        RECEIVER_ON  = 1
-    };
-
-    enum TRANSMITTER : std::uint8_t
-    {
-        TRANSMITTER_OFF = 0,
-        TRANSMITTER_ON  = 1
-    };
-
-    enum USART_ENABLE : std::uint8_t
-    {
-        OFF = 0,
-        ON  = 1
-    };
-
     enum STOP_BIT : std::uint8_t
     {
         STOP_BIT_1    = 0,
@@ -60,6 +42,12 @@ namespace drivers::usart {
     {
         RATE_115200 = 115200,
         RATE_9600   = 9600
+    };
+
+    enum STATUS : std::uint8_t
+    {
+        DISABLE,
+        ENABLE
     };
 
     enum USART1_Remap : std::uint8_t
@@ -211,10 +199,10 @@ namespace drivers::usart {
         void RemapUsart6(std::uint8_t remap);
 
         void ConfigGpioForUart(drivers::port::ADDRESSES_PORT portTX, drivers::port::ADDRESSES_PORT portRX, drivers::port::PIN_NUMBER pinTX, drivers::port::PIN_NUMBER pinRX, drivers::port::ALTERNATE_FUNCTION af) noexcept;
-        void DataWidth(WORD_LENGTH wordLength) noexcept;      // This bit determines the word length. It is set or cleared by software.
-        void SetReceiver(RECEIVER receiver) noexcept;          // This bit enables the receiver. It is set and cleared by software
-        void SetTransmitter(TRANSMITTER transmitter) noexcept;  // This bit enables the transmitter. It is set and cleared by software
-        void UsartEnable(USART_ENABLE usartEnable) noexcept;   // USART prescalers and outputs are stopped and the end of the current byte transfer in order to reduce power consumption
+        void SetWordLength(WORD_LENGTH wordLength) noexcept;      // This bit determines the word length. It is set or cleared by software.
+        void ReceiverEnable(STATUS receiver) noexcept;          // This bit enables the receiver. It is set and cleared by software
+        void TransmitterEnable(STATUS transmitter) noexcept;  // This bit enables the transmitter. It is set and cleared by software
+        void UsartEnable(STATUS usartEnable) noexcept;   // USART prescalers and outputs are stopped and the end of the current byte transfer in order to reduce power consumption
         void SetStopBitsLength(STOP_BIT stopBit) noexcept;      // These bits are used for programming the stop bits.
         void SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept;
         void TransmitData(std::uint8_t value) noexcept;
@@ -224,6 +212,7 @@ namespace drivers::usart {
         void DeInit() noexcept;
         void EnableInterrupt();
 
+        //SR
         bool ReadFlag_CTS();
         void ClearFlag_CTS();
         bool ReadFlag_LBD();
@@ -238,6 +227,118 @@ namespace drivers::usart {
         bool ReadFlag_NF();
         bool ReadFlag_FE();
         bool ReadFlag_PE();
+
+        //CR1
+        /**
+         * Режим передискретизации
+         * @param mode 0 - 16, 1 - 8
+         */
+        void SetOversamplingMode(std::uint8_t mode);
+        bool GetOversamplingMode();
+        /**
+         * Способ пробуждения
+         * @param x 0 - Линия холостого хода, 1 - Адресная метка
+         */
+        void SetWakeUpMethod(std::uint8_t x);
+        bool GetWakeUpMethod();
+        /**
+         * Установка контроля четности
+         * @param x DISABLE - выкл, ENABLE - вкл
+         */
+        void SetParityControl(STATUS x);
+        bool GetParityControl();
+        /**
+         * Выбор четности
+         * @param x 0 - четный, 1 - нечетный
+         */
+        void SetParitySelection(std::uint8_t x);
+        bool GetParitySelection();
+        /**
+         * Включение прерывания по ошибке четности
+         * @param x DISABLE - выкл, ENABLE - вкл
+         */
+        void SetPEIE(STATUS x);
+        bool GetPEIE();
+        /**
+         * Включение прерывания регистр передачи данных пуст
+         * @param x DISABLE - выкл, ENABLE - вкл
+         */
+        void SetTXEIE(STATUS x);
+        bool GetTXEIE();
+        /**
+         * Включение прерывания передача завершена
+         * @param x DISABLE - выкл, ENABLE - вкл
+         */
+        void SetTCIE(STATUS x);
+        bool GetTCIE();
+        /**
+         * Включение прерывания регистр считанных данных не пуст
+         * @param x DISABLE - выкл, ENABLE - вкл
+         */
+        void SetRXNEIE(STATUS x);
+        bool GetRXNEIE();
+        /**
+         * Включение прерывания обнаружена линия холостого хода
+         * @param x DISABLE - выкл, ENABLE - вкл
+         */
+        void SetIDLEIE(STATUS x);
+        bool GetIDLEIE();
+        /**
+         * Пробуждение приемника
+         * @param x 0 - активный, 1 - беззвучный
+         */
+        void ReceiverWakeup(std::uint8_t x);
+        bool GetReceiverWakeup();
+        /**
+         * Отправить перерыв
+         * @param x DISABLE - выкл, ENABLE - вкл
+         */
+        void SendBreak(STATUS x);
+        bool GetSendBreak();
+
+        //CR2
+        void LinModeEnable(STATUS x);
+        bool GetLinModeEnable();
+        void ClockEnable(STATUS x);
+        bool GetClockEnable();
+        void ClockPolarity(std::uint8_t x);
+        bool GetClockPolarity();
+        void ClockPhase(std::uint8_t x);
+        bool GetClockPhase();
+        void LastBitClockPulse(std::uint8_t x);
+        bool GetLastBitClockPulse();
+        void SetLBDIE(STATUS x);
+        bool GetLBDIE();
+        void LinBreakDetectionLength(std::uint8_t x);
+        bool GetLinBreakDetectionLength();
+        void SetAddressUsartNode(std::uint8_t x);
+        std::uint8_t GetAddressUsartNode();
+
+        //CR3
+        void OneSampleBitMethod(std::uint8_t x);
+        bool GetOneSampleBitMethod();
+        void SetCTSIE(STATUS x);
+        bool GetCTSIE();
+        void CTSEnable(STATUS x);
+        bool GetCTSEnable();
+        void RTSEnable(STATUS x);
+        bool GetRTSEnable();
+        void DMAEnableTransmitter(STATUS x);
+        bool GetDMAEnableTransmitter();
+        void DMAEnableReceiver(STATUS x);
+        bool GetDMAEnableReceiver();
+        void SmartcardModeEnable(STATUS x);
+        bool GetSmartcardModeEnable();
+        void SmartcardNACKEnable(STATUS x);
+        bool GetSmartcardNACKEnable();
+        void HalfDuplexSelection(std::uint8_t x);
+        bool GetHalfDuplexSelection();
+        void IrDALowPower(std::uint8_t s);
+        bool GetIrDALowPower();
+        void IrDAModeEnable(STATUS x);
+        bool GetIrDAModeEnable();
+        void SetEIE(STATUS x);
+        bool GetEIE();
     };
 }
 #endif //UART_USART_H
