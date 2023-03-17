@@ -210,7 +210,6 @@ namespace drivers::usart {
         std::uint8_t ReceiveData() noexcept;
         bool IsBusyFlag() noexcept;
         void DeInit() noexcept;
-        void EnableInterrupt();
 
         //SR
         bool ReadFlag_CTS();

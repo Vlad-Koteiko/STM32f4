@@ -254,27 +254,6 @@ namespace drivers::usart {
         }
     }
 
-    void USART::EnableInterrupt()
-    {
-        switch (baseAddress) {
-            case USART1:
-            {
-                drivers::nvic::NVIC::NVIC_Enable(drivers::nvic::NVIC::DEVICE_ID::UASRT_1);
-                break;
-            }
-
-            case USART2:
-            {
-                drivers::nvic::NVIC::NVIC_Enable(drivers::nvic::NVIC::DEVICE_ID::UASRT_2);
-                break;
-            }
-        }
-
-        libs::MWR::setBit(baseAddress + CR1,RXNEIE);
-        libs::MWR::setBit(baseAddress + CR1,PEIE);
-        //libs::MWR::setBit(baseAddress + CR3,8);   ?
-    }
-
     //---------------------------------------------------------------------------------
     bool USART::ReadFlag_CTS() {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, CTS);

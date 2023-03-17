@@ -87,6 +87,9 @@ void SetBaudRate1(std::uint32_t baudRate, std::uint32_t FPCLK, std::uint16_t &fr
             clockControl.mDelay(500);
             gpioD.TogglePin(drivers::port::PIN_13);
             clockControl.mDelay(500);
+
+//            drivers::nvic::NVIC::NVIC_SystemReset();
+
             gpioD.TogglePin(drivers::port::PIN_14);
             clockControl.mDelay(500);
             gpioD.TogglePin(drivers::port::PIN_15);
