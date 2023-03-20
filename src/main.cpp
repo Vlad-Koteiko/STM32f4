@@ -44,7 +44,6 @@ void SetBaudRate1(std::uint32_t baudRate, std::uint32_t FPCLK, std::uint16_t &fr
         cout<<clockControl.GetFreqAPB2()<<cout.ENDL;
         cout<<clockControl.GetFreqHCLK()<<cout.ENDL;
 
-
         float a = static_cast<float>(clockControl.GetFreqAPB2());
         float b = 1000.0;
         float c = a / b;
@@ -78,6 +77,31 @@ void SetBaudRate1(std::uint32_t baudRate, std::uint32_t FPCLK, std::uint16_t &fr
         gpioD.SetPin(drivers::port::PIN_14, drivers::port::PIN_SET);
         gpioD.SetPin(drivers::port::PIN_15, drivers::port::PIN_SET);
         clockControl.mDelay(500);
+
+        std::uint64_t b64 = 0xCCCCBBBBDDDDAAAA;
+        std::uint32_t b32 = 0xDDDDAAAA;
+        std::uint16_t b16 = 0xAAAA;
+        std::uint8_t b8 = 0xBB;
+        drivers::flash::Flash flash;
+        flash.Unlock();
+//        flash.ProgrammByte(0x800A000, b8);
+//        clockControl.mDelay(500);
+//        //flash.Lock();
+//        flash.ProgrammHalfWord(0x800A010, b16);
+//        clockControl.mDelay(500);
+//        flash.ProgrammWord(0x800A020, b32);
+//        clockControl.mDelay(500);
+//        flash.ProgrammDoubleWord(0x800A030, b64);
+//        clockControl.mDelay(500);
+//
+//        std::uint32_t buf = flash.ReadByte(0x800A000);
+//        cout<<buf<<cout.ENDL;
+//        buf = flash.ReadHalfWord(0x800A010);
+//        cout<<buf<<cout.ENDL;
+//        buf = flash.ReadWord(0x800A020);
+//        cout<<buf<<cout.ENDL;
+
+        flash.EraseSector(2, drivers::flash::RANGE2);
         //------------------------------------------------------------------------------------
 
 
