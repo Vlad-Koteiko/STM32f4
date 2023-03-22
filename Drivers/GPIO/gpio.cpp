@@ -12,58 +12,47 @@ namespace drivers::port
         switch (port) {
             case PORTA:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTA);
+                clockControl.AHB1EnableClock(drivers::clock::GPIOAEN);
                 break;
             }
             case PORTB:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTB);
+                clockControl.AHB1EnableClock(drivers::clock::GPIOBEN);
             }
             case PORTC:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTC);
+                clockControl.AHB1EnableClock(drivers::clock::GPIOCEN);
             }
             case PORTD:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTD);
+                clockControl.AHB1EnableClock(drivers::clock::GPIODEN);
                 break;
             }
             case PORTE:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTE);
+                clockControl.AHB1EnableClock(drivers::clock::GPIOEEN);
                 break;
             }
             case PORTF:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTF);
+                clockControl.AHB1EnableClock(drivers::clock::GPIOFEN);
                 break;
             }
             case PORTG:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTG);
+                clockControl.AHB1EnableClock(drivers::clock::GPIOGEN);
                 break;
             }
             case PORTH:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTH);
+                clockControl.AHB1EnableClock(drivers::clock::GPIOHEN);
                 break;
             }
             case PORTI:
             {
-                clockControl.AHB1EnableClock(drivers::clock::PORTI);
+                clockControl.AHB1EnableClock(drivers::clock::GPIOIEN);
                 break;
             }
-            case PORTJ:
-            {
-                clockControl.AHB1EnableClock(drivers::clock::PORTJ);
-                break;
-            }
-            case PORTK:
-            {
-                clockControl.AHB1EnableClock(drivers::clock::PORTK);
-                break;
-            }
-
         }
     }
 

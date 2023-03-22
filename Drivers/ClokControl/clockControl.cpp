@@ -141,43 +141,46 @@ namespace drivers::clock
         libs::MWR::write_register(RegisterSysTick::CTRL, static_cast<std::uint32_t>(5));                          // Enable the Systick Timer
     }
 
-    void ClockControl::AHB1EnableClock(CLOCK_AHB_1 typeEnableClock) const noexcept
+    void ClockControl::AHB1EnableClock(AHB1ENR_poz typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::AHB1ENR,(1 << typeEnableClock));
     }
 
-    void ClockControl::AHB1DisableClock(CLOCK_AHB_1 disableClock) const noexcept
+    void ClockControl::AHB1DisableClock(AHB1RSTR_poz disableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::AHB1RSTR, (1 << disableClock));
     }
 
-    void ClockControl::AHB2EnableClock(CLOCK_AHB_2 typeEnableClock) const noexcept
+    void ClockControl::AHB2EnableClock(AHB2_RSRT_ENR_poz typeEnableClock) const noexcept
     {
         libs::MWR::setBit(AHB2ENR, typeEnableClock);
     }
 
-    void ClockControl::AHB2DisableClock(CLOCK_AHB_2 disableClock) const noexcept
+    void ClockControl::AHB2DisableClock(AHB2_RSRT_ENR_poz disableClock) const noexcept
     {
         libs::MWR::setBit(AHB2RSTR, disableClock);
     }
 
-    void ClockControl::APB1EnableClock(CLOCK_APB_1 typeEnableClock) const noexcept
+    void ClockControl::APB1EnableClock(APB1_RSTR_ENR_poz typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB1ENR,(1 << typeEnableClock));
     }
 
-    void ClockControl::APB1DisableClock(CLOCK_APB_1 disableClock) const noexcept
+    void ClockControl::APB1DisableClock(APB1_RSTR_ENR_poz disableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB1RSTR, (1 << disableClock));
     }
 
-    void ClockControl::APB2EnableClock(CLOCK_APB_2 typeEnableClock) const noexcept
+    void ClockControl::APB2EnableClock(APB2_RSTR_ENR_poz typeEnableClock) const noexcept
     {
         libs::MWR::modifySetRegister(RegisterRCC::APB2ENR,(1 << typeEnableClock));
     }
 
-    void ClockControl::APB2DisableClock(CLOCK_APB_2 disableClock) const noexcept
+    void ClockControl::APB2DisableClock(APB2_RSTR_ENR_poz disableClock) const noexcept
     {
+        if((disableClock >= ADC1) && (disableClock <= ADC3))
+            disableClock = ADC1;
+
         libs::MWR::modifySetRegister(RegisterRCC::APB2RSTR , (1 << disableClock));
     }
 
@@ -219,24 +222,26 @@ namespace drivers::clock
                 APB1EnableClock(UART8); break;
 
             case PORT_A_MODULE:
-                AHB1EnableClock(PORTA); break; // Enable PORT  A
+                AHB1EnableClock(GPIOAEN); break;  // Enable PORT  A
             case PORT_B_MODULE:
-                AHB1EnableClock(PORTB); break;  // Enable PORT  B
+                AHB1EnableClock(GPIOBEN); break;  // Enable PORT  B
             case PORT_C_MODULE:
-                AHB1EnableClock(PORTC); break;  // Enable PORT  C
+                AHB1EnableClock(GPIOCEN); break;  // Enable PORT  C
             case PORT_D_MODULE:
-                AHB1EnableClock(PORTD); break;  // Enable PORT  D
+                AHB1EnableClock(GPIODEN); break;  // Enable PORT  D
             case PORT_E_MODULE:
-                AHB1EnableClock(PORTE); break;  // Enable PORT  A
+                AHB1EnableClock(GPIOEEN); break;  // Enable PORT  A
             case PORT_H_MODULE:
-                AHB1EnableClock(PORTH); break;  // Enable PORT H
+                AHB1EnableClock(GPIOHEN); break;  // Enable PORT H
+            case PORT_I_MODULE:
+                AHB1EnableClock(GPIOIEN); break;  // Enable PORT I
 
             case SYSCF_MODULE:
                 APB2EnableClock(SYSCF); break;  // Enable SYSCF
             case PWR_MODULE:
                 APB1EnableClock(PWR); break;    // Enable PWR
             case USB_FS_MODULE:
-                AHB2EnableClock(USB_OTG_FS_AHB_2); break;  // Enable USB
+                AHB2EnableClock(OTGFS); break;  // Enable USB
 
             /* To be continued... */
         }
@@ -264,24 +269,26 @@ namespace drivers::clock
                 APB1DisableClock(UART8); break;
 
             case PORT_A_MODULE:
-                AHB1DisableClock(PORTA); break; // Disable PORT  A
+                AHB1DisableClock(GPIOARST); break; // Disable PORT  A
             case PORT_B_MODULE:
-                AHB1DisableClock(PORTB); break;  // Disable PORT  B
+                AHB1DisableClock(GPIOBRST); break;  // Disable PORT  B
             case PORT_C_MODULE:
-                AHB1DisableClock(PORTC); break;  // Disable PORT  C
+                AHB1DisableClock(GPIOCRST); break;  // Disable PORT  C
             case PORT_D_MODULE:
-                AHB1DisableClock(PORTD); break;  // Disable PORT  D
+                AHB1DisableClock(GPIODRST); break;  // Disable PORT  D
             case PORT_E_MODULE:
-                AHB1DisableClock(PORTE); break;  // Disable PORT  A
+                AHB1DisableClock(GPIOERST); break;  // Disable PORT  A
             case PORT_H_MODULE:
-                AHB1DisableClock(PORTH); break;  // Disable PORT H
+                AHB1DisableClock(GPIOHRST); break;  // Disable PORT H
+            case PORT_I_MODULE:
+                AHB1DisableClock(GPIOIRST); break;  // Disable PORT I
 
             case SYSCF_MODULE:
                 APB2DisableClock(SYSCF); break;  // Disable SYSCF
             case PWR_MODULE:
                 APB1DisableClock(PWR); break;    // Disable PWR
             case USB_FS_MODULE:
-                AHB2DisableClock(USB_OTG_FS_AHB_2); break;  // Disable USB
+                AHB2DisableClock(OTGFS); break;  // Disable USB
 
                 /* To be continued... */
         }
@@ -312,16 +319,16 @@ namespace drivers::clock
         libs::MWR::modifyResetRegister(PLLCFGR,0x0000FFFF);
 
         //libs::MWR::setBit(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6) | (PLLQ << 24)); котейко
-        libs::MWR::modifySetRegister(PLLCFGR, static_cast<std::uint32_t>((1 << PLLSRC_poz) | setPLLM | (setPLLN << PLLN_poz) | (setPLLQ << PLLQ_poz) | (setPLLP << PLLP_poz)));
+        libs::MWR::modifySetRegister(PLLCFGR, static_cast<std::uint32_t>((1 << PLLSRC) | setPLLM | (setPLLN << PLLN) | (setPLLQ << PLLQ) | (setPLLP << PLLP)));
 
         PLL_Enable();
     }
 
     void ClockControl::PLL_SetSource(std::uint8_t bit) {
         if(bit == 0)
-            libs::MWR::resetBit(PLLCFGR, PLLSRC_poz);
+            libs::MWR::resetBit(PLLCFGR, PLLSRC);
         else
-            libs::MWR::setBit(PLLCFGR, PLLSRC_poz);
+            libs::MWR::setBit(PLLCFGR, PLLSRC);
     }
 
     std::uint32_t ClockControl::GetSysClkSourse() noexcept {
@@ -403,5 +410,106 @@ namespace drivers::clock
 
     bool ClockControl::PLL_IsReady() noexcept {
         return (libs::MWR::readBit<std::uint32_t>(CR, PLLRDY));
+    }
+
+    void ClockControl::LSE_Enable() noexcept {
+        libs::MWR::setBit(BDCR, LSEON);
+    }
+
+    void ClockControl::LSE_Disable() noexcept {
+        libs::MWR::resetBit(BDCR, LSEON);
+    }
+
+    bool ClockControl::LSE_IsReady() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(BDCR, LSERDY);
+    }
+
+    void ClockControl::LSE_SetBypass() noexcept {
+        libs::MWR::setBit(BDCR, LSEBYP);
+    }
+
+    void ClockControl::LSE_ResetBypass() noexcept {
+        libs::MWR::resetBit(BDCR, LSEBYP);
+    }
+
+    bool ClockControl::LSE_GetBypass() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(BDCR, LSEBYP);
+    }
+
+    void ClockControl::SetSourceClock(RTC_Source s) noexcept {
+        libs::MWR::modifyResetRegister(BDCR, 0x3 << RTCSEL);
+        libs::MWR::modifySetRegister( BDCR, s << RTCSEL);
+    }
+
+    void ClockControl::RTC_Enable() noexcept {
+        libs::MWR::setBit(BDCR, RTCEN);
+    }
+
+    void ClockControl::RTC_Disable() noexcept {
+        libs::MWR::resetBit(BDCR, RTCEN);
+    }
+
+    bool ClockControl::RTC_GetStatus() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(BDCR, RTCEN);
+    }
+
+    void ClockControl::BackupDomainReset() noexcept {
+        libs::MWR::setBit(BDCR, BDRST);
+    }
+
+    void ClockControl::BackupDomainNoreset() noexcept {
+        libs::MWR::resetBit(BDCR, BDRST);
+    }
+
+    bool ClockControl::GetBackupDomainStatus() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(BDCR, BDRST);
+    }
+
+    void ClockControl::LSI_Enable() noexcept {
+        libs::MWR::setBit(CSR, LSION);
+    }
+
+    void ClockControl::LSI_Disable() noexcept {
+        libs::MWR::resetBit(CSR, LSION);
+    }
+
+    bool ClockControl::LSI_Status() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, LSION);
+    }
+
+    bool ClockControl::LSI_IsReady() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, LSIRDY);
+    }
+
+    void ClockControl::RemoveResetFlag() noexcept {
+        libs::MWR::setBit(CSR, RMVF);
+    }
+
+    bool ClockControl::GetBorResetFlag() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, BORRSTF);
+    }
+
+    bool ClockControl::GetPinResetFlag() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, PINRSTF);
+    }
+
+    bool ClockControl::GetPorResetFlag() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, PORRSTF);
+    }
+
+    bool ClockControl::GetSoftwareResetFlag() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, SFTRSTF);
+    }
+
+    bool ClockControl::GetIwdgResetFlag() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, IWDGRSTF);
+    }
+
+    bool ClockControl::GetWwdgResetFlag() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, WWDGRSTF);
+    }
+
+    bool ClockControl::GetLowpowerResetFlag() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CSR, LPWRRSTF);
     }
 }
