@@ -25,7 +25,7 @@ namespace  libs
         template<typename T>
         static void inline modifySetRegister(std::uintptr_t adress,T mask) noexcept
         {
-           volatile T temp = read_register<T>(adress);
+           volatile std::uint32_t temp = read_register<std::uint32_t>(adress);
            temp |= mask;
            write_register(adress,temp);
         }

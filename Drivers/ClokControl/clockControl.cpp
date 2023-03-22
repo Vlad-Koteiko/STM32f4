@@ -18,8 +18,8 @@ namespace drivers::clock
         while (flash.GetLatency() != 5)
         {}
 
-        EnablePeripherals(SYSCF_MODULE);
-        EnablePeripherals(PWR_MODULE);
+        //EnablePeripherals(SYSCF_MODULE);
+        //EnablePeripherals(PWR_MODULE);
 
         HSE_Enable();
         while (!HSE_IsReady())
@@ -350,8 +350,8 @@ namespace drivers::clock
         while (flash.GetLatency() != 5)
         {}
 
-        EnablePeripherals(SYSCF_MODULE);
-        EnablePeripherals(PWR_MODULE);
+        //EnablePeripherals(SYSCF_MODULE);
+        //EnablePeripherals(PWR_MODULE);
 
         HSE_Enable();
         while (!HSE_IsReady())
