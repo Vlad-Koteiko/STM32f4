@@ -71,6 +71,17 @@ namespace drivers::pwr
         void BackupDomainDisable();
         bool GetStatusBackupDomain();
 
+        bool GetWakeUpFlag();
+        bool GetStandbyFlag();
+        bool GetPvdOutput();
+        bool BackupRegulatorReady();
+        void WakeupPinEnable();
+        void WakeupPinDisable();
+        bool GetStatusWakeupPin();
+        void BackupRegulatorEnable();
+        void BackupRegulatorDisable();
+        bool GetStatusBackupRegulator();
+        bool GetRegulatorVoltageScallingReady();
     };
 }
 

@@ -62,4 +62,48 @@ namespace drivers::pwr
     bool PWR::GetStatusBackupDomain() {
         return libs::MWR::readBit<std::uint32_t>(CR, DBP);
     }
+
+    bool PWR::GetWakeUpFlag() {
+        return libs::MWR::readBit<std::uint32_t>(CSR, WUF);
+    }
+
+    bool PWR::GetStandbyFlag() {
+        return libs::MWR::readBit<std::uint32_t>(CSR, SBF);
+    }
+
+    bool PWR::GetPvdOutput() {
+        return libs::MWR::readBit<std::uint32_t>(CSR, PVDO);
+    }
+
+    bool PWR::BackupRegulatorReady() {
+        return libs::MWR::readBit<std::uint32_t>(CSR, BRR);
+    }
+
+    void PWR::WakeupPinEnable() {
+        libs::MWR::setBit(CSR, EWUP);
+    }
+
+    void PWR::WakeupPinDisable() {
+        libs::MWR::resetBit(CSR, EWUP);
+    }
+
+    bool PWR::GetStatusWakeupPin() {
+        return libs::MWR::readBit<std::uint32_t>(CSR, EWUP);
+    }
+
+    void PWR::BackupRegulatorEnable() {
+        libs::MWR::setBit(CSR, BRE);
+    }
+
+    void PWR::BackupRegulatorDisable() {
+        libs::MWR::resetBit(CSR, BRE);
+    }
+
+    bool PWR::GetStatusBackupRegulator() {
+        return libs::MWR::readBit<std::uint32_t>(CSR, BRE);
+    }
+
+    bool PWR::GetRegulatorVoltageScallingReady() {
+        return libs::MWR::readBit<std::uint32_t>(CSR, VOSRDY);
+    }
 }
