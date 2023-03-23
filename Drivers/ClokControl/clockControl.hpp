@@ -289,7 +289,7 @@ namespace drivers :: clock
         SYSCF_MODULE,
         PWR_MODULE,
         USB_FS_MODULE,
-        EXTI_MODULE
+        RNG_MODULE
     };
 
     class ClockControl

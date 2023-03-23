@@ -222,15 +222,15 @@ namespace drivers::clock
                 APB1EnableClock(UART8); break;
 
             case PORT_A_MODULE:
-                AHB1EnableClock(GPIOAEN); break;  // Enable PORT  A
+                AHB1EnableClock(GPIOAEN); break;  // Enable PORT A
             case PORT_B_MODULE:
-                AHB1EnableClock(GPIOBEN); break;  // Enable PORT  B
+                AHB1EnableClock(GPIOBEN); break;  // Enable PORT B
             case PORT_C_MODULE:
-                AHB1EnableClock(GPIOCEN); break;  // Enable PORT  C
+                AHB1EnableClock(GPIOCEN); break;  // Enable PORT C
             case PORT_D_MODULE:
-                AHB1EnableClock(GPIODEN); break;  // Enable PORT  D
+                AHB1EnableClock(GPIODEN); break;  // Enable PORT D
             case PORT_E_MODULE:
-                AHB1EnableClock(GPIOEEN); break;  // Enable PORT  A
+                AHB1EnableClock(GPIOEEN); break;  // Enable PORT A
             case PORT_H_MODULE:
                 AHB1EnableClock(GPIOHEN); break;  // Enable PORT H
             case PORT_I_MODULE:
@@ -242,6 +242,9 @@ namespace drivers::clock
                 APB1EnableClock(PWR); break;    // Enable PWR
             case USB_FS_MODULE:
                 AHB2EnableClock(OTGFS); break;  // Enable USB
+
+            case RNG_MODULE:
+                AHB2EnableClock(RNG); break;    // Enable RNG
 
             /* To be continued... */
         }
