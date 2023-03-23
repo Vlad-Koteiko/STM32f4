@@ -464,4 +464,4 @@ namespace drivers :: clock
 
 }    // namespace drivers
 
-#endif    // BLINK_CLOCKCONTROL_H
+#endif    // CLOCKCONTROL_H
