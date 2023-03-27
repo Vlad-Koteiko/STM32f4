@@ -119,7 +119,7 @@ void Reset_Handler() {
      void SPI3_IRQHandler(void)                       {Default_Handler();}  // SPI3
      void UART4_IRQHandler(void)                      {Default_Handler();}  // UART4
      void UART5_IRQHandler(void)                      {Default_Handler();}  // UART5
-     void TIM6_DAC_IRQHandler(void)                   {Default_Handler();}  // TIM6 and DAC1&2 underrun errors
+//     void TIM6_DAC_IRQHandler(void)                   {Default_Handler();}  // TIM6 and DAC1&2 underrun errors
      void TIM7_IRQHandler(void)                       {Default_Handler();}  // TIM7
      void DMA2_Stream0_IRQHandler(void)               {Default_Handler();}  // DMA2 Stream 0
      void DMA2_Stream1_IRQHandler(void)               {Default_Handler();}  // DMA2 Stream 1

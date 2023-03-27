@@ -18,5 +18,5 @@
 void EXTI0_IRQHandler();
 void USART1_IRQHandler();
 void OTG_FS_IRQHandler();
-
+void TIM6_DAC_IRQHandler();
 #endif

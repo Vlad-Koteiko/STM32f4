@@ -245,7 +245,10 @@ namespace drivers::clock
 
             case RNG_MODULE:
                 AHB2EnableClock(RNG); break;    // Enable RNG
-
+            case TIM6_MODULE:
+                APB1EnableClock(TIM6); break;
+            case TIM7_MODULE:
+                APB1EnableClock(TIM7); break;
             /* To be continued... */
         }
     }
@@ -293,6 +296,12 @@ namespace drivers::clock
             case USB_FS_MODULE:
                 AHB2DisableClock(OTGFS); break;  // Disable USB
 
+            case RNG_MODULE:
+                AHB2DisableClock(RNG); break;
+            case TIM6_MODULE:
+                APB1DisableClock(TIM6); break;
+            case TIM7_MODULE:
+                APB1DisableClock(TIM7); break;
                 /* To be continued... */
         }
     }
