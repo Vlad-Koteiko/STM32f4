@@ -10,6 +10,52 @@ namespace drivers::timers
         }
     }
 
+    BasicTimers::BasicTimers(clock::ClockControl &curClock, BASIC_TIMERS timer, std::chrono::milliseconds milliseconds,
+                             bool enableInterrupt) : clockControl(curClock) , baseAddress(timer) {
+
+        switch (timer) {
+            case TIM6: curClock.EnablePeripherals(drivers::clock::TIM6_MODULE); break;
+            case TIM7: curClock.EnablePeripherals(drivers::clock::TIM7_MODULE); break;
+        }
+
+        std::uint32_t freqTimer_Hz = 1000 / milliseconds.count();
+        //std::uint32_t freqTimer_Hz = 1;
+        std::uint32_t freqBusTimer = clockControl.GetFreqAPB1() * 2;
+        //std::uint32_t freqBusTimer = 84000000;
+
+
+        std::uint16_t  prescaller = 0, preload = 0;
+
+        for(std::uint32_t i = 1; i < 65535; i++)
+        {
+            for(std::uint32_t j = 1; j < 65535; j++)
+            {
+
+                std::uint32_t rez = freqBusTimer / i / j;
+                std::uint32_t ost1 = freqBusTimer % i;
+                std::uint32_t ost2 = freqBusTimer % j;
+                if((ost1 == 0) && (ost2 == 0) && (rez == freqTimer_Hz))
+                {
+                    prescaller = i - 1;
+                    preload = j - 1;
+                    break;
+                }
+            }
+            if((prescaller != 0) && (preload != 0))
+            {
+                break;
+            }
+        }
+
+        EnableUpdateEvent();
+        EnableARRPreload();
+        SetPrescaler(prescaller);
+        SetAutoReload(preload);
+        if(enableInterrupt == true)
+            EnableInterrupt();
+        EnableCounter();
+    }
+
     void BasicTimers::EnableCounter() noexcept {
         libs::MWR::setBit(baseAddress + CR1, CEN);
     }

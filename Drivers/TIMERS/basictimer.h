@@ -1,6 +1,7 @@
 #ifndef BASICTIMERS_H
 #define BASICTIMERS_H
 
+#include <chrono>
 #include "MWR.hpp"
 #include "clockControl.hpp"
 
@@ -64,6 +65,7 @@ namespace drivers::timers
     public:
 
         BasicTimers(drivers::clock::ClockControl &curClock, BASIC_TIMERS timer);
+        BasicTimers(drivers::clock::ClockControl &curClock, BASIC_TIMERS timer, std::chrono::milliseconds milliseconds, bool enableInterrupt);
 
         void EnableCounter() noexcept;
         void DisableCounter() noexcept;
