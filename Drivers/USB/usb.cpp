@@ -5,7 +5,7 @@
 
 namespace drivers::usb {
 
-    Usb::Usb(drivers::ClockControl &clockControl1) : clockControl(clockControl1) {}
+    Usb::Usb(drivers::clock::ClockControl &clockControl1) : clockControl(clockControl1) {}
 
     void Usb::Init() noexcept {
 
@@ -36,7 +36,7 @@ namespace drivers::usb {
 
         } while (!libs::MWR::readBit<std::uint32_t>(GRSTCTL,31));
 
-        libs::MWR::enableNumberBit(GRSTCTL,0);
+        libs::MWR::setBit(GRSTCTL,0);
 
         do {
 
@@ -55,24 +55,29 @@ namespace drivers::usb {
         gpio.SetAFPin(gpio.PIN_12,gpio.AF10);
         gpio.SetAFPin(gpio.PIN_11,gpio.AF10);
 
-        clockControl.module_enable(ClockControl::USB_FS_MODULE);
+        clockControl.module_enable(drivers::clock::USB_FS_MODULE);
         nvic.NVIC_Enable(nvic.OTG_FS_IRQ);
     }
 
     void Usb::CoreInit() {
 
-        libs::MWR::enableNumberBit(GUSBCFG, 6);
+        libs::MWR::setBit(GUSBCFG, 6);
 
         CoreReset();
 
-        libs::MWR::enableNumberBit(GCCFG,16); // Activate the USB Transceiver
+        libs::MWR::setBit(GCCFG,16); // Activate the USB Transceiver
 
     }
 
     void Usb::SetCurremtMode() {
 
+<<<<<<< HEAD
         libs::MWR::clearBit(GUSBCFG,0x60000000);
         libs::MWR::enableNumberBit(GUSBCFG,30);
+=======
+        libs::MWR::write_register(GUSBCFG,~0x60000000);
+        libs::MWR::setBit(GUSBCFG,30);
+>>>>>>> ce008de461e5afe2c30924262e25b2560a7d4cc9
 
         do
         {
@@ -88,10 +93,18 @@ namespace drivers::usb {
             libs::MWR::write_register(DIEPTXF + (i * 4) ,0);
         }
 
+<<<<<<< HEAD
         libs::MWR::enableNumberBit(DCTL,1);
         libs::MWR::enableNumberBit(GCCFG,21);
         libs::MWR::clearBit(GCCFG,0x80000);
         libs::MWR::clearBit(GCCFG,0x40000);
+=======
+        libs::MWR::setBit(DCTL,1);
+        libs::MWR::setBit(GCCFG,21);
+        libs::MWR::write_register(GCCFG,~0x80000);
+        libs::MWR::write_register(GCCFG,~0x40000);
+
+>>>>>>> ce008de461e5afe2c30924262e25b2560a7d4cc9
         libs::MWR::setBit(DCFG,0);
 
         libs::MWR::setBit(DCFG,3);

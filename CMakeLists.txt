@@ -33,7 +33,9 @@ set(CMAKE_CXX_STANDARD 17)
 #Uncomment for hardware floating point
 #add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
 add_compile_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
+#add_compile_options(-mfloat-abi=soft -mfpu=fpv4-sp-d16)
 add_link_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs)
+#add_link_options(-mfloat-abi=soft -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs)
 
 #Uncomment for software floating point
 #add_compile_options(-mfloat-abi=soft)
@@ -77,7 +79,10 @@ include_directories(Core/Inc
         Drivers/EXTI
         Drivers/SYSCFG
         Drivers/FLASH
-        Drivers/USB
+        Drivers/IWDG
+        Drivers/PWR
+        Drivers/RNG
+        Drivers/TIMERS
         src/)
 
 add_definitions(-DDEBUG -DSTM32F407xx -DUSE_FULL_LL_DRIVER -DHSE_VALUE=25000000 -DHSE_STARTUP_TIMEOUT=100 -DLSE_STARTUP_TIMEOUT=5000 -DLSE_VALUE=32768 -DEXTERNAL_CLOCK_VALUE=12288000 -DHSI_VALUE=16000000 -DLSI_VALUE=32000 -DVDD_VALUE=3300 -DPREFETCH_ENABLE=1 -DINSTRUCTION_CACHE_ENABLE=1 -DDATA_CACHE_ENABLE=1)
@@ -103,9 +108,13 @@ set(SORUCE_CPP src/main.cpp
                Drivers/EXTI/exti.cpp
                Drivers/SYSCFG/syscfg.cpp
                Drivers/ClokControl/clockControl.cpp
+               Drivers/ClokControl/systick.cpp
                Drivers/EXTI/exti.cpp
                Drivers/FLASH/flash.cpp
-               Drivers/USB/usb.cpp
+               Drivers/IWDG/iwdg.cpp
+               Drivers/PWR/pwr.cpp
+                Drivers/TIMERS/basictimer.cpp
+        Drivers/RNG/rng.cpp
         )
 
 add_executable(${PROJECT_NAME_CPP}.elf ${SORUCE_CPP} ${LINKER_SCRIPT})

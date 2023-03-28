@@ -3,160 +3,80 @@
 //
 
 #include "main.h"
+#include "basictimer.h"
 
 std::uint32_t counter = 0;
 std::uint8_t bufferReceve = 0;
 
-    void foo1( std::pmr::monotonic_buffer_resource &pool,libs::Cout &cout)
-    {
-        std::pmr::vector<char> vec{ &pool};
-
-        for(char ch = 'a'; ch <= 'z'; ++ch)
-        {
-            vec.push_back(ch);
-        }
-    }
-
-    void foo2( std::pmr::monotonic_buffer_resource &pool,libs::Cout &cout)
-    {
-        std::pmr::vector<std::uint8_t> vec{ &pool};
-
-        for(std::size_t i = 0; i <= 20; i++)
-        {
-            vec.push_back(i);
-        }
-    }
-
-     void Init(drivers::ClockControl &clockControl)
-     {
-         drivers::nvic::NVIC nvic(clockControl);
-         drivers::flash::Flash flash;
-
-         flash.PrefetchBufferEnable();
-         flash.DataCacheEnable();
-         flash.InstructionCacheEnable();
-
-         nvic.NVIC_Enable(nvic.EXTI_0,nvic.syscfg.PORT_A,nvic.syscfg.EXTI_0);
-         nvic.NVIC_Enable(nvic.OTG_FS_IRQ);
-     }
+//drivers::clock::ClockControl &clk;
+drivers::port::GPIO *portdRef;
+drivers::timers::BasicTimers *tim6Pointer;
+drivers::usart::USART *uart_p_2;
 
 
     int main()
     {
-        using usart_1 =  drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>;
 
-        drivers::ClockControl clockControl;
-        drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_A> gpio_A(clockControl);
-        drivers::port::GPIO<drivers::port::ADDRESSES_PORT::PORT_D> gpio_D(clockControl);
-        usart_1 usart(clockControl,usart_1::RATE_115200,84000000);
-        drivers::usb::Usb usb(clockControl);
-        libs::Cout cout;
-
-
-        Init(clockControl);
-
-        //-----------------------------------------GPIO INIT----------------------------------
-
-        gpio_A.PIN_init(gpio_A.PIN_1,gpio_A.OUTPUT);
-        gpio_A.SetPinPull(gpio_A.PIN_0,gpio_A.NO_PULL_UP_PULL_DOWN);
-        gpio_A.PIN_init(gpio_A.PIN_0, gpio_A.INPUT);
-
-        gpio_D.PIN_init(gpio_D.PIN_15,gpio_D.OUTPUT);
-        gpio_D.SetPinPull(gpio_D.PIN_0,gpio_D.NO_PULL_UP_PULL_DOWN);
-        gpio_D.PIN_init(gpio_D.PIN_0, gpio_D.INPUT);
-
-        //------------------------------------------------------------------------------------
-
-        //----------------------------------------USART INIT----------------------------------
-
-//        usart.uartInit(usart.RATE_115200,84000000);
-        usart.uartEnableInterrupt();
-
-        //------------------------------------------------------------------------------------
-//        usb.Init();
-//        usb.StartUSB();
-        usb.MX_USB_DEVICE_Init();
-
-        //------------------------------------------------------------------------------------
-
-
-    //    std::array<std::uint8_t,64> buffer = {};
-    //    std::fill_n(std::begin(buffer),buffer.size() - 1, '_');
-    //
-    //    std::pmr::monotonic_buffer_resource pool{buffer.begin(),buffer.size()};
-
-    //    for (std::size_t i = 0; i  < buffer.size(); i++)
-    //    {
-    //        cout <<  static_cast<char>(buffer[i]);
-    //    }
-    //
-    //    cout << cout.ENDL;
-    //
-    //    foo1(pool,cout);
-    //    for (std::size_t i = 0; i  < buffer.size(); i++)
-    //    {
-    //        cout <<  static_cast<char>(buffer[i]);
-    //    }
-    //
-    //    cout << cout.ENDL;
-    //
-    //    foo2(pool,cout);
-    //
-    //    for (std::size_t i = 0; i  < buffer.size(); i++)
-    //    {
-    //        cout <<  static_cast<char>(buffer[i]);
-    //    }
-    //
-    //    cout << cout.ENDL;
-    //
-    //    foo1(pool,cout);
-    //
-    //    for (std::size_t i = 0; i  < buffer.size(); i++)
-    //    {
-    //        cout <<  static_cast<char>(buffer[i]);
-    //    }
-    //
-    //    cout << cout.ENDL;
-    //
-    //    foo2(pool,cout);
-    //
-    //    for (std::size_t i = 0; i  < buffer.size(); i++)
-    //    {
-    //        cout <<  static_cast<char>(buffer[i]);
-    //    }
-
-    //    LL_APB2_GRP1_EnableClock(1 << 14);
-    //    LL_APB1_GRP1_EnableClock(1 << 28);
-
-    //    SystemClock_Config();
-    //    SystemClock_Conf();
-    //    MX_GPIO_Init();
-    //    GPIO_INIT();
-
-    //    MX_USART2_UART_Init();
-
-    //    usart_init();
-
-        /* USER CODE END 2 */
-
-        /* Infinite loop */
-        /* USER CODE BEGIN WHILE */
-
+        drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
+        libs::MWR::write_register(0xE000ED88, 0xF00000);
+        drivers::port::GPIO gpioD(clockControl, drivers::port::PORTD);
+        portdRef = &gpioD;
+        //Init(clockControl);
+        //-----------------------------------------USART INIT---------------------------------
+        drivers::usart::USART usart2(clockControl, drivers::usart::USART2, drivers::usart::USART2_Remap::U2_TX_PA2_RX_PA3);
+        uart_p_2 = &usart2;
+        usart2.SetRXNEIE(drivers::usart::ENABLE);
         char test[20] = "Test UART main\n\r";
+        usart2.TransmitString(test, 16);
+        libs::Cout cout(usart2);
+        cout<<"Test cout"<<cout.ENDL;
+        std::uint32_t  x = clockControl.GetFreqAPB1();
+        cout<<x<<cout.ENDL;
+        cout<<clockControl.GetFreqAPB2()<<cout.ENDL;
+        cout<<clockControl.GetFreqHCLK()<<cout.ENDL;
+        
+        gpioD.InitPin(drivers::port::PIN_12, drivers::port::OUTPUT);
+        gpioD.InitPin(drivers::port::PIN_13, drivers::port::OUTPUT);
+        gpioD.InitPin(drivers::port::PIN_14, drivers::port::OUTPUT);
+        gpioD.InitPin(drivers::port::PIN_15, drivers::port::OUTPUT);
+
+        gpioD.SetPin(drivers::port::PIN_12, drivers::port::PIN_SET);
+        gpioD.SetPin(drivers::port::PIN_13, drivers::port::PIN_SET);
+        gpioD.SetPin(drivers::port::PIN_14, drivers::port::PIN_SET);
+        gpioD.SetPin(drivers::port::PIN_15, drivers::port::PIN_SET);
+        clockControl.mDelay(500);
+
+        //------------------------------------------------------------------------------------
+        drivers::nvic::NVIC nvic;
+        nvic.NVIC_EnableIRQ(drivers::nvic::TIM6_DAC);
+        nvic.NVIC_EnableIRQ(drivers::nvic::USART2);
+
+        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6, std::chrono::milliseconds (1000), true);
+//        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6);
+//        timer6.EnableUpdateEvent();
+//        timer6.EnableInterrupt();
+        //timer6.SetUpdateSource(drivers::timers::COUNTER);
+//        timer6.SetAutoReload(10000);
+//        timer6.SetPrescaler(8400);
+//        timer6.EnableARRPreload();
+//        timer6.EnableCounter();
+        char str[8] = "Start\n\r";
+        tim6Pointer = &timer6;
+        usart2.TransmitString(str, 7);
 
         while (1)
         {
-            cout << "counter = " << counter << cout.ENDL;
-            cout << "USART = " << bufferReceve << cout.ENDL;
+//            gpioD.TogglePin(drivers::port::PIN_12);
+//            clockControl.mDelay(500);
+//            gpioD.TogglePin(drivers::port::PIN_13);
+//            clockControl.mDelay(500);
+//            gpioD.TogglePin(drivers::port::PIN_14);
+//            clockControl.mDelay(500);
+            gpioD.TogglePin(drivers::port::PIN_15);
+            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
 
-            usart.TransmitString(test,20);
-
-            gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_NO);
-            gpio_D.SetPin(gpio_D.PIN_15,gpio_D.PIN_NO);
             clockControl.mDelay(500);
-            gpio_A.SetPin(gpio_A.PIN_1,gpio_A.PIN_OFF);
-            gpio_D.SetPin(gpio_D.PIN_15,gpio_D.PIN_OFF);
-            clockControl.mDelay(500);
+            cout<<counter<<cout.ENDL;
         }
 
        return 0;
@@ -171,10 +91,27 @@ std::uint8_t bufferReceve = 0;
 
     void USART1_IRQHandler()
     {
-        bufferReceve = drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
+//        bufferReceve = drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
+//        uart_p_2->ClearFlag_RXNE();
+//        bufferReceve = uart_p_2->ReceiveData();
+    }
+
+    void USART2_IRQHandler()
+    {
+    //        bufferReceve = drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
+        uart_p_2->ClearFlag_RXNE();
+        bufferReceve = uart_p_2->ReceiveData();
     }
 
     void OTG_FS_IRQHandler()
     {
 
     }
+
+void TIM6_DAC_IRQHandler()
+{
+    portdRef->TogglePin(drivers::port::PIN_12);
+    //libs::MWR::resetBit(0x40001010, 0);
+    tim6Pointer->ClearUpdateInterruptFlag();
+    counter++;
+}

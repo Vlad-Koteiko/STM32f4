@@ -42,11 +42,31 @@ namespace drivers::exti
             LINE_14 = 14,
             LINE_15 = 15,
             LINE_16 = 16,
+            LINE_17 = 17,
+            LINE_18 = 18,
+            LINE_19 = 19,
+            LINE_20 = 20,
+            LINE_21 = 21,
+            LINE_22 = 22
         };
 
         void SetLineTrigger(LINE_NUMBER lineNumber) noexcept;
 
-        void ClearFlag(LINE_NUMBER lineNumber) noexcept;
+        void EnableIT(LINE_NUMBER line) noexcept;
+        void DisableIT(LINE_NUMBER line) noexcept;
+        bool IsEnabledIT(LINE_NUMBER line) noexcept;
+        void EnableEvent(LINE_NUMBER line) noexcept;
+        void DisableEvent(LINE_NUMBER line) noexcept;
+        bool IsEnabledEvent(LINE_NUMBER line) noexcept;
+        void EnbleRisingTrig(LINE_NUMBER line) noexcept;
+        void DisableRisingTrig(LINE_NUMBER line) noexcept;
+        bool IsEnabledRisingTrig(LINE_NUMBER line) noexcept;
+        void EnableFallingTrig(LINE_NUMBER line) noexcept;
+        void DisableFallingTrig(LINE_NUMBER line) noexcept;
+        bool IsEnbledFallingTrig(LINE_NUMBER line) noexcept;
+        void GenerateSWI(LINE_NUMBER line) noexcept;
+        bool IsActiveFlag(LINE_NUMBER line) noexcept;
+        void ClearFlag(LINE_NUMBER line) noexcept;
     };
 }
 
