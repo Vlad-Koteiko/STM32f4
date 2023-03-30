@@ -269,7 +269,7 @@ namespace drivers :: clock
         LPWRRSTF = 31  // Low-power reset flag
     };
 
-    enum  PERIPHERALS : std::uint8_t
+    enum PERIPHERALS : std::uint8_t
     {
         USART_1_MODULE,
         USART_2_MODULE,
@@ -291,7 +291,13 @@ namespace drivers :: clock
         USB_FS_MODULE,
         RNG_MODULE,
         TIM6_MODULE,
-        TIM7_MODULE
+        TIM7_MODULE,
+        SPI1_MODULE,
+        SPI2_MODULE,
+        SPI3_MODULE,
+        SPI4_MODULE,
+        SPI5_MODULE,
+        SPI6_MODULE
     };
 
     class ClockControl

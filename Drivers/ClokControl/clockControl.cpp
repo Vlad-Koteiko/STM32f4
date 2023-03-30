@@ -249,6 +249,19 @@ namespace drivers::clock
                 APB1EnableClock(TIM6); break;
             case TIM7_MODULE:
                 APB1EnableClock(TIM7); break;
+
+            case SPI1_MODULE:
+                APB2EnableClock(SPI1); break;
+            case SPI2_MODULE:
+                APB1EnableClock(SPI2); break;
+            case SPI3_MODULE:
+                APB1EnableClock(SPI3); break;
+            case SPI4_MODULE:
+                APB2EnableClock(SPI4); break;
+            case SPI5_MODULE:
+                APB2EnableClock(SPI5); break;
+            case SPI6_MODULE:
+                APB2EnableClock(SPI6); break;
             /* To be continued... */
         }
     }
