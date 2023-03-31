@@ -235,17 +235,21 @@ namespace drivers::clock
             case PORT_I_MODULE:
                 AHB1EnableClock(GPIOIEN); break;  // Enable PORT I
             case SYSCF_MODULE:
-                APB2EnableClock(SYSCF); break;  // Enable SYSCF
+                APB2EnableClock(SYSCF); break;    // Enable SYSCF
             case PWR_MODULE:
-                APB1EnableClock(PWR); break;    // Enable PWR
+                APB1EnableClock(PWR); break;      // Enable PWR
             case USB_FS_MODULE:
-                AHB2EnableClock(OTGFS); break;  // Enable USB
+                AHB2EnableClock(OTGFS); break;    // Enable USB
             case RNG_MODULE:
-                AHB2EnableClock(RNG); break;    // Enable RNG
+                AHB2EnableClock(RNG); break;      // Enable RNG
             case TIM6_MODULE:
                 APB1EnableClock(TIM6); break;
             case TIM7_MODULE:
-                APB1EnableClock(TIM7); break;
+                APB1EnableClock(TIM7);   break;
+            case DMA_1_MODULE:
+                AHB1EnableClock(DMA1EN); break;   // Enable DMA_1
+            case DMA_2_MODULE:
+                AHB1EnableClock(DMA2EN); break;   // Enable DMA_2
             /* To be continued... */
         }
     }
@@ -299,6 +303,10 @@ namespace drivers::clock
                 APB1DisableClock(TIM6); break;
             case TIM7_MODULE:
                 APB1DisableClock(TIM7); break;
+            case DMA_1_MODULE:
+                AHB1DisableClock(DMA1RST); break;  // Disable DMA_1
+            case DMA_2_MODULE:
+                AHB1DisableClock(DMA2RST); break;  // Disable DMA_1
                 /* To be continued... */
         }
     }

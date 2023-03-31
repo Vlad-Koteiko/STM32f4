@@ -291,7 +291,9 @@ namespace drivers :: clock
         USB_FS_MODULE,
         RNG_MODULE,
         TIM6_MODULE,
-        TIM7_MODULE
+        TIM7_MODULE,
+        DMA_1_MODULE,
+        DMA_2_MODULE
     };
 
     class ClockControl

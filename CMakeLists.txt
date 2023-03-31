@@ -83,6 +83,7 @@ include_directories(Core/Inc
         Drivers/PWR
         Drivers/RNG
         Drivers/TIMERS
+        Drivers/DMA
         src/)
 
 add_definitions(-DDEBUG -DSTM32F407xx -DUSE_FULL_LL_DRIVER -DHSE_VALUE=25000000 -DHSE_STARTUP_TIMEOUT=100 -DLSE_STARTUP_TIMEOUT=5000 -DLSE_VALUE=32768 -DEXTERNAL_CLOCK_VALUE=12288000 -DHSI_VALUE=16000000 -DLSI_VALUE=32000 -DVDD_VALUE=3300 -DPREFETCH_ENABLE=1 -DINSTRUCTION_CACHE_ENABLE=1 -DDATA_CACHE_ENABLE=1)
@@ -113,7 +114,8 @@ set(SORUCE_CPP src/main.cpp
                Drivers/FLASH/flash.cpp
                Drivers/IWDG/iwdg.cpp
                Drivers/PWR/pwr.cpp
-                Drivers/TIMERS/basictimer.cpp
+               Drivers/TIMERS/basictimer.cpp
+               Drivers/DMA/dma.cpp
         Drivers/RNG/rng.cpp
         )
 

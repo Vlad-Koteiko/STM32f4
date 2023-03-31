@@ -34,7 +34,7 @@ drivers::usart::USART *uart_p_2;
         cout<<x<<cout.ENDL;
         cout<<clockControl.GetFreqAPB2()<<cout.ENDL;
         cout<<clockControl.GetFreqHCLK()<<cout.ENDL;
-        
+
         gpioD.InitPin(drivers::port::PIN_12, drivers::port::OUTPUT);
         gpioD.InitPin(drivers::port::PIN_13, drivers::port::OUTPUT);
         gpioD.InitPin(drivers::port::PIN_14, drivers::port::OUTPUT);

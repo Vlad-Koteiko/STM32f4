@@ -32,7 +32,7 @@ namespace  libs
            write_register(adress,temp);
         }
 
-        static void inline modifyResetRegister(std::uintptr_t adress,std::uint32_t mask) noexcept
+        static void inline modifyResetRegister(std::uintptr_t adress, std::uint32_t mask) noexcept
         {
             using type = std::uint32_t;
             volatile type temp = read_register<type>(adress);
