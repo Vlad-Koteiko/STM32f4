@@ -20,6 +20,252 @@ namespace drivers::spi
         }
     }
 
+    SPI::SPI(drivers::clock::ClockControl curClock, ADDRESSES_SPI spi, std::uint8_t remap, NSS n) : clock(curClock), baseAddress(spi) {
+        switch (spi) {
+            case SPI1:
+                clock.EnablePeripherals(drivers::clock::SPI1_MODULE);
+                if(n == SOFT)
+                {
+                    RemapSPI1(remap);
+                } else
+                {
+                    RemapSPI1Nss(remap);
+                }
+                break;
+            case SPI2:
+                break;
+            case SPI3:
+                break;
+            case SPI4:
+                break;
+            case SPI5:
+                break;
+            case SPI6:
+                break;
+        }
+    }
+
+    void SPI::ConfigGpioForSpi(drivers::port::ADDRESSES_PORT portMOSI, drivers::port::PIN_NUMBER pinMOSI,
+                               drivers::port::ADDRESSES_PORT portMISO, drivers::port::PIN_NUMBER pinMISO,
+                               drivers::port::ADDRESSES_PORT portSCK, drivers::port::PIN_NUMBER pinSCK,
+                               drivers::port::ALTERNATE_FUNCTION af) {
+
+        //MOSI
+        drivers::port::GPIO port_mosi(clock, portMOSI);
+        port_mosi.SetPinMode(pinMOSI, drivers::port::ALTERNATE_FUNCT);
+        port_mosi.SetPinSpeed(pinMOSI, drivers::port::VERY_HIGH_SPEED);
+        port_mosi.SetAFPin(pinMOSI, af);
+
+        //MISO
+        drivers::port::GPIO port_miso(clock, portMISO);
+        port_miso.SetPinMode(pinMISO, drivers::port::ALTERNATE_FUNCT);
+        port_miso.SetPinSpeed(pinMOSI, drivers::port::VERY_HIGH_SPEED);
+        port_miso.SetAFPin(pinMISO, af);
+
+        //SCK
+        drivers::port::GPIO port_sck(clock, portSCK);
+        port_sck.SetPinMode(pinSCK, drivers::port::ALTERNATE_FUNCT);
+        port_sck.SetPinSpeed(pinSCK, drivers::port::VERY_HIGH_SPEED);
+        port_sck.SetAFPin(pinSCK, af);
+    }
+
+    void SPI::ConfigGpioForSpi(drivers::port::ADDRESSES_PORT portMOSI, drivers::port::PIN_NUMBER pinMOSI,
+                               drivers::port::ADDRESSES_PORT portMISO, drivers::port::PIN_NUMBER pinMISO,
+                               drivers::port::ADDRESSES_PORT portSCK, drivers::port::PIN_NUMBER pinSCK,
+                               drivers::port::ADDRESSES_PORT portNSS, drivers::port::PIN_NUMBER pinNSS,
+                               drivers::port::ALTERNATE_FUNCTION af) {
+
+        ConfigGpioForSpi(portMOSI, pinMOSI, portMISO, pinMISO, portSCK, pinSCK, af);
+
+        //NSS
+        drivers::port::GPIO port_nss(clock, portNSS);
+        port_nss.SetPinMode(pinNSS, drivers::port::ALTERNATE_FUNCT);
+        port_nss.SetPinSpeed(pinNSS, drivers::port::VERY_HIGH_SPEED);
+        port_nss.SetAFPin(pinNSS, af);
+    }
+
+    void SPI::RemapSPI1(std::uint8_t remap) {
+        switch (remap) {
+            case SPI1_PA7_PA6_PA5_PA4:
+            case SPI1_PA7_PA6_PA5_PA15:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTA, port::PIN_5,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PA6_PB3_PA4:
+            case SPI1_PA7_PA6_PB3_PA15:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTB, port::PIN_3,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PB4_PA5_PA4:
+            case SPI1_PA7_PB4_PA5_PA15:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTA, port::PIN_5,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PB4_PB3_PA4:
+            case SPI1_PA7_PB4_PB3_PA15:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTB, port::PIN_3,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PA6_PA5_PA4:
+            case SPI1_PB5_PA6_PA5_PA15:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTA, port::PIN_5,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PA6_PB3_PA4:
+            case SPI1_PB5_PA6_PB3_PA15:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTB, port::PIN_3,
+                                 port::AF5);
+                break;
+
+            case SPI1_PB5_PB4_PA5_PA4:
+            case SPI1_PB5_PB4_PA5_PA15:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTA, port::PIN_5,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PB4_PB3_PA4:
+            case SPI1_PB5_PB4_PB3_PA15:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTB, port::PIN_3,
+                                 port::AF5);
+                break;
+        }
+    }
+
+    void SPI::RemapSPI1Nss(std::uint8_t remap) {
+
+
+        switch (remap) {
+            case SPI1_PA7_PA6_PA5_PA4:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTA, port::PIN_5,
+                                 port::PORTA, port::PIN_4,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PA6_PA5_PA15:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTA, port::PIN_5,
+                                 port::PORTA, port::PIN_15,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PA6_PB3_PA4:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTB, port::PIN_3,
+                                 port::PORTA, port::PIN_4,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PA6_PB3_PA15:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTB, port::PIN_3,
+                                 port::PORTA, port::PIN_15,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PB4_PA5_PA4:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTA, port::PIN_5,
+                                 port::PORTA, port::PIN_4,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PB4_PA5_PA15:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTA, port::PIN_5,
+                                 port::PORTA, port::PIN_15,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PB4_PB3_PA4:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTB, port::PIN_3,
+                                 port::PORTA, port::PIN_4,
+                                 port::AF5);
+                break;
+            case SPI1_PA7_PB4_PB3_PA15:
+                ConfigGpioForSpi(port::PORTA, port::PIN_7,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTB, port::PIN_3,
+                                 port::PORTA, port::PIN_15,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PA6_PA5_PA4:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTA, port::PIN_5,
+                                 port::PORTA, port::PIN_4,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PA6_PA5_PA15:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTA, port::PIN_5,
+                                 port::PORTA, port::PIN_15,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PA6_PB3_PA4:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTB, port::PIN_3,
+                                 port::PORTA, port::PIN_4,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PA6_PB3_PA15:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTA, port::PIN_6,
+                                 port::PORTB, port::PIN_3,
+                                 port::PORTA, port::PIN_15,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PB4_PA5_PA4:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTA, port::PIN_5,
+                                 port::PORTA, port::PIN_4,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PB4_PA5_PA15:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTA, port::PIN_5,
+                                 port::PORTA, port::PIN_15,
+                                 port::AF5);
+                break;
+
+            case SPI1_PB5_PB4_PB3_PA4:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTB, port::PIN_3,
+                                 port::PORTA, port::PIN_4,
+                                 port::AF5);
+                break;
+            case SPI1_PB5_PB4_PB3_PA15:
+                ConfigGpioForSpi(port::PORTB, port::PIN_5,
+                                 port::PORTB, port::PIN_4,
+                                 port::PORTB, port::PIN_3,
+                                 port::PORTA, port::PIN_15,
+                                 port::AF5);
+                break;
+        }
+    }
+
     void SPI::Enable() noexcept {
         libs::MWR::setBit(baseAddress + CR1, SPE);
     }
@@ -33,6 +279,7 @@ namespace drivers::spi
     }
 
     void SPI::SetMode(SPI_MODE m) noexcept {
+        libs::MWR::resetBit(baseAddress + CR1, MSTR);
         switch (m) {
             case MASTER: libs::MWR::setBit(baseAddress + CR1, MSTR); break;
             case SLAVE: libs::MWR::resetBit(baseAddress + CR1, MSTR); break;
@@ -44,9 +291,10 @@ namespace drivers::spi
     }
 
     void SPI::SetStandard(SPI_STANDART s) noexcept {
+        libs::MWR::resetBit(baseAddress + CR2, FRF);
         switch (s) {
-            case MOTOROLA: libs::MWR::resetBit(baseAddress + CR2, FRF);
-            case TI: libs::MWR::setBit(baseAddress + CR2, FRF);
+            case MOTOROLA: libs::MWR::resetBit(baseAddress + CR2, FRF); break;
+            case TI: libs::MWR::setBit(baseAddress + CR2, FRF); break;
         }
     }
 
@@ -55,8 +303,8 @@ namespace drivers::spi
     }
 
     void SPI::SetClockPhase(CLOCK_PHASE cp) noexcept {
-        libs::MWR::modifyResetRegister(baseAddress + CR1, 1 << CPHA);
-        libs::MWR::modifySetRegister(baseAddress + CR1, cp << CPHA);
+        libs::MWR::modifyResetRegister(baseAddress + CR1, 0x1);
+        libs::MWR::modifySetRegister(baseAddress + CR1, cp);
     }
 
     CLOCK_PHASE SPI::GetClockPhase() noexcept {
@@ -73,7 +321,7 @@ namespace drivers::spi
     }
 
     void SPI::SetBaudRatePrescaler(BAUD_RATE_PRESCALER brp) noexcept {
-        libs::MWR::modifyResetRegister(baseAddress + CR1, 0x1F << BR);
+        libs::MWR::modifyResetRegister(baseAddress + CR1, 0x7 << BR);
         libs::MWR::modifySetRegister(baseAddress + CR1, brp << BR);
     }
 
@@ -108,17 +356,21 @@ namespace drivers::spi
         bool rxonly = libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, RXONLY);
         bool bidimode = libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, BIDIMODE);
         bool bidioe = libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, BIDIOE);
+
+        TRANSFER_DIRECTION td;
         if(bidimode == true)
         {
             if(bidioe == true)
-                return HALF_DUPLEX_TX;
+                td = HALF_DUPLEX_TX;
             else
-                return HALF_DUPLEX_RX;
+                td = HALF_DUPLEX_RX;
         }
 
         if(rxonly == true)
-            return SIMPLEX_RX;
-        else return FULL_DUPLEX;
+            td = SIMPLEX_RX;
+        else td = FULL_DUPLEX;
+
+        return td;
     }
 
     void SPI::SetDataWidth(DATA_WIDTH dw) noexcept {
@@ -180,15 +432,19 @@ namespace drivers::spi
         ssm = libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, SSM);
         ssoe = libs::MWR::readBit<std::uint32_t>(baseAddress + CR2, SSOE);
 
+        NSS ns;
+
         if(ssm == true)
-            return SOFT;
+            ns = SOFT;
         else
         {
             if(ssoe == true)
-                return HARD_OUTPUT;
+                ns = HARD_OUTPUT;
             else
-                return HARD_INPUT;
+                ns = HARD_INPUT;
         }
+
+        return ns;
     }
 
     bool SPI::IsActiveFlag_RXNE() noexcept {
@@ -311,5 +567,16 @@ namespace drivers::spi
 
     void SPI::TransmitData16(std::uint16_t txData) noexcept {
         libs::MWR::write_register(baseAddress + DR, txData);
+    }
+
+    void SPI::TransmitArray(void *txData, std::uint16_t sizeArray) noexcept {
+
+        std::size_t temp = 0;
+        while (sizeArray--)
+        {
+            while (IsActiveFlag_TXE())
+            {}
+            TransmitData8(*(static_cast<char *>(txData) + temp++));
+        }
     }
 }

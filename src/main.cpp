@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "basictimer.h"
+#include "spi.h"
 
 std::uint32_t counter = 0;
 std::uint8_t bufferReceve = 0;
@@ -69,18 +70,36 @@ libs::Cout *coutP;
         tim6Pointer = &timer6;
         usart2.TransmitString(str, 7);
 
+        drivers::spi::SPI spi1(clockControl, drivers::spi::SPI1);
+        spi1.RemapSPI1(drivers::spi::SPI1_PA7_PA6_PA5_PA4);
+        spi1.SetClockPhase(drivers::spi::EDGE1);
+        spi1.SetClockPolarity(drivers::spi::LOW);
+        spi1.SetMode(drivers::spi::MASTER);
+        spi1.SetBaudRatePrescaler(drivers::spi::DIV16);
+        spi1.SetTransferBitOrder(drivers::spi::MSB_FIRST);
+        spi1.SetTransferDirection(drivers::spi::FULL_DUPLEX);
+        spi1.SetDataWidth(drivers::spi::BIT8);
+        spi1.SetNSSMode(drivers::spi::HARD_OUTPUT);
+        spi1.SetStandard(drivers::spi::MOTOROLA);
+
+        //libs::MWR::write_register(0x40013000, 0x35C);
+        spi1.Enable();
+
         while (1)
         {
 //            gpioD.TogglePin(drivers::port::PIN_12);
 //            clockControl.mDelay(500);
 //            gpioD.TogglePin(drivers::port::PIN_13);
 //            clockControl.mDelay(500);
-//            gpioD.TogglePin(drivers::port::PIN_14);
-//            clockControl.mDelay(500);
+            gpioD.TogglePin(drivers::port::PIN_14);
+            clockControl.mDelay(500);
             gpioD.TogglePin(drivers::port::PIN_15);
             clockControl.mDelay(500);
             //cout<<"IDLE "<<(std::uint8_t)usart2.ReadFlag_IDLE()<<cout.ENDL;
             //cout<<counter<<cout.ENDL;
+            //if(spi1.IsActiveFlag_TXE())
+                spi1.TransmitData8(0x22);
+
         }
 
        return 0;

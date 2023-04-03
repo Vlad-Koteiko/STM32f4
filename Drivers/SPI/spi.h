@@ -4,6 +4,7 @@
 
 #include "MWR.hpp"
 #include "clockControl.hpp"
+#include "gpio.h"
 
 namespace drivers::spi
 {
@@ -104,8 +105,8 @@ namespace drivers::spi
 
     enum BAUD_RATE_PRESCALER : std::uint8_t
     {
-        DIV2,  
-        DIV4,     
+        DIV2,
+        DIV4,
         DIV8,
         DIV16,
         DIV32,
@@ -141,6 +142,65 @@ namespace drivers::spi
         HARD_OUTPUT
     };
 
+    enum SPI1_Remap : std::uint8_t //SPI1_{MOSI}_{MISO}_{SCK}_{NSS}
+    {
+        SPI1_PA7_PA6_PA5_PA4,
+        SPI1_PA7_PA6_PA5_PA15,
+        SPI1_PA7_PA6_PB3_PA4,
+        SPI1_PA7_PA6_PB3_PA15,
+        SPI1_PA7_PB4_PA5_PA4,
+        SPI1_PA7_PB4_PA5_PA15,
+        SPI1_PA7_PB4_PB3_PA4,
+        SPI1_PA7_PB4_PB3_PA15,
+        SPI1_PB5_PA6_PA5_PA4,
+        SPI1_PB5_PA6_PA5_PA15,
+        SPI1_PB5_PA6_PB3_PA4,
+        SPI1_PB5_PA6_PB3_PA15,
+        SPI1_PB5_PB4_PA5_PA4,
+        SPI1_PB5_PB4_PA5_PA15,
+        SPI1_PB5_PB4_PB3_PA4,
+        SPI1_PB5_PB4_PB3_PA15
+    };
+
+    enum SPI2_Remap : std::uint8_t //SPI2_{MOSI}_{MISO}_{SCK}_{NSS}
+    {
+        SPI2_PB15_PB14_PB10_PB9,
+        SPI2_PB15_PB14_PB10_PB11,
+        SPI2_PB15_PB14_PB12_PB9,
+        SPI2_PB15_PB14_PB12_PB11,
+        SPI2_PB15_PC2_PB10_PB9,
+        SPI2_PB15_PC2_PB10_PB11,
+        SPI2_PB15_PC2_PB12_PB9,
+        SPI2_PB15_PC2_PB12_PB11,
+        SPI2_PC3_PB14_PB10_PB9,
+        SPI2_PC3_PB14_PB10_PB11,
+        SPI2_PC3_PB14_PB12_PB9,
+        SPI2_PC3_PB14_PB12_PB11,
+        SPI2_PC3_PC2_PB10_PB9,
+        SPI2_PC3_PC2_PB10_PB11,
+        SPI2_PC3_PC2_PB12_PB9,
+        SPI2_PC3_PC2_PB12_PB11,
+    };
+
+    enum SPI3_Remap : std::uint8_t //SPI_{MOSI}_{MISO}_{SCK}_{NSS}
+    {
+        SPI3_PB5_PB4_PB3_PA4,
+        SPI3_PB5_PB4_PB3_PA15,
+        SPI3_PB5_PB4_PC10_PA4,
+        SPI3_PB5_PB4_PC10_PA15,
+        SPI3_PB5_PC11_PB3_PA4,
+        SPI3_PB5_PC11_PB3_PA15,
+        SPI3_PB5_PC11_PC10_PA4,
+        SPI3_PB5_PC11_PC10_PA15,
+        SPI3_PC12_PB4_PB3_PA4,
+        SPI3_PC12_PB4_PB3_PA15,
+        SPI3_PC12_PB4_PC10_PA4,
+        SPI3_PC12_PB4_PC10_PA15,
+        SPI3_PC12_PC11_PB3_PA4,
+        SPI3_PC12_PC11_PB3_PA15,
+        SPI3_PC12_PC11_PC10_PA4,
+        SPI3_PC12_PC11_PC10_PA15
+    };
     class SPI
     {
         std::uintptr_t baseAddress;
@@ -161,6 +221,24 @@ namespace drivers::spi
 
     public:
         SPI(drivers::clock::ClockControl curClock, ADDRESSES_SPI spi);
+        SPI(drivers::clock::ClockControl curClock, ADDRESSES_SPI spi, std::uint8_t remap, NSS n);
+
+        void ConfigGpioForSpi(drivers::port::ADDRESSES_PORT portMOSI, drivers::port::PIN_NUMBER pinMOSI,
+                              drivers::port::ADDRESSES_PORT portMISO, drivers::port::PIN_NUMBER pinMISO,
+                              drivers::port::ADDRESSES_PORT portSCK, drivers::port::PIN_NUMBER pinSCK,
+                              drivers::port::ADDRESSES_PORT portNSS, drivers::port::PIN_NUMBER pinNSS,
+                              drivers::port::ALTERNATE_FUNCTION af);
+
+        void ConfigGpioForSpi(drivers::port::ADDRESSES_PORT portMOSI, drivers::port::PIN_NUMBER pinMOS,
+                              drivers::port::ADDRESSES_PORT portMISO, drivers::port::PIN_NUMBER pinMIS,
+                              drivers::port::ADDRESSES_PORT portSCK, drivers::port::PIN_NUMBER pinSCK,
+                              drivers::port::ALTERNATE_FUNCTION af);
+
+        void RemapSPI1(std::uint8_t remap);
+        void RemapSPI1Nss(std::uint8_t remap);
+        void RemapSPI2(std::uint8_t remap);
+        void RemapSPI3(std::uint8_t remap);
+
         void Enable() noexcept;
         void Disable() noexcept;
         bool IsEnabled() noexcept;
@@ -252,6 +330,7 @@ namespace drivers::spi
         std::uint16_t ReceiveData16() noexcept;
         void TransmitData8(std::uint8_t txData) noexcept;
         void TransmitData16(std::uint16_t txData) noexcept;
+        void TransmitArray(void *txData, std::uint16_t sizeArray) noexcept;
     };
 }
 
