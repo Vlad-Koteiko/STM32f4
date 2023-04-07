@@ -561,22 +561,84 @@ namespace drivers::spi
         return libs::MWR::read_register<std::uint16_t>(baseAddress + DR);
     }
 
+    void SPI::ReceiveArray8(void *rxData, std::uint16_t sizeArray) noexcept {
+        std::size_t temp = 0;
+        while (sizeArray--)
+        {
+            while (IsActiveFlag_RXNE())
+            {
+                *(static_cast<char *>(rxData) + temp++) = ReceiveData8();
+            }
+        }
+    }
+
     void SPI::TransmitData8(std::uint8_t txData) noexcept {
+        while (IsActiveFlag_TXE() == 0)
+        {}
         libs::MWR::write_register(baseAddress + DR, txData);
     }
 
     void SPI::TransmitData16(std::uint16_t txData) noexcept {
+        while (IsActiveFlag_TXE())
+        {}
         libs::MWR::write_register(baseAddress + DR, txData);
     }
 
-    void SPI::TransmitArray(void *txData, std::uint16_t sizeArray) noexcept {
+    void SPI::TransmitArray8(std::uint8_t *txData, std::uint32_t sizeArray) noexcept {
 
         std::size_t temp = 0;
         while (sizeArray--)
         {
-            while (IsActiveFlag_TXE())
+            while (!IsActiveFlag_TXE())
             {}
-            TransmitData8(*(static_cast<char *>(txData) + temp++));
+            TransmitData8(txData[temp]);
+            temp++;
+        }
+    }
+
+    void SPI::TransmitReceiveArray(std::uint8_t *txData, std::uint8_t *rxData, std::size_t size) {
+        std::size_t temp = 0;
+        while (size--)
+        {
+            while (!IsActiveFlag_TXE())
+            {}
+            TransmitData8(txData[temp]);
+            while (!IsActiveFlag_RXNE())
+            {}
+            rxData[temp] = ReceiveData8();
+            temp++;
+        }
+    }
+
+    void SPI::TransmitReceiveArray(void *txData, void *rxData, std::size_t size) {
+        std::size_t temp = 0;
+        DATA_WIDTH dw = GetDataWidth();
+
+        while (size--)
+        {
+            while (!IsActiveFlag_TXE())
+            {}
+            if(dw == BIT8) {
+                TransmitData8(*(static_cast<uint8_t *>(txData) + temp));
+                temp++;
+            }
+            else {
+                TransmitData16(*(static_cast<uint16_t *>(txData) + temp));
+                temp+=2;
+            }
+
+            while (!IsActiveFlag_RXNE())
+            {}
+
+            if(dw == BIT8)
+            {
+                *(static_cast<uint8_t *>(rxData) + temp) = ReceiveData8();
+                temp++;
+            } else {
+                *(static_cast<uint16_t *>(rxData) + temp) = ReceiveData16();
+                temp+=2;
+            }
+
         }
     }
 }

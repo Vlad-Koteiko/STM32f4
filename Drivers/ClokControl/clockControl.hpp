@@ -336,13 +336,6 @@ namespace drivers :: clock
             PLLI2SCFGR = baseRegisterRCC + 0x84   // RCC PLLI2S configuration register, Address offset: 0x84
         };
 
-        enum RegisterSysTick : const std::uintptr_t
-        {
-              CTRL  = baseRegisterSysTick,          // Offset: 0x000 (R/W)  SysTick Control and Status Register
-              LOAD  = baseRegisterSysTick + 0x04,   // Offset: 0x004 (R/W)  SysTick Reload Value Register
-              VAL   = baseRegisterSysTick + 0x08,   // Offset: 0x008 (R/W)  SysTick Current Value Register
-              CALIB = baseRegisterSysTick + 0x0C    // Offset: 0x00C (R/ )  SysTick Calibration Register
-        };
 
     public:
         ClockControl();
@@ -404,8 +397,6 @@ namespace drivers :: clock
         void PLL_SetSource(std::uint8_t bit);
         void SetInternalClockGenerator_16MHz() noexcept;
         void SetExternalClockGenerator_168MHz() noexcept;
-
-        void mDelay(std::uint32_t Delay)const;
 
         void EnablePeripherals(PERIPHERALS name) const noexcept;
         void DisablePeripherals(PERIPHERALS name) const noexcept;

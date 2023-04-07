@@ -18,26 +18,40 @@ namespace drivers::systick
   }
 
   void SysTick::SetClockSourceAHB() {
-      libs::MWR::setBit(CTRL, CLKSOURCE_poz);
+      libs::MWR::setBit(CTRL, CLKSOURCE);
   }
 
   void SysTick::SetClockSourceAHB8() {
-      libs::MWR::resetBit(CTRL, CLKSOURCE_poz);
+      libs::MWR::resetBit(CTRL, CLKSOURCE);
   }
 
   void  SysTick::EnableInterrupt() {
-      libs::MWR::setBit(CTRL, TICKINT_poz);
+      libs::MWR::setBit(CTRL, TICKINT);
   }
 
   void SysTick::DisableInterrupt() {
-      libs::MWR::resetBit(CTRL, TICKINT_poz);
+      libs::MWR::resetBit(CTRL, TICKINT);
   }
 
   void SysTick::Start() {
-      libs::MWR::setBit(CTRL, ENABLE_poz);
+      libs::MWR::setBit(CTRL, ENABLE);
   }
 
   void SysTick::Stop() {
-      libs::MWR::resetBit(CTRL, ENABLE_poz);
+      libs::MWR::resetBit(CTRL, ENABLE);
   }
+
+    void SysTick::DelayMs(std::uint32_t val) {
+
+      if(val < 0xFFFFFFFF)
+          val++;
+
+        while (val)
+        {
+            if((libs::MWR::read_register<std::uint32_t>(CTRL) & (1 << 16)) != 0)
+            {
+                val--;
+            }
+        }
+    }
 }

@@ -5,11 +5,11 @@
 
 namespace drivers::systick
 {
-    enum CTRL_register : std::uint8_t
+    enum CTRL_poz : std::uint8_t
     {
-        ENABLE_poz = 0,
-        TICKINT_poz = 1,
-        CLKSOURCE_poz = 2
+        ENABLE = 0,
+        TICKINT = 1,
+        CLKSOURCE = 2
     };
 
   class SysTick
@@ -37,8 +37,9 @@ public:
       void DisableInterrupt();
       void Start();
       void Stop();
-      void SetValue(uint32_t val);
-      void SetLoad(uint32_t val);
+      void SetValue(std::uint32_t val);
+      void SetLoad(std::uint32_t val);
+      static void DelayMs(std::uint32_t val);
   };
 }
 

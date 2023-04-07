@@ -18,9 +18,6 @@ namespace drivers::clock
         while (flash.GetLatency() != 5)
         {}
 
-        //EnablePeripherals(SYSCF_MODULE);
-        //EnablePeripherals(PWR_MODULE);
-
         HSE_Enable();
         while (!HSE_IsReady())
         {}
@@ -85,7 +82,6 @@ namespace drivers::clock
                 SetExternalClockGenerator_168MHz();
                 break;
         }
-        InitTickSysTick(freqHCLK,1000);
     }
 
     volatile std::uint32_t ClockControl::GetFreqSystemCoreClock() {
@@ -134,12 +130,6 @@ namespace drivers::clock
         libs::MWR::modifySetRegister(RegisterRCC::CFGR,value);
     }
 
-    void ClockControl::InitTickSysTick(std::uint32_t HCLKFrequency, std::uint32_t ticks) noexcept
-    {
-        libs::MWR::write_register(RegisterSysTick::LOAD,static_cast<std::uint32_t>((HCLKFrequency / ticks) - 1)); // set reload register
-        libs::MWR::write_register(RegisterSysTick::VAL,0);                                                        // load the SysTick Counter Value
-        libs::MWR::write_register(RegisterSysTick::CTRL, static_cast<std::uint32_t>(5));                          // Enable the Systick Timer
-    }
 
     void ClockControl::AHB1EnableClock(AHB1ENR_poz typeEnableClock) const noexcept
     {
@@ -182,22 +172,6 @@ namespace drivers::clock
             disableClock = ADC1;
 
         libs::MWR::modifySetRegister(RegisterRCC::APB2RSTR , (1 << disableClock));
-    }
-
-    void ClockControl::mDelay(std::uint32_t Delay) const
-    {
-        if(Delay < 0xFFFFFFFFU)
-        {
-            Delay++;
-        }
-
-        while (Delay)
-        {
-            if((libs::MWR::read_register<std::uint32_t>(CTRL) & (1 << 16)) != 0)
-            {
-                Delay--;
-            }
-        }
     }
 
     void ClockControl::EnablePeripherals(PERIPHERALS name) const noexcept
@@ -409,7 +383,7 @@ namespace drivers::clock
 
         //HSI_Disable();
 
-        InitTickSysTick(168000000,1000);            // 1ms
+        //InitTickSysTick(168000000,1000);            // 1ms
     }
 
     void ClockControl::HSI_Enable() noexcept {

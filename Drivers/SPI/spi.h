@@ -328,9 +328,13 @@ namespace drivers::spi
         
         std::uint8_t ReceiveData8() noexcept;
         std::uint16_t ReceiveData16() noexcept;
+        void ReceiveArray8(void *rxData, std::uint16_t sizeArray) noexcept;
         void TransmitData8(std::uint8_t txData) noexcept;
         void TransmitData16(std::uint16_t txData) noexcept;
-        void TransmitArray(void *txData, std::uint16_t sizeArray) noexcept;
+        void TransmitArray8(std::uint8_t *txData, std::uint32_t sizeArray) noexcept;
+
+        void TransmitReceiveArray(std::uint8_t *txData, std::uint8_t *rxData, std::size_t size);
+        void TransmitReceiveArray(void *txData, void *rxData, std::size_t size);
     };
 }
 

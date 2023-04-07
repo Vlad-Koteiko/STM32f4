@@ -86,6 +86,7 @@ namespace drivers::port
 
     void GPIO::SetPinMode(PIN_NUMBER numberPin, PORT_MODER portModer) const noexcept
     {
+        libs::MWR::modifyResetRegister(baseAddress + MODER, static_cast<std::uint32_t>(0x3 << numberPin * 2));
         libs::MWR::modifySetRegister(baseAddress + MODER, static_cast<std::uint32_t>((portModer << numberPin * 2)));
     }
 
