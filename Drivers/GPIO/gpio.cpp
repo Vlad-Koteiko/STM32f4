@@ -143,6 +143,14 @@ namespace drivers::port
         SetPinOutputType(pinNumber, PUSH_PULL);
         SetPinMode(pinNumber, INPUT);
     }
+
+    std::uint8_t GPIO::ReadPin(PIN_NUMBER pin) noexcept {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + IDR, pin);
+    }
+
+    std::uint32_t GPIO::ReadPort() noexcept {
+        return libs::MWR::read_register<std::uint16_t>(baseAddress + IDR);
+    }
 }
 
 

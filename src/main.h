@@ -16,6 +16,5 @@
 #include "iwdg.h"
 
 void EXTI0_IRQHandler();
-void TIM6_DAC_IRQHandler();
 void USART2_IRQHandler();
 #endif

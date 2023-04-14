@@ -1,7 +1,7 @@
 
 #include "w25q16.h"
 
-namespace libs::flash
+namespace devices::flash
 {
     void W25Q16::UnSelect() noexcept {
         csPort.SetPin(csPin, drivers::port::PIN_SET);

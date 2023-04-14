@@ -5,7 +5,7 @@
 #include "gpio.h"
 #include "systick.h"
 
-namespace libs::flash
+namespace devices::flash
 {
     enum DEFAULT_COMMANDS : std::uint8_t
     {

@@ -27,7 +27,7 @@ else()
 endif()
 
 # project settings
-project(STM32F4 CXX )
+project(STM32F4 CXX C)
 set(CMAKE_CXX_STANDARD 17)
 
 #Uncomment for hardware floating point
@@ -85,6 +85,8 @@ include_directories(Core/Inc
         Drivers/TIMERS
         Drivers/SPI
         devices/flash
+        devices/display
+        devices/adc
         src/)
 
 add_definitions(-DDEBUG -DSTM32F407xx -DUSE_FULL_LL_DRIVER -DHSE_VALUE=25000000 -DHSE_STARTUP_TIMEOUT=100 -DLSE_STARTUP_TIMEOUT=5000 -DLSE_VALUE=32768 -DEXTERNAL_CLOCK_VALUE=12288000 -DHSI_VALUE=16000000 -DLSI_VALUE=32000 -DVDD_VALUE=3300 -DPREFETCH_ENABLE=1 -DINSTRUCTION_CACHE_ENABLE=1 -DDATA_CACHE_ENABLE=1)
@@ -119,6 +121,10 @@ set(SORUCE_CPP src/main.cpp
         Drivers/RNG/rng.cpp
         Drivers/SPI/spi.cpp
         devices/flash/w25q16.cpp
+        devices/display/st7789.cpp
+        devices/display/consolas_9pt_bold.cpp
+        libs/print/printf.c
+        devices/adc/ad7705.cpp
         )
 
 add_executable(${PROJECT_NAME_CPP}.elf ${SORUCE_CPP} ${LINKER_SCRIPT})
