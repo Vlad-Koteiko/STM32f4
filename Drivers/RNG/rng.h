@@ -46,7 +46,7 @@ namespace drivers::rng
         void ClearFlag_SEIS() noexcept;
         void EnableIT() noexcept;
         void DisableIT() noexcept;
-        void IsEnabledIT() noexcept;
+        bool IsEnabledIT() noexcept;
         std::uint32_t ReadRandData32() noexcept;
     };
 }

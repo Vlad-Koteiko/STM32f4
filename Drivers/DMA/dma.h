@@ -27,14 +27,91 @@ namespace drivers::DMA
         Stream_7 = 0xB8,
     };
 
-    enum DATA_TRANSFER : std::uint8_t
+    enum FLAG_INTERRUPT_STATUS : std::uint8_t
+    {
+        FIFO_ERROR_INTERRUPT        = 0,
+        DIRECT_MODE_ERROR_INTERRUPT = 2,
+        TRANSFER_ERROR_INTERRUPT    = 3,
+        HALF_TRANSFER_INTERRUPT     = 4,
+        TRANSFER_COMPLETE_INTERRUPT = 5
+    };
+
+    enum FLAG_STREAM_CONFIGURATION: std::uint8_t
+    {
+        STREAM_ENABLE                           = 0,
+        DIRECT_MODE_ERROR_INTERRUPT_ENABLE      = 1,
+        TRANSFER_ERROR_INTERRUPT_ENABLE         = 2,
+        HALF_TRENSFER_INTERRUPT_ENABLE          = 3,
+        TRANSFER_COMPLETE_INTERRUPT_ENABLE      = 4,
+        PERIPHERAL_FROW_CONTROLLER              = 5,
+        DATA_TRANSFER_DIRECTION                 = 6,
+        CIRCULAR_MODE                           = 8,
+        PERIPHERAL_INCREMENT_MODE               = 9,
+        MEMORY_INCREMENT_MODE                   = 10,
+        PRIPHERAL_DATA_SIZE                     = 11,
+        MEMORY_DATA_SIZE                        = 13,
+        PERIPHERAL_INCREMENT_OFFSET_SIZE        = 15,
+        PRIORITY_LEVEL                          = 16,
+        DOUBLE_BUFFER_MODE                      = 18,
+        CURRENT_TARGET                          = 19,
+        PERIPHERAL_BURST_TRANSFER_CONFIGURATION = 21,
+        MEMORY_BURST_TRANSFER_CONFIGURATION     = 23,
+        CHANNEL_SELECTION                       = 25
+    };
+
+    enum FLAG_FIFO_CONTROL_REGISTER: std::uint8_t
+    {
+        FIFO_THRESHOLD_SELECTION    = 0,
+        DIRECT_MODE_DISABLE         = 2,
+        FIFO_SATUS                  = 3,
+        FIFO_ERROR_INTERRUPT_ENABLE = 7
+    };
+
+    enum DATA_TRANSFER_DIRECTION : std::uint8_t
     {
         PERIPHERAL_TO_MEMORY = 0,
         MEMORY_TO_PERIPHERAL = 1,
-        MEMORY_TO_MEMORY = 2,
+        MEMORY_TO_MEMORY     = 2,
+    };
+
+    enum MEMORY_DATA_SIZE : std::uint8_t
+    {
+        BYTE      = 0,
+        HALF_WORD = 1,
+        WORD      = 2
+    };
+
+    enum PRIORITY_LEVEL : std::uint8_t
+    {
+        LOW       = 0,
+        MEDIUM    = 1,
+        HIGH      = 2,
+        VERY_HIGH = 3
+    };
+
+    enum PERIPHERAL_BURST : std::uint8_t
+    {
+        SINGLE_TRANSFER = 0,
+        INCR4           = 1,
+        INCR8           = 2,
+        INCR16          = 3
+    };
+
+    enum CHANNEL_SELECTION : std::uint8_t
+    {
+        CHANNEL_0 = 0,
+        CHANNEL_1 = 1,
+        CHANNEL_2 = 2,
+        CHANNEL_3 = 3,
+        CHANNEL_4 = 4,
+        CHANNEL_5 = 5,
+        CHANNEL_6 = 6,
+        CHANNEL_7 = 7
     };
 
     class DMA {
+
+        using readWriteRegister = libs::MWR;
 
         const drivers::clock::ClockControl &clockControl;
         const std::uintptr_t baseAddress;
@@ -47,7 +124,7 @@ namespace drivers::DMA
         };
 
         enum RegisterSTREAM : std::ptrdiff_t {
-            CR   = 0, /*!< DMA stream 0 configuration register            Address offset: 0x0 */
+            CR   = 0,    /*!< DMA stream 0 configuration register            Address offset: 0x0 */
             NDTR = 0x04, /*!< DMA stream 0 number of data register        Address offset: 0x04 */
             PAR  = 0x08, /*!< DMA stream 0 peripheral address register    Address offset: 0x08 */
             M0AR = 0x0C, /*!< DMA stream 0 memory 0 address register      Address offset: 0x0C */
@@ -55,51 +132,33 @@ namespace drivers::DMA
             FCR  = 0x14, /*!< DMA stream 0 FIFO control register          Address offset: 0x14 */
         };
 
-        std::uint8_t getNumberStream(const NUMBER_STREAM&) const noexcept;
-
-        bool GetFlagInterruptStatus(const NUMBER_STREAM&, std::uint8_t, bool) const noexcept;
+        constexpr std::uint8_t  getNumberStream(const NUMBER_STREAM&) const noexcept;
+        constexpr std::uint32_t getAddress(const NUMBER_STREAM&, std::ptrdiff_t) const noexcept;
+        constexpr std::uint32_t getAddress(std::ptrdiff_t) const noexcept;
+        constexpr std::uint8_t  getFlagFIFOcontrolValue(const FLAG_FIFO_CONTROL_REGISTER&, std::uint32_t) const noexcept;
+        bool getFlagInterruptStatus(const NUMBER_STREAM&,const std::uint8_t&, bool) const noexcept;
 
     public:
 
         DMA(const drivers::clock::ClockControl &clockControl,const ADDRESSES_DMA addressesDma);
-        void Start_IT(const NUMBER_STREAM& numberStream ,std::uint32_t SrcAddress, std::uint32_t DstAddress, std::uint32_t DataLength) const noexcept;
-        void SetConfig(const NUMBER_STREAM& ,const std::uintptr_t SrcAddress, std::uintptr_t DstAddress, std::uint32_t DataLength) const noexcept;
-
-        void Enable(const NUMBER_STREAM&) const noexcept;
-        void Deseable(const NUMBER_STREAM&) const noexcept;
 
         /* Interuuupt status register */
-        bool GetFlagFifoError(const NUMBER_STREAM&) const noexcept;
-        bool GetFlagDirectModeError(const NUMBER_STREAM&) const noexcept;
-        bool GetFlagTransferError(const NUMBER_STREAM&) const noexcept;
-        bool GetFlagHalfTransferError(const NUMBER_STREAM&) const noexcept;
-        bool GetFlagTransferCompleteError(const NUMBER_STREAM&) const noexcept;
-
-        /* Clear flag interrupt */
-        void ClearFlagFifoError(const NUMBER_STREAM&) const noexcept;
-        void ClearFlagDirectModeError(const NUMBER_STREAM&) const noexcept;
-        void ClearFlagTransferError(const NUMBER_STREAM&) const noexcept;
-        void ClearFlagHalfTransferError(const NUMBER_STREAM&) const noexcept;
-        void ClearFlagTransferCompleteError(const NUMBER_STREAM&) const noexcept;
+        [[nodiscard]] bool getFlagInterrupt(const NUMBER_STREAM&, const FLAG_INTERRUPT_STATUS&) const noexcept;
+        void clearFlagInterrupt(const NUMBER_STREAM&, const FLAG_INTERRUPT_STATUS&) const noexcept;
 
         /* DMA stream x configuration register */
-        void ChannelSelection(const NUMBER_STREAM&, std::uint8_t) const noexcept;
-        void SetTransferCompleteInterruptEnable(const NUMBER_STREAM&) const noexcept;
-        void ClearTransferCompleteInterruptEnable(const NUMBER_STREAM&) const noexcept;
-        void SetTransferErrorInterruptEnable(const NUMBER_STREAM&) const noexcept;
-        void ClearTransferErrorInterruptEnable(const NUMBER_STREAM&) const noexcept;
-        void SetDirectModeErrorInterruptEnable(const NUMBER_STREAM&) const noexcept;
-        void ClearDirectModeErrorInterruptEnable(const NUMBER_STREAM&) const noexcept;
-        void SetHalfTransferInterruptEnable(const NUMBER_STREAM&) const noexcept;
-        void ClearHalfTransferInterruptEnable(const NUMBER_STREAM&) const noexcept;
-        void SetPeripheralFlowController(const NUMBER_STREAM&) const noexcept;
-        void ClearPeripheralFlowController(const NUMBER_STREAM&) const noexcept;
-        void DataTransferDirection(const NUMBER_STREAM&,const DATA_TRANSFER&) const noexcept;
-        void EnableCircularMode() const noexcept;
+        void setStreamConfigurationRegister(const NUMBER_STREAM&, const FLAG_STREAM_CONFIGURATION&, std::uint8_t) const noexcept;
+        void setNumberDataRegister(const NUMBER_STREAM&, std::uint16_t) const noexcept;
+        void setPeripheralAddressRegister(const NUMBER_STREAM&, std::uint32_t) const noexcept;
+        void setMemoryAddressRegister_0(const NUMBER_STREAM&, std::uint32_t) const noexcept;
+        void setMemoryAddressRegister_1(const NUMBER_STREAM&, std::uint32_t) const noexcept;
 
+        /* FIFO status register */
+        [[nodiscard]] std::uint8_t getFlagFIFOcontrol(const NUMBER_STREAM&, const FLAG_FIFO_CONTROL_REGISTER&) const noexcept;
+        void setFlagFIFOcontrol(const NUMBER_STREAM&, const FLAG_FIFO_CONTROL_REGISTER&, std::uint8_t) const noexcept;
 
-
-
+        void enable(const NUMBER_STREAM&) const noexcept;
+        void deseable(const NUMBER_STREAM&) const noexcept;
 
     };
 }

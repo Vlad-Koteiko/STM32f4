@@ -8,237 +8,121 @@ namespace drivers::DMA
 {
     DMA::DMA(const drivers::clock::ClockControl &clockControl, const drivers::DMA::ADDRESSES_DMA addressesDma)
                                                         : clockControl(clockControl), baseAddress(addressesDma) {
-        switch(baseAddress) {
-            case DMA_1:
-                clockControl.EnablePeripherals(drivers::clock::DMA_1_MODULE);
-                break;
-            case DMA_2:
-                clockControl.EnablePeripherals(drivers::clock::DMA_2_MODULE);
-                break;
-        }
+
+        baseAddress == DMA_1 ?  clockControl.EnablePeripherals(drivers::clock::DMA_1_MODULE) :  clockControl.EnablePeripherals(drivers::clock::DMA_2_MODULE);
     }
 
-    std::uint8_t DMA::getNumberStream(const NUMBER_STREAM& numberStream) const noexcept {
-        std::uint8_t temp;
+    constexpr std::uint8_t DMA::getNumberStream(const NUMBER_STREAM& numberStream) const noexcept {
         switch (numberStream) {
-            case Stream_0: temp = 0;
+            case Stream_0: return 0;
                 break;
-            case Stream_1: temp = 6;
+            case Stream_1: return 6;
                 break;
-            case Stream_2: temp = 16;
+            case Stream_2: return 16;
                 break;
-            case Stream_3: temp = 22;
+            case Stream_3: return 22;
                 break;
-            case Stream_4: temp = 0;
+            case Stream_4: return 0;
                 break;
-            case Stream_5: temp = 6;
+            case Stream_5: return 6;
                 break;
-            case Stream_6: temp = 16;
+            case Stream_6: return 16;
                 break;
-            case Stream_7: temp = 22;
+            case Stream_7: return 22;
+                break;
+            default:       return 99;
                 break;
         }
-        return temp;
     }
 
-    bool DMA::GetFlagInterruptStatus(const NUMBER_STREAM& numberStream, std::uint8_t offset, bool getFlag) const noexcept{
+    constexpr std::uint32_t DMA::getAddress(const drivers::DMA::NUMBER_STREAM &numberStream, std::ptrdiff_t offset) const noexcept {
+        return static_cast<std::uint32_t>(baseAddress + numberStream + offset);
+    }
+
+    constexpr std::uint32_t DMA::getAddress(std::ptrdiff_t offset) const noexcept {
+        return static_cast<std::uint32_t>(baseAddress + offset);
+    }
+
+    constexpr std::uint8_t DMA::getFlagFIFOcontrolValue(const drivers::DMA::FLAG_FIFO_CONTROL_REGISTER &flagFifoControlRegister, std::uint32_t value) const noexcept {
+        return ((value >> flagFifoControlRegister) & flagFifoControlRegister);
+    }
+
+    bool DMA::getFlagInterruptStatus(const NUMBER_STREAM& numberStream,const std::uint8_t& offset, bool getFlag) const noexcept{
         bool temp = false;
-        switch (numberStream) {
-            case Stream_0:
-            case Stream_1:
-            case Stream_2:
-            case Stream_3:
-                if (getFlag)
-                {
-                    temp = libs::MWR::readBit<std::uint32_t>(baseAddress + LISR, getNumberStream(numberStream) + offset);
 
-                } else
-                {
-                    libs::MWR::resetBit(baseAddress + LISR, getNumberStream(numberStream) + offset);
-                }
-                break;
-            case Stream_4:
-            case Stream_5:
-            case Stream_6:
-            case Stream_7:
-                if (getFlag)
-                {
-                    temp = libs::MWR::readBit<std::uint32_t>(baseAddress + HISR, getNumberStream(numberStream) + offset);
+        if(numberStream == Stream_0 || numberStream == Stream_1 ||
+            numberStream == Stream_2 || numberStream == Stream_3)
+        {
+            if (getFlag)
+            {
+              temp = libs::MWR::readBit<std::uint32_t>(getAddress(LISR), getNumberStream(numberStream) + offset);
 
-                } else
-                {
-                    libs::MWR::resetBit(baseAddress + HISR, getNumberStream(numberStream) + offset);
-                }
-                break;
+            } else
+            {
+                libs::MWR::resetBit(getAddress(LISR), getNumberStream(numberStream) + offset);
+            }
+        } else
+        {
+            if (getFlag)
+            {
+                temp = libs::MWR::readBit<std::uint32_t>(getAddress(HISR), getNumberStream(numberStream) + offset);
+
+            } else
+            {
+                libs::MWR::resetBit(getAddress(HISR), getNumberStream(numberStream) + offset);
+            }
         }
+
         return temp;
     }
 
-    void DMA::Enable(const NUMBER_STREAM& numberStream) const noexcept{
-       libs::MWR::setBit(baseAddress + numberStream + CR, 0);
+    void DMA::enable(const drivers::DMA::NUMBER_STREAM &numberStream) const noexcept {
+        setStreamConfigurationRegister(numberStream,STREAM_ENABLE,1);
     }
 
-    void DMA::Deseable(const drivers::DMA::NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::resetBit(baseAddress + numberStream + CR, 0);
+    void DMA::deseable(const drivers::DMA::NUMBER_STREAM &numberStream) const noexcept {
+        setStreamConfigurationRegister(numberStream,STREAM_ENABLE,0);
     }
 
-    void DMA::Start_IT(const NUMBER_STREAM& numberStream ,uint32_t SrcAddress, uint32_t DstAddress, uint32_t DataLength) const noexcept
-    {
-//        HAL_StatusTypeDef status = HAL_OK;
-//
-//        /* calculate DMA base and stream number */
-//        DMA_Base_Registers *regs = (DMA_Base_Registers *)hdma->StreamBaseAddress;
-//
-//        /* Check the parameters */
-//        assert_param(IS_DMA_BUFFER_SIZE(DataLength));
-//
-//        /* Process locked */
-//        __HAL_LOCK(hdma);
-//
-//        if(HAL_DMA_STATE_READY == hdma->State)
-//        {
-//            /* Change DMA peripheral state */
-//            hdma->State = HAL_DMA_STATE_BUSY;
-//
-//            /* Initialize the error code */
-//            hdma->ErrorCode = HAL_DMA_ERROR_NONE;
-
-            /* Configure the source, destination address and the data length */
-            SetConfig(numberStream,SrcAddress, DstAddress, DataLength);
-
-            /* Clear all interrupt flags at correct offset within the register */
-//            regs->IFCR = 0x3FU << hdma->StreamIndex;
-//            libs::MWR::write_register(baseAddress + LIFCR, 0x3F << 16);
-            ClearFlagDirectModeError(numberStream);
-            ClearFlagFifoError(numberStream);
-            ClearFlagHalfTransferError(numberStream);
-            ClearFlagTransferCompleteError(numberStream);
-            ClearFlagTransferError(numberStream);
-
-//
-//
-            /* Enable Common interrupts*/
-//            hdma->Instance->CR  |= DMA_IT_TC | DMA_IT_TE | DMA_IT_DME;
-//            libs::MWR::write_register(baseAddress + numberStream + CR, (1 << 4 | 1 << 2 | 1 << 1));
-            SetTransferCompleteInterruptEnable(numberStream);
-            SetTransferErrorInterruptEnable(numberStream);
-            SetDirectModeErrorInterruptEnable(numberStream);
-
-//            if(hdma->XferHalfCpltCallback != NULL)
-//            {
-//                hdma->Instance->CR  |= DMA_IT_HT;
-//                 libs::MWR::setBit(baseAddress + numberStream + CR, 3);
-                   SetHalfTransferInterruptEnable(numberStream);
-//            }
-//
-//            /* Enable the Peripheral */
-//            __HAL_DMA_ENABLE(hdma);
-            Enable(numberStream);
-//        }
-//        else
-//        {
-//            /* Process unlocked */
-//            __HAL_UNLOCK(hdma);
-//
-//            /* Return error status */
-//            status = HAL_BUSY;
-//        }
+    bool DMA::getFlagInterrupt(const drivers::DMA::NUMBER_STREAM& numberStream, const drivers::DMA::FLAG_INTERRUPT_STATUS& flag) const noexcept {
+       return getFlagInterruptStatus(numberStream,flag, true);
     }
 
-    void DMA::SetConfig(const NUMBER_STREAM& numberStream, const std::uintptr_t SrcAddress, std::uintptr_t DstAddress,
-                            std::uint32_t DataLength) const noexcept {
-        /* Clear DBM bit */
-        libs::MWR::resetBit(baseAddress + numberStream + CR, 18);
-        /* Configure DMA Stream data length */
-        libs::MWR::write_register(baseAddress + numberStream + NDTR,DataLength);
-        /* Configure DMA Stream destination address */
-        libs::MWR::write_register(baseAddress + numberStream + PAR, DstAddress);
-        /* Configure DMA Stream source address */
-        libs::MWR::write_register(baseAddress + numberStream + M0AR, SrcAddress);
+    void DMA::clearFlagInterrupt(const drivers::DMA::NUMBER_STREAM& numberStream, const drivers::DMA::FLAG_INTERRUPT_STATUS& flag) const noexcept {
+        getFlagInterruptStatus(numberStream, flag, false);
     }
 
-    bool DMA::GetFlagFifoError(const NUMBER_STREAM& numberStream) const noexcept{
-        return GetFlagInterruptStatus(numberStream, 0, true);
+    void DMA::setStreamConfigurationRegister(const drivers::DMA::NUMBER_STREAM &numberStream,
+                                             const drivers::DMA::FLAG_STREAM_CONFIGURATION &flagStreamConfiguration, std::uint8_t value) const noexcept {
+        readWriteRegister::modifySetRegister(getAddress(numberStream, CR), value << flagStreamConfiguration);
     }
 
-    bool DMA::GetFlagDirectModeError(const NUMBER_STREAM& numberStream) const noexcept{
-        return GetFlagInterruptStatus(numberStream, 2, true);
+    void DMA::setNumberDataRegister(const drivers::DMA::NUMBER_STREAM &numberStream, std::uint16_t sizeData) const noexcept {
+        readWriteRegister::write_register(getAddress(numberStream,NDTR), sizeData);
     }
 
-    bool DMA::GetFlagTransferError(const NUMBER_STREAM& numberStream) const noexcept{
-        return GetFlagInterruptStatus(numberStream, 3, true);
+    void DMA::setPeripheralAddressRegister(const drivers::DMA::NUMBER_STREAM &numberStream, std::uint32_t address) const noexcept{
+        readWriteRegister::write_register(getAddress(numberStream,PAR), address);
     }
 
-    bool DMA::GetFlagHalfTransferError(const NUMBER_STREAM& numberStream) const noexcept {
-        return GetFlagInterruptStatus(numberStream, 4, true);
+    void DMA::setMemoryAddressRegister_0(const drivers::DMA::NUMBER_STREAM &numberStream, std::uint32_t address) const noexcept {
+        readWriteRegister::write_register(getAddress(numberStream,M0AR), address);
     }
 
-    bool DMA::GetFlagTransferCompleteError(const NUMBER_STREAM& numberStream) const noexcept {
-        return GetFlagInterruptStatus(numberStream, 5, true);
+    void DMA::setMemoryAddressRegister_1(const drivers::DMA::NUMBER_STREAM &numberStream , std::uint32_t address) const noexcept {
+        readWriteRegister::write_register(getAddress(numberStream, M1AR), address);
     }
 
-    void DMA::ClearFlagFifoError(const NUMBER_STREAM& numberStream) const noexcept {
-        GetFlagInterruptStatus(numberStream, 0, false);
+    void DMA::setFlagFIFOcontrol(const drivers::DMA::NUMBER_STREAM &numberStream ,
+                                 const drivers::DMA::FLAG_FIFO_CONTROL_REGISTER &flagFifoControlRegister, std::uint8_t value) const noexcept {
+        readWriteRegister::modifySetRegister(getAddress(numberStream, FCR),(value << flagFifoControlRegister));
     }
 
-    void DMA::ClearFlagDirectModeError(const NUMBER_STREAM& numberStream) const noexcept {
-        GetFlagInterruptStatus(numberStream, 2, false);
+    std::uint8_t DMA::getFlagFIFOcontrol(const drivers::DMA::NUMBER_STREAM &numberStream,
+                                         const drivers::DMA::FLAG_FIFO_CONTROL_REGISTER &flagFifoControlRegister) const noexcept {
+        std::uint32_t temp = libs::MWR::read_register<std::uint32_t>(getAddress(numberStream,FCR));
+        return getFlagFIFOcontrolValue(flagFifoControlRegister,temp);
     }
-
-    void DMA::ClearFlagTransferError(const drivers::DMA::NUMBER_STREAM& numberStream) const noexcept {
-        GetFlagInterruptStatus(numberStream, 3, false);
-    }
-
-    void DMA::ClearFlagHalfTransferError(const drivers::DMA::NUMBER_STREAM& numberStream) const noexcept {
-        GetFlagInterruptStatus(numberStream, 4, false);
-    }
-
-    void DMA::ClearFlagTransferCompleteError(const drivers::DMA::NUMBER_STREAM& numberStream) const noexcept {
-        GetFlagInterruptStatus(numberStream, 5, false);
-    }
-
-    void DMA::ChannelSelection(const NUMBER_STREAM& numberStream, std::uint8_t channel) const noexcept{
-        libs::MWR::write_register(baseAddress + numberStream + CR, static_cast<std::uint32_t>(channel << 25));
-    }
-
-    void DMA::SetTransferCompleteInterruptEnable(const NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::setBit(baseAddress + numberStream + CR, 4);
-    }
-
-    void DMA::ClearTransferCompleteInterruptEnable(const NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::resetBit(baseAddress + numberStream + CR, 4);
-    }
-
-    void DMA::SetTransferErrorInterruptEnable(const drivers::DMA::NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::setBit(baseAddress + numberStream + CR, 2);
-    }
-
-    void DMA::ClearTransferErrorInterruptEnable(const NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::resetBit(baseAddress + numberStream + CR, 2);
-    }
-
-    void DMA::SetDirectModeErrorInterruptEnable(const NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::setBit(baseAddress + numberStream + CR, 1);
-    }
-
-    void DMA::ClearDirectModeErrorInterruptEnable(const NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::resetBit(baseAddress + numberStream + CR, 1);
-    }
-
-    void DMA::SetHalfTransferInterruptEnable(const NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::setBit(baseAddress + numberStream + CR, 3);
-    }
-
-    void DMA::ClearHalfTransferInterruptEnable(const NUMBER_STREAM& numberStream) const noexcept {
-        libs::MWR::resetBit(baseAddress + numberStream + CR, 3);
-    }
-
-    void DMA::DataTransferDirection(const NUMBER_STREAM& numberStream, const DATA_TRANSFER& dataTransfer) const noexcept {
-        libs::MWR::modifySetRegister(baseAddress + numberStream + CR, dataTransfer << 6);
-    }
-
-
-
 }
 
 

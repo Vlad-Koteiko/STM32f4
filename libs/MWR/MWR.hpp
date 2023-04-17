@@ -19,7 +19,7 @@ namespace  libs
         }
 
         template<typename T>
-        static inline volatile T read_register(std::uintptr_t adress) noexcept
+        [[nodiscard]] static inline volatile T read_register(std::uintptr_t adress) noexcept
         {
             return *reinterpret_cast<volatile const T *>(adress);
         }
@@ -51,7 +51,7 @@ namespace  libs
         }
 
         template<typename T>
-        static bool inline readBit(std::uintptr_t adress, std::uint8_t numberBit) noexcept
+        [[nodiscard]] static bool inline readBit(std::uintptr_t adress, std::uint8_t numberBit) noexcept
         {
             return (read_register<T>(adress) & (1 << numberBit));
         }

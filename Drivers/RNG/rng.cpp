@@ -55,8 +55,8 @@ namespace drivers::rng
         libs::MWR::resetBit(CR, IE);
     }
 
-    void RNG::IsEnabledIT() noexcept {
-        libs::MWR::readBit<std::uint32_t>(CR, IE);
+    bool RNG::IsEnabledIT() noexcept {
+        return libs::MWR::readBit<std::uint32_t>(CR, IE);
     }
 
     std::uint32_t RNG::ReadRandData32() noexcept {
