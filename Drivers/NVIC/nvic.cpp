@@ -44,6 +44,7 @@ namespace drivers::nvic {
         {
             libs::MWR::modifySetRegister(ISER + 8, 1 << (irq & writeLimit));
         }
+
     }
 
     void NVIC::NVIC_DisableIRQ(LINE_IRQn irq) noexcept {

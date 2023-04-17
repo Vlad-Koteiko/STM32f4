@@ -18,6 +18,8 @@ std::uint8_t bufferReceve = 0;
 drivers::port::GPIO *portdRef;
 drivers::usart::USART *usart2Pointer;
 libs::Cout *coutP;
+drivers::timers::BasicTimers *tim6Pointer;
+drivers::usart::USART *uart_p_2;
 
 int my_putchar(char c)
 {
@@ -27,14 +29,16 @@ int my_putchar(char c)
     return 0;
 }
 
-    int main() {
+
+    int main()
+    {
+
         drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
         libs::MWR::write_register(0xE000ED88, 0xF00000); //разрешение FPU
         drivers::systick::SysTick sysTick(168000000, 1000);
         sysTick.Start();
         drivers::port::GPIO gpioD(clockControl, drivers::port::PORTD);
         portdRef = &gpioD;
-
         //Init(clockControl);
         //-----------------------------------------USART INIT---------------------------------
         drivers::usart::USART usart2(clockControl, drivers::usart::USART2,
@@ -43,19 +47,19 @@ int my_putchar(char c)
         //       usart2.SetRXNEIE(drivers::usart::ENABLE);
         usart2Pointer = &usart2;
 
+
+        uart_p_2 = &usart2;
+        usart2.SetRXNEIE(drivers::usart::ENABLE);
         char test[20] = "Test UART main\n\r";
         usart2.TransmitString(test, 16);
         libs::Cout cout(usart2);
         coutP = &cout;
         cout << "Test cout" << cout.ENDL;
 
-
         gpioD.InitPin(drivers::port::PIN_12, drivers::port::OUTPUT);
         gpioD.InitPin(drivers::port::PIN_13, drivers::port::OUTPUT);
         gpioD.InitPin(drivers::port::PIN_14, drivers::port::OUTPUT);
         gpioD.InitPin(drivers::port::PIN_15, drivers::port::OUTPUT);
-
-
 
         gpioD.SetPin(drivers::port::PIN_12, drivers::port::PIN_SET);
         gpioD.SetPin(drivers::port::PIN_13, drivers::port::PIN_SET);
@@ -96,6 +100,22 @@ int my_putchar(char c)
         std::uint16_t reg;
         reg = adc.ReadClock();
         printf("TestReg : %x\n\r", reg);
+        drivers::nvic::NVIC nvic;
+        nvic.NVIC_EnableIRQ(drivers::nvic::TIM6_DAC);
+        nvic.NVIC_EnableIRQ(drivers::nvic::USART2);
+
+        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6, std::chrono::milliseconds (1000), true);
+//        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6);
+//        timer6.EnableUpdateEvent();
+//        timer6.EnableInterrupt();
+        //timer6.SetUpdateSource(drivers::timers::COUNTER);
+//        timer6.SetAutoReload(10000);
+//        timer6.SetPrescaler(8400);
+//        timer6.EnableARRPreload();
+//        timer6.EnableCounter();
+        char str[8] = "Start\n\r";
+        tim6Pointer = &timer6;
+        usart2.TransmitString(str, 7);
 
         while (1)
         {
@@ -114,6 +134,10 @@ int my_putchar(char c)
             printf("Ch1 : %x\n\r", reg);
             reg = adc.ReadData(devices::ad7705::AIN2_PLUS_AIN2_MINUS);
             printf("Ch2 : %x\n\r", reg);
+            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
+
+            sysTick.DelayMs(500);
+            cout<<counter<<cout.ENDL;
         }
 
        return 0;
@@ -128,24 +152,19 @@ int my_putchar(char c)
 
     void USART2_IRQHandler()
     {
-        if(usart2Pointer->ReadFlag_IDLE())
-        {
-            coutP->operator<<("IDLE inter\n\r")<<coutP->ENDL;
-            usart2Pointer->SetIDLEIE(drivers::usart::DISABLE);
-        }
-        if(usart2Pointer->ReadFlag_RXNE())
-        {
-            coutP->operator<<("RXNE ");
-            coutP->operator<<((std::uint8_t)usart2Pointer->ReadFlag_RXNE());
-            coutP->operator<<(" IDLE ");
-            coutP->operator<<((std::uint8_t)usart2Pointer->ReadFlag_IDLE());
-            coutP->operator<<("\n\r");
-            usart2Pointer->ClearFlag_RXNE();
-            char str[] = "IDLE: ";
-            usart2Pointer->ReceiveData();
-            usart2Pointer->TransmitString(str, 6);
-            coutP->operator<<((std::uint8_t)usart2Pointer->ReadFlag_IDLE());
-            coutP->operator<<("\n\r");
-        }
+
+//        bufferReceve = drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
+//        uart_p_2->ClearFlag_RXNE();
+//        bufferReceve = uart_p_2->ReceiveData();
+    }
+
+void USART1_IRQHandler()
+{
+    
+}
+
+    void OTG_FS_IRQHandler()
+    {
+
     }
 

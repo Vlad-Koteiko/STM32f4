@@ -297,7 +297,9 @@ namespace drivers :: clock
         SPI3_MODULE,
         SPI4_MODULE,
         SPI5_MODULE,
-        SPI6_MODULE
+        SPI6_MODULE,
+        DMA_1_MODULE,
+        DMA_2_MODULE
     };
 
     class ClockControl

@@ -13,6 +13,7 @@ extern std::uint32_t _sbss;      // Start of bss
 extern std::uint32_t _ebss;      // End of bss
 extern std::uint32_t _estack;    // Top of stack
 
+using vector = std::add_pointer<void()>::type; // void (*)(void)
 
 //Static constructor initializator from libc
 //extern void __libc_init_array();
@@ -102,7 +103,7 @@ void Reset_Handler() {
      void I2C2_ER_IRQHandler(void)                    {Default_Handler();}  // I2C2 Error
      void SPI1_IRQHandler(void)                       {Default_Handler();}  // SPI1
      void SPI2_IRQHandler(void)                       {Default_Handler();}  // SPI2
-     void USART1_IRQHandler(void)                     {Default_Handler();}  // USART1
+//     void USART1_IRQHandler(void)                     {Default_Handler();}  // USART1
 //     void USART2_IRQHandler(void)                     {Default_Handler();}  // USART2
      void USART3_IRQHandler(void)                     {Default_Handler();}  // USART3
      void EXTI15_10_IRQHandler(void)                  {Default_Handler();}  // External Line[15:10]s
@@ -132,7 +133,7 @@ void Reset_Handler() {
      void CAN2_RX0_IRQHandler(void)                   {Default_Handler();}  // CAN2 RX0
      void CAN2_RX1_IRQHandler(void)                   {Default_Handler();}  // CAN2 RX1
      void CAN2_SCE_IRQHandler(void)                   {Default_Handler();}  // CAN2 SCE
-     void OTG_FS_IRQHandler(void)                     {Default_Handler();}  // USB OTG FS
+//     void OTG_FS_IRQHandler(void)                     {Default_Handler();}  // USB OTG FS
      void DMA2_Stream5_IRQHandler(void)               {Default_Handler();}  // DMA2 Stream 5
      void DMA2_Stream6_IRQHandler(void)               {Default_Handler();}  // DMA2 Stream 6
      void DMA2_Stream7_IRQHandler(void)               {Default_Handler();}  // DMA2 Stream 7
@@ -147,10 +148,12 @@ void Reset_Handler() {
      void HASH_RNG_IRQHandler(void)                   {Default_Handler();}  // Hash and Rng
      void FPU_IRQHandler(void)                        {Default_Handler();}  // FPU
 
+
+
     // Interrupt vector table
     __attribute__((section(".isr_vector")))
-     void (*VectorTable[])(void) = {
-            (void (*)(void)) &_estack,
+     vector VectorTable[] = {                       // void (*VectorTable[])(void)
+            (vector) &_estack,
               Reset_Handler,
               NMI_Handler,
               HardFault_Handler,

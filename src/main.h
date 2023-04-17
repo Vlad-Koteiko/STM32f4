@@ -14,7 +14,10 @@
 #include "syscfg.h"
 #include "exti.h"
 #include "iwdg.h"
+#include "dma.h"
 
 void EXTI0_IRQHandler();
+void USART1_IRQHandler();
 void USART2_IRQHandler();
+void OTG_FS_IRQHandler();
 #endif

@@ -137,6 +137,7 @@ namespace drivers::port
         void DeinitPin(PIN_NUMBER pinNumber) const;
         std::uint8_t ReadPin(PIN_NUMBER pin) noexcept;
         std::uint32_t ReadPort() noexcept;
+
     };
 
 }    // namespace drivers

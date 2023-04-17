@@ -194,7 +194,6 @@ namespace drivers::clock
                 APB1EnableClock(UART7); break;
             case UART_8_MODULE:
                 APB1EnableClock(UART8); break;
-
             case PORT_A_MODULE:
                 AHB1EnableClock(GPIOAEN); break;  // Enable PORT A
             case PORT_B_MODULE:
@@ -209,16 +208,14 @@ namespace drivers::clock
                 AHB1EnableClock(GPIOHEN); break;  // Enable PORT H
             case PORT_I_MODULE:
                 AHB1EnableClock(GPIOIEN); break;  // Enable PORT I
-
             case SYSCF_MODULE:
-                APB2EnableClock(SYSCF); break;  // Enable SYSCF
+                APB2EnableClock(SYSCF); break;    // Enable SYSCF
             case PWR_MODULE:
-                APB1EnableClock(PWR); break;    // Enable PWR
+                APB1EnableClock(PWR); break;      // Enable PWR
             case USB_FS_MODULE:
-                AHB2EnableClock(OTGFS); break;  // Enable USB
-
+                AHB2EnableClock(OTGFS); break;    // Enable USB
             case RNG_MODULE:
-                AHB2EnableClock(RNG); break;    // Enable RNG
+                AHB2EnableClock(RNG); break;      // Enable RNG
             case TIM6_MODULE:
                 APB1EnableClock(TIM6); break;
             case TIM7_MODULE:
@@ -236,6 +233,11 @@ namespace drivers::clock
                 APB2EnableClock(SPI5); break;
             case SPI6_MODULE:
                 APB2EnableClock(SPI6); break;
+                APB1EnableClock(TIM7);   break;
+            case DMA_1_MODULE:
+                AHB1EnableClock(DMA1EN); break;   // Enable DMA_1
+            case DMA_2_MODULE:
+                AHB1EnableClock(DMA2EN); break;   // Enable DMA_2
             /* To be continued... */
         }
     }
@@ -289,6 +291,10 @@ namespace drivers::clock
                 APB1DisableClock(TIM6); break;
             case TIM7_MODULE:
                 APB1DisableClock(TIM7); break;
+            case DMA_1_MODULE:
+                AHB1DisableClock(DMA1RST); break;  // Disable DMA_1
+            case DMA_2_MODULE:
+                AHB1DisableClock(DMA2RST); break;  // Disable DMA_1
                 /* To be continued... */
         }
     }
