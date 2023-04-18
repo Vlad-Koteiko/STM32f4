@@ -37,13 +37,8 @@ namespace devices::ad7705
     void Ad7705::WriteCommunicationReg(Registers reg, std::uint8_t readOrWrite, std::uint8_t channel)  noexcept{
         std::uint8_t buf = 0;
         buf = reg | (readOrWrite << 3) | channel;
-    //    printf("buf before: %x \n\r ", buf);
-
         LowCS();
         spi.TransmitReceiveArray(&buf, &buf, 1);
-
-    //    printf("buf after: %x \n\r ", buf);
-
         HighCS();
     }
 
@@ -80,9 +75,6 @@ namespace devices::ad7705
         reg = (clkdis << 4) | (clkdiv << 3) | our;
         WriteCommunicationReg(CLOCK, 0, 0);
         LowCS();
-
-        printf("Reg clock %x\n\r", reg);
-
         spi.TransmitReceiveArray(&reg, &reg, 1);
         HighCS();
     }
@@ -107,7 +99,7 @@ namespace devices::ad7705
     }
 
     std::uint16_t Ad7705::ReadData(Channel ch) noexcept {
-       // while (!ReadyData()) {}
+        while (!ReadyData()) {}
         WriteCommunicationReg(DATA, 1, ch);
         std::uint8_t val[2];
         LowCS();

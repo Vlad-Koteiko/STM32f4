@@ -67,9 +67,9 @@ int my_putchar(char c)
         gpioD.SetPin(drivers::port::PIN_15, drivers::port::PIN_SET);
       //  drivers::systick::SysTick::DelayMs(500);
 
-        gpioD.InitPin(drivers::port::PIN_5, drivers::port::OUTPUT);
+        gpioD.InitPin(drivers::port::PIN_5, drivers::port::INPUT);
         gpioD.InitPin(drivers::port::PIN_6, drivers::port::OUTPUT);
-        gpioD.InitPin(drivers::port::PIN_7, drivers::port::INPUT);
+        gpioD.InitPin(drivers::port::PIN_7, drivers::port::OUTPUT);
 
         //------------------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ int my_putchar(char c)
         //spi1.SetClockPolarity(drivers::spi::LOW);
         spi1.SetClockPolarity(drivers::spi::HIGH);
         spi1.SetMode(drivers::spi::MASTER);
-        spi1.SetBaudRatePrescaler(drivers::spi::DIV2);
+        spi1.SetBaudRatePrescaler(drivers::spi::DIV8);
         spi1.SetTransferBitOrder(drivers::spi::MSB_FIRST);
         spi1.SetTransferDirection(drivers::spi::FULL_DUPLEX);
         spi1.SetDataWidth(drivers::spi::BIT8);
@@ -88,21 +88,22 @@ int my_putchar(char c)
         spi1.SetStandard(drivers::spi::MOTOROLA);
         spi1.Enable();
 
-        devices::ad7705::Ad7705 adc(spi1, gpioD, drivers::port::PIN_5,
-                                    gpioD, drivers::port::PIN_6,
-                                    gpioD, drivers::port::PIN_7);
+        devices::ad7705::Ad7705 adc(spi1, gpioD, drivers::port::PIN_6,
+                                    gpioD, drivers::port::PIN_7,
+                                    gpioD, drivers::port::PIN_5);
 
 
-        adc.Init(devices::ad7705::NORMAL, devices::ad7705::G2, devices::ad7705::FIN_49152_50Hz);
+//        adc.Init(devices::ad7705::NORMAL, devices::ad7705::G2, devices::ad7705::FIN_49152_50Hz);
 //        adc.WriteClock(0, 0, devices::ad7705::FIN_49152_50Hz);
 
 
         std::uint16_t reg;
-        reg = adc.ReadClock();
+        reg = adc.ReadTestReg();
         printf("TestReg : %x\n\r", reg);
-        drivers::nvic::NVIC nvic;
-        nvic.NVIC_EnableIRQ(drivers::nvic::TIM6_DAC);
-        nvic.NVIC_EnableIRQ(drivers::nvic::USART2);
+        std::uint32_t buf;
+
+        buf = adc.ReadZeroScaleCalibrReg(devices::ad7705::AIN1_PLUS_AIN1_MINUS);
+        printf("Zero : %x\n\r", buf);
 
         drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6, std::chrono::milliseconds (1000), true);
 //        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6);
@@ -130,41 +131,16 @@ int my_putchar(char c)
             sysTick.DelayMs(500);
             sysTick.DelayMs(500);
 
-            reg = adc.ReadData(devices::ad7705::AIN1_PLUS_AIN1_MINUS);
-            printf("Ch1 : %x\n\r", reg);
-            reg = adc.ReadData(devices::ad7705::AIN2_PLUS_AIN2_MINUS);
-            printf("Ch2 : %x\n\r", reg);
-            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
+//            reg = adc.ReadData(devices::ad7705::AIN1_PLUS_AIN1_MINUS);
+//            printf("Ch1 : %x\n\r", reg);
+//            reg = adc.ReadData(devices::ad7705::AIN2_PLUS_AIN2_MINUS);
+//            printf("Ch2 : %x\n\r", reg);
+//            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
 
             sysTick.DelayMs(500);
             cout<<counter<<cout.ENDL;
         }
 
        return 0;
-    }
-
-    void EXTI0_IRQHandler()
-    {
-        drivers::exti::EXIT_RTSR exitRtsr;
-        exitRtsr.ClearFlag(exitRtsr.LINE_0);
-        counter++;
-    }
-
-    void USART2_IRQHandler()
-    {
-
-//        bufferReceve = drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
-//        uart_p_2->ClearFlag_RXNE();
-//        bufferReceve = uart_p_2->ReceiveData();
-    }
-
-void USART1_IRQHandler()
-{
-    
-}
-
-    void OTG_FS_IRQHandler()
-    {
-
     }
 

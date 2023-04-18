@@ -4,6 +4,28 @@
 #include "spi.h"
 #include "gpio.h"
 
+
+
+
+/*
+drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
+
+drivers::spi::SPI spi1(clockControl, drivers::spi::SPI1);
+spi1.RemapSPI1(drivers::spi::SPI1_PB5_PB4_PB3_PA15);
+//spi1.SetClockPhase(drivers::spi::EDGE1);
+spi1.SetClockPhase(drivers::spi::EDGE2);
+//spi1.SetClockPolarity(drivers::spi::LOW);
+spi1.SetClockPolarity(drivers::spi::HIGH);
+spi1.SetMode(drivers::spi::MASTER);
+spi1.SetBaudRatePrescaler(drivers::spi::DIV8);
+spi1.SetTransferBitOrder(drivers::spi::MSB_FIRST);
+spi1.SetTransferDirection(drivers::spi::FULL_DUPLEX);
+spi1.SetDataWidth(drivers::spi::BIT8);
+spi1.SetNSSMode(drivers::spi::HARD_OUTPUT);
+spi1.SetStandard(drivers::spi::MOTOROLA);
+spi1.Enable();
+*/
+
 namespace devices::ad7705
 {
     enum Registers : std::uint8_t
