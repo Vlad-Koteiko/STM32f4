@@ -62,6 +62,9 @@ namespace drivers::timers
             ARR  = 0x2C  // auto-reload register
         };
 
+        constexpr std::uint16_t getPrescaller(std::uint32_t, std::uint32_t) const noexcept;
+        constexpr std::uint16_t getPreload(std::uint32_t, std::uint32_t) const noexcept;
+
     public:
 
         BasicTimers(drivers::clock::ClockControl &curClock, BASIC_TIMERS timer);

@@ -12,45 +12,47 @@ namespace drivers::port
         switch (port) {
             case PORTA:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIOAEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_A_MODULE);
                 break;
             }
             case PORTB:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIOBEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_B_MODULE);
+                break;
             }
             case PORTC:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIOCEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_C_MODULE);
+                break;
             }
             case PORTD:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIODEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_D_MODULE);
                 break;
             }
             case PORTE:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIOEEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_E_MODULE);
                 break;
             }
             case PORTF:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIOFEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_F_MODULE);
                 break;
             }
             case PORTG:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIOGEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_G_MODULE);
                 break;
             }
             case PORTH:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIOHEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_H_MODULE);
                 break;
             }
             case PORTI:
             {
-                clockControl.AHB1EnableClock(drivers::clock::GPIOIEN);
+                clockControl.EnablePeripherals(drivers::clock::PORT_I_MODULE);
                 break;
             }
         }

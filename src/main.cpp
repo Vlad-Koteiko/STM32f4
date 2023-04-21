@@ -19,8 +19,8 @@ drivers::usart::USART *uart_p_2;
 
         drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
         libs::MWR::write_register(0xE000ED88, 0xF00000);
-        drivers::port::GPIO gpioD(clockControl, drivers::port::PORTD);
-        portdRef = &gpioD;
+        drivers::port::GPIO gpioA(clockControl, drivers::port::PORTA);
+        portdRef = &gpioA;
         //Init(clockControl);
         //-----------------------------------------USART INIT---------------------------------
         drivers::usart::USART usart2(clockControl, drivers::usart::USART2, drivers::usart::USART2_Remap::U2_TX_PA2_RX_PA3);
@@ -29,29 +29,30 @@ drivers::usart::USART *uart_p_2;
         char test[20] = "Test UART main\n\r";
         usart2.TransmitString(test, 16);
         libs::Cout cout(usart2);
+
         cout<<"Test cout"<<cout.ENDL;
         std::uint32_t  x = clockControl.GetFreqAPB1();
         cout<<x<<cout.ENDL;
         cout<<clockControl.GetFreqAPB2()<<cout.ENDL;
         cout<<clockControl.GetFreqHCLK()<<cout.ENDL;
 
-        gpioD.InitPin(drivers::port::PIN_12, drivers::port::OUTPUT);
-        gpioD.InitPin(drivers::port::PIN_13, drivers::port::OUTPUT);
-        gpioD.InitPin(drivers::port::PIN_14, drivers::port::OUTPUT);
-        gpioD.InitPin(drivers::port::PIN_15, drivers::port::OUTPUT);
+        gpioA.InitPin(drivers::port::PIN_1, drivers::port::OUTPUT);
+//        gpioD.InitPin(drivers::port::PIN_13, drivers::port::OUTPUT);
+//        gpioD.InitPin(drivers::port::PIN_14, drivers::port::OUTPUT);
+//        gpioD.InitPin(drivers::port::PIN_15, drivers::port::OUTPUT);
 
-        gpioD.SetPin(drivers::port::PIN_12, drivers::port::PIN_SET);
-        gpioD.SetPin(drivers::port::PIN_13, drivers::port::PIN_SET);
-        gpioD.SetPin(drivers::port::PIN_14, drivers::port::PIN_SET);
-        gpioD.SetPin(drivers::port::PIN_15, drivers::port::PIN_SET);
-        clockControl.mDelay(500);
+        gpioA.SetPin(drivers::port::PIN_1, drivers::port::PIN_SET);
+//        gpioD.SetPin(drivers::port::PIN_13, drivers::port::PIN_SET);
+//        gpioD.SetPin(drivers::port::PIN_14, drivers::port::PIN_SET);
+//        gpioD.SetPin(drivers::port::PIN_15, drivers::port::PIN_SET);
+//        clockControl.mDelay(500);
 
         //------------------------------------------------------------------------------------
         drivers::nvic::NVIC nvic;
         nvic.NVIC_EnableIRQ(drivers::nvic::TIM6_DAC);
         nvic.NVIC_EnableIRQ(drivers::nvic::USART2);
 
-        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6, std::chrono::milliseconds (1000), true);
+        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6, std::chrono::milliseconds(1000), true);
 //        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6);
 //        timer6.EnableUpdateEvent();
 //        timer6.EnableInterrupt();
@@ -72,7 +73,7 @@ drivers::usart::USART *uart_p_2;
 //            clockControl.mDelay(500);
 //            gpioD.TogglePin(drivers::port::PIN_14);
 //            clockControl.mDelay(500);
-            gpioD.TogglePin(drivers::port::PIN_15);
+            gpioA.TogglePin(drivers::port::PIN_1);
             cout << "bufferReceve = " << bufferReceve << cout.ENDL;
 
             clockControl.mDelay(500);
