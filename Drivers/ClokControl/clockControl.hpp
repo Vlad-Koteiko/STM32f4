@@ -18,211 +18,204 @@ namespace drivers :: clock
         FREQ_48000000  = 48000000,
     };
 
-    enum PrescalerAHB : std::uint8_t
-    {
-        AHB_OFF            = 0,      // system clock not divided
-        AHB_DIVISOR_BY_2   = 0b1000, // system clock divided by 2
-        AHB_DIVISOR_BY_4   = 0b1001, // system clock divided by 4
-        AHB_DIVISOR_BY_8   = 0b1010, // system clock divided by 8
-        AHB_DIVISOR_BY_16  = 0b1011, // system clock divided by 16
-        AHB_DIVISOR_BY_64  = 0b1100, // system clock divided by 64
-        AHB_DIVISOR_BY_128 = 0b1101, // system clock divided by 128
-        AHB_DIVISOR_BY_256 = 0b1110, // system clock divided by 256
-        AHB_DIVISOR_BY_512 = 0b1111, // system clock divided by 512
-    };
+    namespace constants {
 
-    enum PrescalerAPB : std::uint8_t
-    {
-        APB_OFF            = 0,     // system clock not divided
-        APB_DIVISOR_BY_2   = 0b100, // system clock divided by 2
-        APB_DIVISOR_BY_4   = 0b101, // system clock divided by 4
-        APB_DIVISOR_BY_8   = 0b110, // system clock divided by 8
-        APB_DIVISOR_BY_16  = 0b111, // system clock divided by 16
-    };
+        enum PrescalerAHB : std::uint8_t {
+            AHB_OFF = 0,      // system clock not divided
+            AHB_DIVISOR_BY_2 = 0b1000, // system clock divided by 2
+            AHB_DIVISOR_BY_4 = 0b1001, // system clock divided by 4
+            AHB_DIVISOR_BY_8 = 0b1010, // system clock divided by 8
+            AHB_DIVISOR_BY_16 = 0b1011, // system clock divided by 16
+            AHB_DIVISOR_BY_64 = 0b1100, // system clock divided by 64
+            AHB_DIVISOR_BY_128 = 0b1101, // system clock divided by 128
+            AHB_DIVISOR_BY_256 = 0b1110, // system clock divided by 256
+            AHB_DIVISOR_BY_512 = 0b1111, // system clock divided by 512
+        };
 
-    enum CR_poz : std::uint8_t
-    {
-        HSION     = 0, // Internal high-speed clock enable
-        HSIRDY    = 1, // Internal high-speed clock ready flag
-        HSITRIM   = 3, // Internal high-speed clock trimming [7:3]
-        HSICAL    = 8, // Internal high-speed clock calibration [15:8]
-        HSEON     = 16, // HSE clock enable
-        HSERDY    = 17, // HSE clock ready flag
-        HSEBYP    = 18, // HSE clock bypass
-        CSSON     = 19, // Clock security system enable
-        PLLON     = 24, // Main PLL (PLL) enable
-        PLLRDY    = 25, // Main PLL (PLL) clock ready flag
-        PLLI2SON  = 26, // PLLI2S enable
-        PLLI2SRDY = 27, // PLLI2S clock ready flag
-        PLLISAION = 28, // PLLSAI enable
-        PLLSAIRDY = 29, // PLLSAI clock ready flag
-    };
+        enum PrescalerAPB : std::uint8_t {
+            APB_OFF = 0,     // system clock not divided
+            APB_DIVISOR_BY_2 = 0b100, // system clock divided by 2
+            APB_DIVISOR_BY_4 = 0b101, // system clock divided by 4
+            APB_DIVISOR_BY_8 = 0b110, // system clock divided by 8
+            APB_DIVISOR_BY_16 = 0b111, // system clock divided by 16
+        };
 
-    enum PLLCFGR_poz : std::uint8_t
-    {
-        PLLM = 0,
-        PLLN = 6,
-        PLLP = 16,
-        PLLSRC = 22,
-        PLLQ = 24
-    };
+        enum CR_poz : std::uint8_t {
+            HSION = 0, // Internal high-speed clock enable
+            HSIRDY = 1, // Internal high-speed clock ready flag
+            HSITRIM = 3, // Internal high-speed clock trimming [7:3]
+            HSICAL = 8, // Internal high-speed clock calibration [15:8]
+            HSEON = 16, // HSE clock enable
+            HSERDY = 17, // HSE clock ready flag
+            HSEBYP = 18, // HSE clock bypass
+            CSSON = 19, // Clock security system enable
+            PLLON = 24, // Main PLL (PLL) enable
+            PLLRDY = 25, // Main PLL (PLL) clock ready flag
+            PLLI2SON = 26, // PLLI2S enable
+            PLLI2SRDY = 27, // PLLI2S clock ready flag
+            PLLISAION = 28, // PLLSAI enable
+            PLLSAIRDY = 29, // PLLSAI clock ready flag
+        };
 
-    enum CFGR_poz : std::uint8_t
-    {
-        SW      = 0,  // System clock switch [1:0]
-        SWS     = 2,  // System clock switch status [3:2]
-        HPRE    = 4,  //AHB prescaler [7:4]
-        PPRE1   = 10, // APB Low speed prescaler (APB1) [12:10]
-        PPRE2   = 13, // APB high-speed prescaler (APB2) [15:13]
-        RTCPRE  = 16, // HSE division factor for RTC clock [20:16]
-        MCO1    = 21, // Microcontroller clock output 1 [22:21]
-        I2SSRC  = 23, // I2S clock selection
-        MCO1PRE = 24, // MCO1 prescaler [26:24]
-        MCO2PRE = 27, // MCO2 prescaler [29:27]
-        MCO2    = 30, // Microcontroller clock output 2 [31:30]
-    };
+        enum PLLCFGR_poz : std::uint8_t {
+            PLLM = 0,
+            PLLN = 6,
+            PLLP = 16,
+            PLLSRC = 22,
+            PLLQ = 24
+        };
 
-    enum CIR_poz
-    {
-        LSIRDYF     = 0, // LSI ready interrupt flag
-        LSERDYF     = 1, // LSE ready interrupt flag
-        HSIRDYF     = 2, // HSI ready interrupt flag
-        HSERDYF     = 3, // HSE ready interrupt flag
-        PLLRDYF     = 4, // Main PLL (PLL) ready interrupt flag
-        PLLI2SRDYF  = 5, // PLLI2S ready interrupt flag
-        PLLSAIRDYF  = 6, // PLLSAI Ready Interrupt flag
-        CSSF        = 7, // Clock security system interrupt flag
-        LSIRDYIE    = 8, // LSI ready interrupt enable
-        LSERDYIE    = 9, // LSE ready interrupt enable
-        HSIRDYIE    = 10, // HSI ready interrupt enable
-        HSERDYIE    = 11, // HSE ready interrupt enable
-        PLLRDYIE    = 12, // Main PLL (PLL) ready interrupt enable
-        PLLI2SRDYIE = 13, // PLLI2S ready interrupt enable
-        PLLSAIRDYIE = 14, // PLLSAI Ready Interrupt Enable
-        LSIRDYC     = 16, // LSI ready interrupt clear
-        LSERDYC     = 17, // LSE ready interrupt clear
-        HSIRDYC     = 18, // HSI ready interrupt clear
-        HSERDYC     = 19, // HSE ready interrupt clear
-        PLLRDYC     = 20, // Main PLL(PLL) ready interrupt clear
-        PLLI2SRDYC  = 21, // PLLI2S ready interrupt clear
-        PLLSAIRDYC  = 22, // PLLSAI Ready Interrupt Clear
-        CSSC        = 23, // Clock security system interrupt clear
-    };
+        enum CFGR_poz : std::uint8_t {
+            SW = 0,  // System clock switch [1:0]
+            SWS = 2,  // System clock switch status [3:2]
+            HPRE = 4,  //AHB prescaler [7:4]
+            PPRE1 = 10, // APB Low speed prescaler (APB1) [12:10]
+            PPRE2 = 13, // APB high-speed prescaler (APB2) [15:13]
+            RTCPRE = 16, // HSE division factor for RTC clock [20:16]
+            MCO1 = 21, // Microcontroller clock output 1 [22:21]
+            I2SSRC = 23, // I2S clock selection
+            MCO1PRE = 24, // MCO1 prescaler [26:24]
+            MCO2PRE = 27, // MCO2 prescaler [29:27]
+            MCO2 = 30, // Microcontroller clock output 2 [31:30]
+        };
 
-    enum BDCR_poz : std::uint8_t
-    {
-        LSEON  = 0,  // External low-speed oscillator enable
-        LSERDY = 1,  // External low-speed oscillator ready
-        LSEBYP = 2,  // External low-speed oscillator bypass
-        RTCSEL = 8,  // RTC clock source selection [9:8]
-        RTCEN  = 15, // RTC clock enable
-        BDRST  = 16  // Backup domain software reset
-    };
+        enum CIR_poz {
+            LSIRDYF = 0, // LSI ready interrupt flag
+            LSERDYF = 1, // LSE ready interrupt flag
+            HSIRDYF = 2, // HSI ready interrupt flag
+            HSERDYF = 3, // HSE ready interrupt flag
+            PLLRDYF = 4, // Main PLL (PLL) ready interrupt flag
+            PLLI2SRDYF = 5, // PLLI2S ready interrupt flag
+            PLLSAIRDYF = 6, // PLLSAI Ready Interrupt flag
+            CSSF = 7, // Clock security system interrupt flag
+            LSIRDYIE = 8, // LSI ready interrupt enable
+            LSERDYIE = 9, // LSE ready interrupt enable
+            HSIRDYIE = 10, // HSI ready interrupt enable
+            HSERDYIE = 11, // HSE ready interrupt enable
+            PLLRDYIE = 12, // Main PLL (PLL) ready interrupt enable
+            PLLI2SRDYIE = 13, // PLLI2S ready interrupt enable
+            PLLSAIRDYIE = 14, // PLLSAI Ready Interrupt Enable
+            LSIRDYC = 16, // LSI ready interrupt clear
+            LSERDYC = 17, // LSE ready interrupt clear
+            HSIRDYC = 18, // HSI ready interrupt clear
+            HSERDYC = 19, // HSE ready interrupt clear
+            PLLRDYC = 20, // Main PLL(PLL) ready interrupt clear
+            PLLI2SRDYC = 21, // PLLI2S ready interrupt clear
+            PLLSAIRDYC = 22, // PLLSAI Ready Interrupt Clear
+            CSSC = 23, // Clock security system interrupt clear
+        };
 
-    enum RTC_Source : std::uint8_t
-    {
-        NO_CLOCK,
-        LSE,
-        LSI,
-        HSE
-    };
+        enum BDCR_poz : std::uint8_t {
+            LSEON = 0,  // External low-speed oscillator enable
+            LSERDY = 1,  // External low-speed oscillator ready
+            LSEBYP = 2,  // External low-speed oscillator bypass
+            RTCSEL = 8,  // RTC clock source selection [9:8]
+            RTCEN = 15, // RTC clock enable
+            BDRST = 16  // Backup domain software reset
+        };
 
-    enum CSR_poz : std::uint8_t
-    {
-        LSION    = 0,  // Internal low-speed oscillator enable
-        LSIRDY   = 1,  // Internal low-speed oscillator ready
-        RMVF     = 24, // Remove reset flag
-        BORRSTF  = 25, // BOR reset flag
-        PINRSTF  = 26, // PIN reset flag
-        PORRSTF  = 27, // POR/PDR reset flag
-        SFTRSTF  = 28, // Software reset flag
-        IWDGRSTF = 29, // Independent watchdog reset flag
-        WWDGRSTF = 30, // Window watchdog reset flag
-        LPWRRSTF = 31  // Low-power reset flag
-    };
+        enum RTC_Source : std::uint8_t {
+            NO_CLOCK,
+            LSE,
+            LSI,
+            HSE
+        };
 
-    enum  PERIPHERALS : std::uint8_t
-    {
-        // RCC AHB1 peripheral clock register
-        PORT_A_MODULE      = 0,
-        PORT_B_MODULE      = 1,
-        PORT_C_MODULE      = 2,
-        PORT_D_MODULE      = 3,
-        PORT_E_MODULE      = 4,
-        PORT_F_MODULE      = 5,
-        PORT_G_MODULE      = 6,
-        PORT_H_MODULE      = 7,
-        PORT_I_MODULE      = 8,
-        CRC_MODULE         = 12,
-        BKPSRAM_MODULE     = 18,
-        CCMDATARAM_MODULE  = 20,
-        DMA1_MODULE        = 21,
-        DMA2_MODULE        = 22,
-        ETHMAC_MODULE      = 25,
-        ETHMACTX_MODULE    = 26,
-        ETHMACRX_MODULE    = 27,
-        ETHMACPTP_MODULE   = 28,
-        OTGHS_MODULE       = 29,
-        OTGHSULPI_MODULE   = 30,
+        enum CSR_poz : std::uint8_t {
+            LSION = 0,  // Internal low-speed oscillator enable
+            LSIRDY = 1,  // Internal low-speed oscillator ready
+            RMVF = 24, // Remove reset flag
+            BORRSTF = 25, // BOR reset flag
+            PINRSTF = 26, // PIN reset flag
+            PORRSTF = 27, // POR/PDR reset flag
+            SFTRSTF = 28, // Software reset flag
+            IWDGRSTF = 29, // Independent watchdog reset flag
+            WWDGRSTF = 30, // Window watchdog reset flag
+            LPWRRSTF = 31  // Low-power reset flag
+        };
 
-        // RCC AHB2 peripheral clock enable register
-        DCMI_MODULE        = 0 + 32,
-        CRYP_MODULE        = 4 + 32,
-        HASH_MODULE        = 5 + 32,
-        RNG_MODULE         = 6 + 32,
-        OTGFS_MODULE       = 7 + 32,
+        enum PERIPHERALS : std::uint8_t {
+            // RCC AHB1 peripheral clock register
+            PORT_A_MODULE = 0,
+            PORT_B_MODULE = 1,
+            PORT_C_MODULE = 2,
+            PORT_D_MODULE = 3,
+            PORT_E_MODULE = 4,
+            PORT_F_MODULE = 5,
+            PORT_G_MODULE = 6,
+            PORT_H_MODULE = 7,
+            PORT_I_MODULE = 8,
+            CRC_MODULE = 12,
+            BKPSRAM_MODULE = 18,
+            CCMDATARAM_MODULE = 20,
+            DMA1_MODULE = 21,
+            DMA2_MODULE = 22,
+            ETHMAC_MODULE = 25,
+            ETHMACTX_MODULE = 26,
+            ETHMACRX_MODULE = 27,
+            ETHMACPTP_MODULE = 28,
+            OTGHS_MODULE = 29,
+            OTGHSULPI_MODULE = 30,
 
-        // RCC APB1 peripheral clock enable register
-        TIM2_MODULE        = 0  + 64,
-        TIM3_MODULE        = 1  + 64,
-        TIM4_MODULE        = 2  + 64,
-        TIM5_MODULE        = 3  + 64,
-        TIM6_MODULE        = 4  + 64,
-        TIM7_MODULE        = 5  + 64,
-        TIM12_MODULE       = 6  + 64,
-        TIM13_MODULE       = 7  + 64,
-        TIM14_MODULE       = 8  + 64,
-        WWDG_MODULE        = 11 + 64,
-        SPI2_MODULE        = 14 + 64,
-        SPI3_MODULE        = 15 + 64,
-        USART2_MODULE      = 17 + 64,
-        USART3_MODULE      = 18 + 64,
-        UART4_MODULE       = 19 + 64,
-        UART5_MODULE       = 20 + 64,
-        I2C1_MODULE        = 21 + 64,
-        I2C2_MODULE        = 22 + 64,
-        I2C3_MODULE        = 23 + 64,
-        CAN1_MODULE        = 25 + 64,
-        CAN2_MODULE        = 26 + 64,
-        PWR_MODULE         = 28 + 64,
-        DAC_MODULE         = 29 + 64,
-        UART7_MODULE       = 30 + 64,
-        UART8_MODULE       = 31 + 64,
+            // RCC AHB2 peripheral clock enable register
+            DCMI_MODULE = 0 + 32,
+            CRYP_MODULE = 4 + 32,
+            HASH_MODULE = 5 + 32,
+            RNG_MODULE = 6 + 32,
+            OTGFS_MODULE = 7 + 32,
 
-        // RCC APB2 peripheral clock enable register
-        TIM1_MODULE        = 0  + 96,
-        TIM8_MODULE        = 1  + 96,
-        USART1_MODULE      = 4  + 96,
-        USART6_MODULE      = 5  + 96,
-        ADC1_MODULE        = 8  + 96,
-        ADC2_MODULE        = 9  + 96,
-        ADC3_MODULE        = 10 + 96,
-        SDIO_MODULE        = 11 + 96,
-        SPI1_MODULE        = 12 + 96,
-        SPI4_MODULE        = 13 + 96,
-        SYSCF_MODULE       = 14 + 96,
-        TIM9_MODULE        = 16 + 96,
-        TIM10_MODULE       = 17 + 96,
-        TIM11_MODULE       = 18 + 96,
-        SPI5_MODULE        = 20 + 96,
-        SPI6_MODULE        = 21 + 96,
-        SAI1_MODULE        = 22 + 96,
-        LTDC_MODULE        = 26 + 96
-    };
+            // RCC APB1 peripheral clock enable register
+            TIM2_MODULE = 0 + 64,
+            TIM3_MODULE = 1 + 64,
+            TIM4_MODULE = 2 + 64,
+            TIM5_MODULE = 3 + 64,
+            TIM6_MODULE = 4 + 64,
+            TIM7_MODULE = 5 + 64,
+            TIM12_MODULE = 6 + 64,
+            TIM13_MODULE = 7 + 64,
+            TIM14_MODULE = 8 + 64,
+            WWDG_MODULE = 11 + 64,
+            SPI2_MODULE = 14 + 64,
+            SPI3_MODULE = 15 + 64,
+            USART2_MODULE = 17 + 64,
+            USART3_MODULE = 18 + 64,
+            UART4_MODULE = 19 + 64,
+            UART5_MODULE = 20 + 64,
+            I2C1_MODULE = 21 + 64,
+            I2C2_MODULE = 22 + 64,
+            I2C3_MODULE = 23 + 64,
+            CAN1_MODULE = 25 + 64,
+            CAN2_MODULE = 26 + 64,
+            PWR_MODULE = 28 + 64,
+            DAC_MODULE = 29 + 64,
+            UART7_MODULE = 30 + 64,
+            UART8_MODULE = 31 + 64,
 
-    constexpr auto countFreqHCLK =         [](const Frequency& f) constexpr noexcept {return f;};
-    constexpr auto countSystemCoreClock =  [](const Frequency& f) constexpr noexcept {return f;};
-    constexpr auto countFreqAPB1 =         [](const Frequency& f) constexpr noexcept {
+            // RCC APB2 peripheral clock enable register
+            TIM1_MODULE = 0 + 96,
+            TIM8_MODULE = 1 + 96,
+            USART1_MODULE = 4 + 96,
+            USART6_MODULE = 5 + 96,
+            ADC1_MODULE = 8 + 96,
+            ADC2_MODULE = 9 + 96,
+            ADC3_MODULE = 10 + 96,
+            SDIO_MODULE = 11 + 96,
+            SPI1_MODULE = 12 + 96,
+            SPI4_MODULE = 13 + 96,
+            SYSCF_MODULE = 14 + 96,
+            TIM9_MODULE = 16 + 96,
+            TIM10_MODULE = 17 + 96,
+            TIM11_MODULE = 18 + 96,
+            SPI5_MODULE = 20 + 96,
+            SPI6_MODULE = 21 + 96,
+            SAI1_MODULE = 22 + 96,
+            LTDC_MODULE = 26 + 96
+        };
+    }
+
+    constexpr auto countFreqHCLK =         [](const Frequency& f) constexpr noexcept -> std::uint32_t {return f;};
+    constexpr auto countSystemCoreClock =  [](const Frequency& f) constexpr noexcept -> std::uint32_t {return f;};
+    constexpr auto countFreqAPB1 =         [](const Frequency& f) constexpr noexcept -> std::uint32_t {
         std::uint32_t temp = f;
         switch (f) {
             case FREQ_48000000:
@@ -242,7 +235,7 @@ namespace drivers :: clock
                 break;
         }return temp;};
 
-    constexpr auto countFreqAPB2 =         [](const Frequency& f) constexpr noexcept {
+    constexpr auto countFreqAPB2 =         [](const Frequency& f) constexpr noexcept -> std::uint32_t {
         std::uint32_t temp = f;
         switch (f) {
             case FREQ_48000000:
@@ -261,6 +254,7 @@ namespace drivers :: clock
                 temp = temp / 2;
                 break;
         }return temp;};
+
 
     class ClockControl
     {
@@ -305,18 +299,25 @@ namespace drivers :: clock
             CALIB = baseRegisterSysTick + 0x0C    // Offset: 0x00C (R/ )  SysTick Calibration Register
         };
 
-         std::uint32_t  systemCoreClock; //Hz
-         std::uint32_t  freqAPB1;        //Hz
-         std::uint32_t  freqAPB2;        //Hz
-         std::uint32_t  freqHCLK;        //Hz
+        class Variables
+        {
+        public:
+           constexpr Variables(const Frequency& f) : systemCoreClock(countSystemCoreClock(f)), freqAPB1(countFreqAPB1(f)),
+                                                     freqAPB2(countFreqAPB2(f)),               freqHCLK(countFreqHCLK(f))
+            {};
+
+            std::uint32_t  systemCoreClock; //Hz
+            std::uint32_t  freqAPB1;        //Hz
+            std::uint32_t  freqAPB2;        //Hz
+            std::uint32_t  freqHCLK;        //Hz
+        };
+
+        Variables variables;
 
         constexpr std::uint8_t getPeripheralsNumber(const std::uint8_t& ,const std::uint8_t&) const noexcept;
 
-//        constexpr void setFrequency(const drivers::clock::Frequency &frequency, std::uint8_t prescalerApb1,
-//                                    std::uint8_t prescalerApb2) noexcept;
-
-        void setBaseConfig(std::array<std::uint8_t,4>, const PrescalerAHB&, const PrescalerAPB&,
-                           const PrescalerAPB&) noexcept;
+        void setBaseConfig(std::array<std::uint8_t,4>, const constants::PrescalerAHB&, const constants::PrescalerAPB&,
+                           const constants::PrescalerAPB&) noexcept;
 
         void AHB1EnableClock( const std::uint8_t &typeEnableClock)  const noexcept;
         void AHB1DisableClock(const std::uint8_t &disableClock)     const noexcept;
@@ -328,18 +329,63 @@ namespace drivers :: clock
         void APB2DisableClock(const std::uint8_t &disableClock)     const noexcept;
 
     public:
-//        ClockControl();
-        ClockControl(const Frequency& f);
 
-         [[nodiscard]] std::uint32_t GetFreqHCLK() const noexcept;
-         [[nodiscard]] std::uint32_t GetFreqSystemCoreClock() const noexcept;
-         [[nodiscard]] std::uint32_t GetFreqAPB1() const noexcept;
-         [[nodiscard]] std::uint32_t GetFreqAPB2()  const noexcept;
+        ClockControl() = delete;
+
+        constexpr ClockControl(const Frequency& f) : variables(f)
+        {
+            drivers::flash::Flash flash;
+            flash.SetLatency(5);
+            while (flash.GetLatency() != 5)
+            {}
+
+            HSE_Enable();
+
+            while (!HSE_IsReady())
+            {}
+
+            HSI_Disable();
+
+            switch (f) {
+                case FREQ_48000000:
+                    setBaseConfig({96,4,0,4}, constants::AHB_DIVISOR_BY_2, constants::APB_DIVISOR_BY_2, constants::APB_OFF);
+                    break;
+
+                case FREQ_50000000:
+                    setBaseConfig({50,4,0,4},constants::AHB_OFF,constants::APB_DIVISOR_BY_2,constants::APB_DIVISOR_BY_2);
+                    break;
+
+                case FREQ_100000000:
+                    setBaseConfig({100,4,0,4},constants::AHB_OFF,constants::APB_DIVISOR_BY_4,constants::APB_DIVISOR_BY_2);
+                    break;
+
+                case FREQ_168000000:
+                    setBaseConfig({168,4,0,7},constants::AHB_OFF,constants::APB_DIVISOR_BY_4,constants::APB_DIVISOR_BY_2);
+                    break;
+            }
+            InitTickSysTick(variables.freqHCLK,1000);
+        }
+
+        constexpr std::uint32_t GetFreqSystemCoreClock() const noexcept  {
+            return variables.systemCoreClock;
+        }
+
+        constexpr std::uint32_t GetFreqHCLK()  const noexcept{
+            return variables.freqHCLK;
+        }
+
+        constexpr std::uint32_t GetFreqAPB1() const noexcept  {
+            return variables.freqAPB1;
+        }
+
+        constexpr std::uint32_t GetFreqAPB2()  const noexcept {
+            return variables.freqAPB2;
+        }
 
         void SetCalibTrimming(std::uint32_t value) const noexcept;
-        void SetAHBPrescaler(const PrescalerAHB& prescaler) const noexcept;
-        void SetAPB1Prescaler(const PrescalerAPB& prescaler) const noexcept;
-        void SetAPB2Prescaler(const PrescalerAPB& prescaler) const noexcept;
+        void SetAHBPrescaler(const constants::PrescalerAHB& prescaler) const noexcept;
+        void SetAPB1Prescaler(const constants::PrescalerAPB& prescaler) const noexcept;
+        void SetAPB2Prescaler(const constants::PrescalerAPB& prescaler) const noexcept;
         void SetSysClkSource(std::uint32_t value) const noexcept;
         void InitTickSysTick(std::uint32_t HCLKFrequency, std::uint32_t ticks) const noexcept;
 
@@ -379,8 +425,8 @@ namespace drivers :: clock
         void PLL_SetSource(std::uint8_t bit) const noexcept;
         void mDelay(std::uint32_t Delay) const noexcept;
 
-        void EnablePeripherals(const  PERIPHERALS &name) const noexcept;
-        void DisablePeripherals(const PERIPHERALS &name) const noexcept;
+        void EnablePeripherals(const  constants::PERIPHERALS &name) const noexcept;
+        void DisablePeripherals(const constants::PERIPHERALS &name) const noexcept;
 
         /**
          * Включить внутренний генератор
@@ -420,7 +466,7 @@ namespace drivers :: clock
         void LSE_SetBypass() const noexcept;
         void LSE_ResetBypass() const noexcept;
         [[nodiscard]] bool LSE_GetBypass() const noexcept;
-        void SetSourceClock(RTC_Source s) const noexcept;
+        void SetSourceClock(constants::RTC_Source s) const noexcept;
         void RTC_Enable() const noexcept;
         void RTC_Disable() const noexcept;
         [[nodiscard]] bool RTC_GetStatus() const noexcept;

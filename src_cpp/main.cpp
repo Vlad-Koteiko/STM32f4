@@ -6,11 +6,11 @@
 #include "cout.hpp"
 #include "clockControl.hpp"
 #include "gpio.h"
-#include "usart.h"
+#include "usart.hpp"
 #include "nvic.h"
 #include "syscfg.h"
 #include "exti.h"
-#include "main.h"
+#include "main.hpp"
 
 
     std::uint32_t counter = 0;

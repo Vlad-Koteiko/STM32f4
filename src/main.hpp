@@ -9,16 +9,18 @@
 #include "cout.hpp"
 #include "clockControl.hpp"
 #include "gpio.h"
-#include "usart.h"
+#include "usart.hpp"
 #include "nvic.h"
 #include "syscfg.h"
 #include "exti.h"
 #include "iwdg.h"
-#include "dma.h"
+#include "dma.hpp"
+#include "basictimer.hpp"
 
-void EXTI0_IRQHandler();
-void USART1_IRQHandler();
-void USART2_IRQHandler();
-void OTG_FS_IRQHandler();
-void TIM6_DAC_IRQHandler();
+class Bass
+{
+public:
+    void main() noexcept;
+};
+
 #endif

@@ -4,7 +4,7 @@
 namespace drivers::rng
 {
     RNG::RNG(drivers::clock::ClockControl &clockControl) : clockControl(clockControl){
-        clockControl.EnablePeripherals(drivers::clock::RNG_MODULE);
+        clockControl.EnablePeripherals(drivers::clock::constants::RNG_MODULE);
     }
 
     void RNG::Enable() noexcept {

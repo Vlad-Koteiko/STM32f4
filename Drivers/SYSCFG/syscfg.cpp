@@ -6,7 +6,7 @@
 namespace drivers::syscfg {
 
     SYSCFG::SYSCFG(drivers::clock::ClockControl &clockControl) : clockControl(clockControl) {
-        clockControl.EnablePeripherals(drivers::clock::SYSCF_MODULE);
+        clockControl.EnablePeripherals(drivers::clock::constants::SYSCF_MODULE);
     }
 
     void SYSCFG::SetMemoryMap(MEM_MODE mode) {

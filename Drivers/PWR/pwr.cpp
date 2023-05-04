@@ -4,7 +4,7 @@
 namespace drivers::pwr
 {
     PWR::PWR(drivers::clock::ClockControl &clockControl) : clockControl(clockControl){
-        clockControl.EnablePeripherals(drivers::clock::PWR_MODULE);
+        clockControl.EnablePeripherals(drivers::clock::constants::PWR_MODULE);
     }
 
     void PWR::SetLPDS() {

@@ -4,58 +4,9 @@
 #include "clockControl.hpp"
 namespace drivers::clock
 {
-    ClockControl::ClockControl(const Frequency& f) : systemCoreClock(countSystemCoreClock(f)), freqAPB1(countFreqAPB1(f)),
-                                                     freqAPB2(countFreqAPB2(f)),               freqHCLK(countFreqHCLK(f))
-    {
-        drivers::flash::Flash flash;
-        flash.SetLatency(5);
-        while (flash.GetLatency() != 5)
-        {}
-
-        HSE_Enable();
-        while (!HSE_IsReady())
-        {}
-
-        HSI_Disable();
-
-        switch (f) {
-            case FREQ_48000000:
-//                setFrequency(FREQ_48000000,2,1);
-                setBaseConfig({96,4,0,4},AHB_DIVISOR_BY_2,APB_DIVISOR_BY_2,APB_OFF);
-                break;
-
-            case FREQ_50000000:
-//                setFrequency(FREQ_50000000,2,2);
-                setBaseConfig({50,4,0,4},AHB_OFF,APB_DIVISOR_BY_2,APB_DIVISOR_BY_2);
-                break;
-
-            case FREQ_100000000:
-//                setFrequency(FREQ_100000000,4,2);
-                setBaseConfig({100,4,0,4},AHB_OFF,APB_DIVISOR_BY_4,APB_DIVISOR_BY_2);
-                break;
-
-            case FREQ_168000000:
-//                setFrequency(FREQ_168000000,4,2);
-                setBaseConfig({168,4,0,7},AHB_OFF,APB_DIVISOR_BY_4,APB_DIVISOR_BY_2);
-                break;
-        }
-        InitTickSysTick(freqHCLK,1000);
-
-
-    }
-//    constexpr void ClockControl::setFrequency(const drivers::clock::Frequency &frequency,
-//                                    std::uint8_t prescalerApb1,
-//                                    std::uint8_t prescalerApb2) noexcept {
-//
-//        freqHCLK = frequency;
-//        systemCoreClock = freqHCLK;
-//        freqAPB1 = frequency / prescalerApb1;
-//        freqAPB2 = frequency / prescalerApb2;
-//    }
-
     void ClockControl::setBaseConfig(std::array<std::uint8_t, 4> array,
-                                     const drivers::clock::PrescalerAHB &prescalerAhb, const drivers::clock::PrescalerAPB &prescalerApb1,
-                                     const drivers::clock::PrescalerAPB &prescalerApb2) noexcept {
+                                     const drivers::clock::constants::PrescalerAHB &prescalerAhb, const drivers::clock::constants::PrescalerAPB &prescalerApb1,
+                                     const drivers::clock::constants::PrescalerAPB &prescalerApb2) noexcept {
 
         PLL_Config_Sys(array[0],array[1],array[2],array[3]);
         while (PLL_IsReady())
@@ -66,41 +17,25 @@ namespace drivers::clock
         SetSysClkSource(2);
     }
 
-    [[nodiscard]] std::uint32_t ClockControl::GetFreqSystemCoreClock() const noexcept  {
-        return systemCoreClock;
-    }
-
-    [[nodiscard]] std::uint32_t ClockControl::GetFreqHCLK()  const noexcept{
-        return freqHCLK;
-    }
-
-    [[nodiscard]] std::uint32_t ClockControl::GetFreqAPB1() const noexcept  {
-        return freqAPB1;
-    }
-
-    [[nodiscard]] std::uint32_t ClockControl::GetFreqAPB2()  const noexcept {
-        return freqAPB2;
-    }
-
    void ClockControl::SetCalibTrimming(std::uint32_t value) const noexcept
     {
         libs::MWR::modifyResetRegister(RegisterRCC::CR,0xF8);              // clear internal high-speed clock trimming
         libs::MWR::modifySetRegister(RegisterRCC::CR,(value << 3));
     }
 
-    void ClockControl::SetAHBPrescaler(const PrescalerAHB &prescaler) const noexcept
+    void ClockControl::SetAHBPrescaler(const constants::PrescalerAHB &prescaler) const noexcept
     {
         libs::MWR::modifyResetRegister(RegisterRCC::CFGR,0xF0);            // AHB prescaler clear
         libs::MWR::modifySetRegister(RegisterRCC::CFGR,(prescaler << 4));
     }
 
-    void ClockControl::SetAPB1Prescaler(const PrescalerAPB &prescaler) const noexcept
+    void ClockControl::SetAPB1Prescaler(const constants::PrescalerAPB &prescaler) const noexcept
     {
         libs::MWR::modifyResetRegister(RegisterRCC::CFGR,(0x7 << 10));      // APB prescaler clear
         libs::MWR::modifySetRegister(RegisterRCC::CFGR,(prescaler << 10));
     }
 
-    void ClockControl::SetAPB2Prescaler(const PrescalerAPB &prescaler) const noexcept
+    void ClockControl::SetAPB2Prescaler(const constants::PrescalerAPB &prescaler) const noexcept
     {
         libs::MWR::modifyResetRegister(RegisterRCC::CFGR,(0x7 << 13));      // APB prescaler clear
         libs::MWR::modifySetRegister(RegisterRCC::CFGR,(prescaler << 13));
@@ -182,7 +117,7 @@ namespace drivers::clock
         return (number - offset);
     }
 
-    void ClockControl::EnablePeripherals(const PERIPHERALS &name) const noexcept
+    void ClockControl::EnablePeripherals(const constants::PERIPHERALS &name) const noexcept
     {
         if(name < AHB_2)
         {
@@ -202,7 +137,7 @@ namespace drivers::clock
         }
     }
 
-    void ClockControl::DisablePeripherals(const PERIPHERALS &name) const noexcept
+    void ClockControl::DisablePeripherals(const constants::PERIPHERALS &name) const noexcept
     {
         if(name < AHB_2)
         {
@@ -223,23 +158,23 @@ namespace drivers::clock
     }
 
     void ClockControl::HSE_Enable() const noexcept {
-        libs::MWR::setBit(CR,HSEON);
+        libs::MWR::setBit(CR,constants::HSEON);
     }
 
     void ClockControl::HSE_Disable() const noexcept {
-        libs::MWR::resetBit(CR, HSEON);
+        libs::MWR::resetBit(CR, constants::HSEON);
     }
 
     bool ClockControl::HSE_Status() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CR, HSEON);
+        return libs::MWR::readBit<std::uint32_t>(CR, constants::HSEON);
     }
 
     bool ClockControl::HSE_IsReady() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CR,HSERDY);
+        return libs::MWR::readBit<std::uint32_t>(CR,constants::HSERDY);
     }
 
     bool ClockControl::HSI_Status() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CR, HSION);
+        return libs::MWR::readBit<std::uint32_t>(CR, constants::HSION);
     }
 
     void ClockControl::PLL_Config_Sys(std::uint16_t  setPLLN, std::uint16_t setPLLM, std::uint16_t setPLLP, std::uint16_t setPLLQ) const noexcept {
@@ -247,16 +182,16 @@ namespace drivers::clock
         libs::MWR::modifyResetRegister(PLLCFGR,0x0000FFFF);
 
         //libs::MWR::setBit(PLLCFGR, (1 << 22) | PLLM | (PLLN << 6) | (PLLQ << 24)); котейко
-        libs::MWR::modifySetRegister(PLLCFGR, static_cast<std::uint32_t>((1 << PLLSRC) | setPLLM | (setPLLN << PLLN) | (setPLLQ << PLLQ) | (setPLLP << PLLP)));
+        libs::MWR::modifySetRegister(PLLCFGR, static_cast<std::uint32_t>((1 << constants::PLLSRC) | setPLLM | (setPLLN << constants::PLLN) | (setPLLQ << constants::PLLQ) | (setPLLP << constants::PLLP)));
 
         PLL_Enable();
     }
 
     void ClockControl::PLL_SetSource(std::uint8_t bit) const noexcept {
         if(bit == 0)
-            libs::MWR::resetBit(PLLCFGR, PLLSRC);
+            libs::MWR::resetBit(PLLCFGR, constants::PLLSRC);
         else
-            libs::MWR::setBit(PLLCFGR, PLLSRC);
+            libs::MWR::setBit(PLLCFGR, constants::PLLSRC);
     }
 
     std::uint32_t ClockControl::GetSysClkSourse() const noexcept {
@@ -264,128 +199,128 @@ namespace drivers::clock
     }
 
     void ClockControl::HSI_Enable() const noexcept {
-        libs::MWR::setBit(CR, HSION);
+        libs::MWR::setBit(CR, constants::HSION);
     }
 
     void ClockControl::HSI_Disable() const noexcept
     {
-        libs::MWR::resetBit(CR, HSION);
+        libs::MWR::resetBit(CR, constants::HSION);
     }
 
     bool ClockControl::HSI_IsReady() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CR, HSIRDY);
+        return libs::MWR::readBit<std::uint32_t>(CR, constants::HSIRDY);
     }
 
     void ClockControl::PLL_Enable() const noexcept {
-        libs::MWR::setBit(CR, PLLON);
+        libs::MWR::setBit(CR, constants::PLLON);
     }
 
     void ClockControl::PLL_Disable() const noexcept {
-        libs::MWR::resetBit(CR, PLLON);
+        libs::MWR::resetBit(CR, constants::PLLON);
     }
 
     bool ClockControl::PLL_IsReady() const noexcept {
-        return (libs::MWR::readBit<std::uint32_t>(CR, PLLRDY));
+        return (libs::MWR::readBit<std::uint32_t>(CR, constants::PLLRDY));
     }
 
     void ClockControl::LSE_Enable() const noexcept {
-        libs::MWR::setBit(BDCR, LSEON);
+        libs::MWR::setBit(BDCR, constants::LSEON);
     }
 
     void ClockControl::LSE_Disable() const noexcept {
-        libs::MWR::resetBit(BDCR, LSEON);
+        libs::MWR::resetBit(BDCR, constants::LSEON);
     }
 
     bool ClockControl::LSE_IsReady() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(BDCR, LSERDY);
+        return libs::MWR::readBit<std::uint32_t>(BDCR, constants::LSERDY);
     }
 
     void ClockControl::LSE_SetBypass() const noexcept {
-        libs::MWR::setBit(BDCR, LSEBYP);
+        libs::MWR::setBit(BDCR, constants::LSEBYP);
     }
 
     void ClockControl::LSE_ResetBypass() const noexcept {
-        libs::MWR::resetBit(BDCR, LSEBYP);
+        libs::MWR::resetBit(BDCR, constants::LSEBYP);
     }
 
     bool ClockControl::LSE_GetBypass() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(BDCR, LSEBYP);
+        return libs::MWR::readBit<std::uint32_t>(BDCR, constants::LSEBYP);
     }
 
-    void ClockControl::SetSourceClock(RTC_Source s) const noexcept {
-        libs::MWR::modifyResetRegister(BDCR, 0x3 << RTCSEL);
-        libs::MWR::modifySetRegister( BDCR, s << RTCSEL);
+    void ClockControl::SetSourceClock(constants::RTC_Source s) const noexcept {
+        libs::MWR::modifyResetRegister(BDCR, 0x3 << constants::RTCSEL);
+        libs::MWR::modifySetRegister( BDCR, s << constants::RTCSEL);
     }
 
     void ClockControl::RTC_Enable() const noexcept {
-        libs::MWR::setBit(BDCR, RTCEN);
+        libs::MWR::setBit(BDCR, constants::RTCEN);
     }
 
     void ClockControl::RTC_Disable() const noexcept {
-        libs::MWR::resetBit(BDCR, RTCEN);
+        libs::MWR::resetBit(BDCR, constants::RTCEN);
     }
 
     bool ClockControl::RTC_GetStatus() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(BDCR, RTCEN);
+        return libs::MWR::readBit<std::uint32_t>(BDCR, constants::RTCEN);
     }
 
     void ClockControl::BackupDomainReset() const noexcept {
-        libs::MWR::setBit(BDCR, BDRST);
+        libs::MWR::setBit(BDCR, constants::BDRST);
     }
 
     void ClockControl::BackupDomainNoreset() const noexcept {
-        libs::MWR::resetBit(BDCR, BDRST);
+        libs::MWR::resetBit(BDCR, constants::BDRST);
     }
 
     bool ClockControl::GetBackupDomainStatus() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(BDCR, BDRST);
+        return libs::MWR::readBit<std::uint32_t>(BDCR, constants::BDRST);
     }
 
     void ClockControl::LSI_Enable() const noexcept {
-        libs::MWR::setBit(CSR, LSION);
+        libs::MWR::setBit(CSR, constants::LSION);
     }
 
     void ClockControl::LSI_Disable() const noexcept {
-        libs::MWR::resetBit(CSR, LSION);
+        libs::MWR::resetBit(CSR, constants::LSION);
     }
 
     bool ClockControl::LSI_Status() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, LSION);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::LSION);
     }
 
     bool ClockControl::LSI_IsReady() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, LSIRDY);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::LSIRDY);
     }
 
     void ClockControl::RemoveResetFlag() const noexcept {
-        libs::MWR::setBit(CSR, RMVF);
+        libs::MWR::setBit(CSR, constants::RMVF);
     }
 
     bool ClockControl::GetBorResetFlag() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, BORRSTF);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::BORRSTF);
     }
 
     bool ClockControl::GetPinResetFlag() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, PINRSTF);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::PINRSTF);
     }
 
     bool ClockControl::GetPorResetFlag() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, PORRSTF);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::PORRSTF);
     }
 
     bool ClockControl::GetSoftwareResetFlag() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, SFTRSTF);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::SFTRSTF);
     }
 
     bool ClockControl::GetIwdgResetFlag() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, IWDGRSTF);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::IWDGRSTF);
     }
 
     bool ClockControl::GetWwdgResetFlag() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, WWDGRSTF);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::WWDGRSTF);
     }
 
     bool ClockControl::GetLowpowerResetFlag() const noexcept {
-        return libs::MWR::readBit<std::uint32_t>(CSR, LPWRRSTF);
+        return libs::MWR::readBit<std::uint32_t>(CSR, constants::LPWRRSTF);
     }
 }

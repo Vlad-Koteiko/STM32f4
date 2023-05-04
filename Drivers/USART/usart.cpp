@@ -1,64 +1,64 @@
 //
 // Created by koteiko_vv on 23.01.2023.
 //
-#include "usart.h"
+#include "usart.hpp"
 
 namespace drivers::usart {
 
-    USART::USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr, std::uint8_t remap) : clockControl(_clockControl), baseAddress(adr)
-    {
-        switch (adr)
-        {
-            case USART1:
-            {
-                clockControl.EnablePeripherals(drivers::clock::USART1_MODULE);
-                RemapUsart1(remap);
-                SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
-                break;
-            }
-            case USART2:
-            {
-                clockControl.EnablePeripherals(drivers::clock::USART2_MODULE);
-                RemapUsart2(remap);
-                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-                break;
-            }
-            case USART3:
-            {
-                clockControl.EnablePeripherals(drivers::clock::USART3_MODULE);
-                RemapUsart3(remap);
-                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-                break;
-            }
-            case UART4:
-            {
-                clockControl.EnablePeripherals(drivers::clock::UART4_MODULE);
-                RemapUart4(remap);
-                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-                break;
-            }
-
-            case UART5:
-            {
-                clockControl.EnablePeripherals(drivers::clock::UART5_MODULE);
-                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTD, drivers::port::PIN_12, drivers::port::PIN_2, drivers::port::AF8);
-                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-                break;
-            }
-
-            case USART6:
-            {
-                clockControl.EnablePeripherals(drivers::clock::USART6_MODULE);
-                RemapUsart6(remap);
-                SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
-                break;
-            }
-        }
-        SetWordLength(BIT_8);
-        ReceiverEnable(ENABLE);
-        TransmitterEnable(ENABLE);
-        UsartEnable(ENABLE);
-    }
+//    USART::USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr, std::uint8_t remap) : clockControl(_clockControl), baseAddress(adr)
+//    {
+//        switch (adr)
+//        {
+//            case USART1:
+//            {
+//                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::USART1_MODULE);
+//                RemapUsart1(remap);
+//                SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
+//                break;
+//            }
+//            case USART2:
+//            {
+//                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::USART2_MODULE);
+//                RemapUsart2(remap);
+//                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
+//                break;
+//            }
+//            case USART3:
+//            {
+//                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::USART3_MODULE);
+//                RemapUsart3(remap);
+//                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
+//                break;
+//            }
+//            case UART4:
+//            {
+//                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::UART4_MODULE);
+//                RemapUart4(remap);
+//                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
+//                break;
+//            }
+//
+//            case UART5:
+//            {
+//                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::UART5_MODULE);
+//                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTD, drivers::port::PIN_12, drivers::port::PIN_2, drivers::port::AF8);
+//                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
+//                break;
+//            }
+//
+//            case USART6:
+//            {
+//                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::USART6_MODULE);
+//                RemapUsart6(remap);
+//                SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
+//                break;
+//            }
+//        }
+//        SetWordLength(BIT_8);
+//        ReceiverEnable(ENABLE);
+//        TransmitterEnable(ENABLE);
+//        UsartEnable(ENABLE);
+//    }
 
     void USART::RemapUsart1(std::uint8_t remap)
     {
@@ -236,21 +236,21 @@ namespace drivers::usart {
     {
         switch (baseAddress) {
             case USART1:
-                clockControl.EnablePeripherals(drivers::clock::USART1_MODULE); break;
+                clockControl.EnablePeripherals(drivers::clock::constants::USART1_MODULE); break;
             case USART2:
-                clockControl.EnablePeripherals(drivers::clock::USART2_MODULE); break;
+                clockControl.EnablePeripherals(drivers::clock::constants::USART2_MODULE); break;
             case USART3:
-                clockControl.EnablePeripherals(drivers::clock::USART3_MODULE); break;
+                clockControl.EnablePeripherals(drivers::clock::constants::USART3_MODULE); break;
             case UART4:
-                clockControl.EnablePeripherals(drivers::clock::UART4_MODULE);  break;
+                clockControl.EnablePeripherals(drivers::clock::constants::UART4_MODULE);  break;
             case UART5:
-                clockControl.EnablePeripherals(drivers::clock::UART5_MODULE);  break;
+                clockControl.EnablePeripherals(drivers::clock::constants::UART5_MODULE);  break;
             case USART6:
-                clockControl.EnablePeripherals(drivers::clock::USART6_MODULE); break;
+                clockControl.EnablePeripherals(drivers::clock::constants::USART6_MODULE); break;
             case UART7:
-                clockControl.EnablePeripherals(drivers::clock::UART7_MODULE);  break;
+                clockControl.EnablePeripherals(drivers::clock::constants::UART7_MODULE);  break;
             case UART8:
-                clockControl.EnablePeripherals(drivers::clock::UART8_MODULE);  break;
+                clockControl.EnablePeripherals(drivers::clock::constants::UART8_MODULE);  break;
         }
     }
 

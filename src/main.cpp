@@ -2,8 +2,8 @@
 // Created by koteiko_vv on 13.12.2022.
 //
 
-#include "main.h"
-#include "basictimer.h"
+#include "main.hpp"
+
 
 std::uint32_t counter = 0;
 std::uint8_t bufferReceve = 0;
@@ -13,9 +13,7 @@ drivers::port::GPIO *portdRef;
 drivers::timers::BasicTimers *tim6Pointer;
 drivers::usart::USART *uart_p_2;
 
-
-    int main()
-    {
+void Bass::main() noexcept {
 
         drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
         libs::MWR::write_register(0xE000ED88, 0xF00000);
@@ -52,17 +50,17 @@ drivers::usart::USART *uart_p_2;
         nvic.NVIC_EnableIRQ(drivers::nvic::TIM6_DAC);
         nvic.NVIC_EnableIRQ(drivers::nvic::USART2);
 
-        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6, std::chrono::milliseconds(1000), true);
+//        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6, std::chrono::milliseconds(1000), true);
 //        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6);
 //        timer6.EnableUpdateEvent();
 //        timer6.EnableInterrupt();
-        //timer6.SetUpdateSource(drivers::timers::COUNTER);
+//        timer6.SetUpdateSource(drivers::timers::COUNTER);
 //        timer6.SetAutoReload(10000);
 //        timer6.SetPrescaler(8400);
 //        timer6.EnableARRPreload();
 //        timer6.EnableCounter();
         char str[8] = "Start\n\r";
-        tim6Pointer = &timer6;
+//        tim6Pointer = &timer6;
         usart2.TransmitString(str, 7);
 
         while (1)
@@ -80,7 +78,6 @@ drivers::usart::USART *uart_p_2;
             cout<<counter<<cout.ENDL;
         }
 
-       return 0;
     }
 
     void EXTI0_IRQHandler()
@@ -109,10 +106,10 @@ drivers::usart::USART *uart_p_2;
 
     }
 
-void TIM6_DAC_IRQHandler()
-{
-    portdRef->TogglePin(drivers::port::PIN_12);
-    //libs::MWR::resetBit(0x40001010, 0);
-    tim6Pointer->ClearUpdateInterruptFlag();
-    counter++;
-}
+    void TIM6_DAC_IRQHandler()
+    {
+        portdRef->TogglePin(drivers::port::PIN_12);
+        //libs::MWR::resetBit(0x40001010, 0);
+        tim6Pointer->ClearUpdateInterruptFlag();
+        counter++;
+    }

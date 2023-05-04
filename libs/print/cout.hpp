@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <string>
 #include <array>
-#include "usart.h"
+#include "usart.hpp"
 
 namespace  libs
 {

@@ -12,47 +12,47 @@ namespace drivers::port
         switch (port) {
             case PORTA:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_A_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_A_MODULE);
                 break;
             }
             case PORTB:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_B_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_B_MODULE);
                 break;
             }
             case PORTC:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_C_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_C_MODULE);
                 break;
             }
             case PORTD:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_D_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_D_MODULE);
                 break;
             }
             case PORTE:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_E_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_E_MODULE);
                 break;
             }
             case PORTF:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_F_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_F_MODULE);
                 break;
             }
             case PORTG:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_G_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_G_MODULE);
                 break;
             }
             case PORTH:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_H_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_H_MODULE);
                 break;
             }
             case PORTI:
             {
-                clockControl.EnablePeripherals(drivers::clock::PORT_I_MODULE);
+                clockControl.EnablePeripherals(drivers::clock::constants::PORT_I_MODULE);
                 break;
             }
         }
