@@ -9,6 +9,7 @@
 #include "clockControl.hpp"
 #include "nvic.h"
 #include "gpio.h"
+#include "dma.hpp"
 
 namespace drivers::usart {
 
@@ -393,6 +394,10 @@ namespace drivers::usart {
         bool GetIrDAModeEnable();
         void SetEIE(STATUS x);
         bool GetEIE();
+
+        bool InitUsartDma(const dma::DMA &usartDma ,bool isTransmit, bool isReceive);
+        bool TransmitDataDma(dma::DMA &dma, std::uint8_t *sendBuffer, std::uint16_t size);
+        bool ReceiveDataDma(dma::DMA &dma, std::uint8_t *recvBuffer, std::uint16_t size);
     };
 }
 #endif //UART_USART_H

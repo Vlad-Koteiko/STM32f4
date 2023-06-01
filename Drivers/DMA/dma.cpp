@@ -3,6 +3,9 @@
 //
 
 #include "dma.hpp"
+#include "cout.hpp"
+
+extern libs::Cout *globalCout;
 
 namespace drivers::dma
 {
@@ -18,7 +21,7 @@ namespace drivers::dma
 
             } else
             {
-                libs::MWR::resetBit(getAddress(LISR), getNumberStream(numberStream) + offset);
+                libs::MWR::setBit(getAddress(LIFCR), getNumberStream(numberStream) + offset);
             }
         } else
         {
@@ -28,7 +31,7 @@ namespace drivers::dma
 
             } else
             {
-                libs::MWR::resetBit(getAddress(HISR), getNumberStream(numberStream) + offset);
+                libs::MWR::setBit(getAddress(HIFCR), (getNumberStream(numberStream) + offset));
             }
         }
 
@@ -39,7 +42,7 @@ namespace drivers::dma
         setStreamConfigurationRegister(numberStream,constants::STREAM_ENABLE,1);
     }
 
-    void DMA::deseable(const drivers::dma::constants::NUMBER_STREAM &numberStream) const noexcept {
+    void DMA::disable(const drivers::dma::constants::NUMBER_STREAM &numberStream) const noexcept {
         setStreamConfigurationRegister(numberStream,constants::STREAM_ENABLE,0);
     }
 
@@ -81,6 +84,10 @@ namespace drivers::dma
                                          const drivers::dma::constants::FLAG_FIFO_CONTROL_REGISTER &flagFifoControlRegister) const noexcept {
         std::uint32_t temp = libs::MWR::read_register<std::uint32_t>(getAddress(numberStream,FCR));
         return getFlagFIFOcontrolValue(flagFifoControlRegister,temp);
+    }
+
+    std::uintptr_t DMA::getBaseAddress() const noexcept {
+        return baseAddress;
     }
 }
 

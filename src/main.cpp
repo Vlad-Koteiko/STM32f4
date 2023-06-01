@@ -12,6 +12,10 @@ std::uint8_t bufferReceve = 0;
 drivers::port::GPIO *portdRef;
 drivers::timers::BasicTimers *tim6Pointer;
 drivers::usart::USART *uart_p_2;
+libs::Cout *globalCout;
+drivers::dma::DMA *globalDma1;
+
+std::uint8_t recvDma[5];
 
 void Bass::main() noexcept {
 
@@ -27,6 +31,7 @@ void Bass::main() noexcept {
         char test[20] = "Test UART main\n\r";
         usart2.TransmitString(test, 16);
         libs::Cout cout(usart2);
+        globalCout = &cout;
 
         cout<<"Test cout"<<cout.ENDL;
         std::uint32_t  x = clockControl.GetFreqAPB1();
@@ -49,6 +54,8 @@ void Bass::main() noexcept {
         drivers::nvic::NVIC nvic;
         nvic.NVIC_EnableIRQ(drivers::nvic::TIM6_DAC);
         nvic.NVIC_EnableIRQ(drivers::nvic::USART2);
+        nvic.NVIC_EnableIRQ(drivers::nvic::DMA1_Stream5);
+        nvic.NVIC_EnableIRQ(drivers::nvic::DMA1_Stream6);
 
 //        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6, std::chrono::milliseconds(1000), true);
 //        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6);
@@ -63,6 +70,14 @@ void Bass::main() noexcept {
 //        tim6Pointer = &timer6;
         usart2.TransmitString(str, 7);
 
+        drivers::dma::DMA dma1(clockControl, drivers::dma::ADDRESSES_DMA::DMA_1);
+        globalDma1 = &dma1;
+        usart2.InitUsartDma(dma1, true, true);
+        std::uint8_t  buf[] = "Transmit dma\n\r\0";
+        usart2.TransmitDataDma(dma1, buf, 14);
+        usart2.ReceiveDataDma(dma1, recvDma, 5);
+
+
         while (1)
         {
 //            gpioD.TogglePin(drivers::port::PIN_12);
@@ -71,11 +86,11 @@ void Bass::main() noexcept {
 //            clockControl.mDelay(500);
 //            gpioD.TogglePin(drivers::port::PIN_14);
 //            clockControl.mDelay(500);
-            gpioA.TogglePin(drivers::port::PIN_1);
-            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
-
-            clockControl.mDelay(500);
-            cout<<counter<<cout.ENDL;
+//            gpioA.TogglePin(drivers::port::PIN_1);
+//            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
+//
+//            clockControl.mDelay(500);
+//            cout<<counter<<cout.ENDL;
         }
 
     }
@@ -112,4 +127,20 @@ void Bass::main() noexcept {
         //libs::MWR::resetBit(0x40001010, 0);
         tim6Pointer->ClearUpdateInterruptFlag();
         counter++;
+    }
+
+    void DMA1_Stream5_IRQHandler()
+    {
+        globalCout->operator<<("stream5\n\r");
+        globalDma1->clearFlagInterrupt(drivers::dma::constants::Stream_5, drivers::dma::constants::TRANSFER_COMPLETE_INTERRUPT);
+    }
+
+    void DMA1_Stream6_IRQHandler()
+    {
+        globalCout->operator<<("stream6\n\r");
+        //libs::MWR::write_register(0x4002600C, 0xFFFFFFFF);
+//        libs::MWR::setBit(0x4002600C, 21);
+//        globalDma1->disable(drivers::dma::constants::Stream_6);
+        globalDma1->clearFlagInterrupt(drivers::dma::constants::Stream_6, drivers::dma::constants::TRANSFER_COMPLETE_INTERRUPT);
+//        globalDma1->clearFlagInterrupt(drivers::dma::constants::Stream_6, drivers::dma::constants::HALF_TRANSFER_INTERRUPT);
     }

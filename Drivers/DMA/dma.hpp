@@ -43,14 +43,14 @@ namespace drivers::dma
             STREAM_ENABLE                           = 0,
             DIRECT_MODE_ERROR_INTERRUPT_ENABLE      = 1,
             TRANSFER_ERROR_INTERRUPT_ENABLE         = 2,
-            HALF_TRENSFER_INTERRUPT_ENABLE          = 3,
+            HALF_TRANSFER_INTERRUPT_ENABLE          = 3,
             TRANSFER_COMPLETE_INTERRUPT_ENABLE      = 4,
-            PERIPHERAL_FROW_CONTROLLER              = 5,
+            PERIPHERAL_FLOW_CONTROLLER              = 5,
             DATA_TRANSFER_DIRECTION                 = 6,
             CIRCULAR_MODE                           = 8,
             PERIPHERAL_INCREMENT_MODE               = 9,
             MEMORY_INCREMENT_MODE                   = 10,
-            PRIPHERAL_DATA_SIZE                     = 11,
+            PERIPHERAL_DATA_SIZE                    = 11,
             MEMORY_DATA_SIZE                        = 13,
             PERIPHERAL_INCREMENT_OFFSET_SIZE        = 15,
             PRIORITY_LEVEL                          = 16,
@@ -58,32 +58,32 @@ namespace drivers::dma
             CURRENT_TARGET                          = 19,
             PERIPHERAL_BURST_TRANSFER_CONFIGURATION = 21,
             MEMORY_BURST_TRANSFER_CONFIGURATION     = 23,
-            CHANNEL_SELECTION                       = 25
+            CHANNEL                                 = 25
         };
 
         enum FLAG_FIFO_CONTROL_REGISTER: std::uint8_t
         {
             FIFO_THRESHOLD_SELECTION    = 0,
             DIRECT_MODE_DISABLE         = 2,
-            FIFO_SATUS                  = 3,
+            FIFO_STATUS                 = 3,
             FIFO_ERROR_INTERRUPT_ENABLE = 7
         };
 
-        enum DATA_TRANSFER_DIRECTION : std::uint8_t
+        enum DATA_DIRECTION : std::uint8_t
         {
             PERIPHERAL_TO_MEMORY = 0,
             MEMORY_TO_PERIPHERAL = 1,
             MEMORY_TO_MEMORY     = 2,
         };
 
-        enum MEMORY_DATA_SIZE : std::uint8_t
+        enum DATA_SIZE : std::uint8_t
         {
             BYTE      = 0,
             HALF_WORD = 1,
             WORD      = 2
         };
 
-        enum PRIORITY_LEVEL : std::uint8_t
+        enum PRIORITY : std::uint8_t
         {
             LOW       = 0,
             MEDIUM    = 1,
@@ -110,12 +110,58 @@ namespace drivers::dma
             CHANNEL_6 = 6,
             CHANNEL_7 = 7
         };
+
+        enum STATUS : std::uint8_t
+        {
+            DISABLED = 0,
+            ENABLED = 1
+        };
+
+        enum  TARGET : std::uint8_t
+        {
+            MEMORY0,
+            MEMORY1
+        };
+
+        enum FIFO_THRESHOLD : std::uint8_t
+        {
+            FIFO_0_25 = 0,
+            FIFO_0_50 = 1,
+            FIFO_0_75 = 2,
+            FIFO_FULL = 3
+        };
+    };
+
+    struct DMA_Config
+    {
+        constants::STATUS directModeErrorInterrupt;
+        constants::STATUS transferErrorInterrupt;
+        constants::STATUS halfTransferInterrupt;
+        constants::STATUS peripheralFlowController;
+        constants::DATA_DIRECTION dataTransferDirection;
+        constants::STATUS circularMode;
+        constants::STATUS peripheralIncrement;
+        constants::STATUS memoryIncrement;
+        constants::DATA_SIZE peripheralDataSize;
+        constants::DATA_SIZE memoryDataSize;
+        constants::STATUS peripheralIncrementOffsetSize;
+        constants::PRIORITY priorityLevel;
+        constants::STATUS doubleBufferMode;
+        constants::TARGET currentTarget;
+        constants::PERIPHERAL_BURST peripheralBurstTransferConfiguration;
+        constants::PERIPHERAL_BURST memoryBurstTransferConfiguration;
+        constants::CHANNEL_SELECTION channel;
+
+        constants::FIFO_THRESHOLD  FIFOThresholdSelection;
+        constants::STATUS directModeDisableInvers;
+        constants::STATUS fifoErrorInterrupt;
+
+        constants::NUMBER_STREAM stream;
     };
 
     class DMA {
 
         using readWriteRegister = libs::MWR;
-
         const drivers::clock::ClockControl &clockControl;
         const std::uintptr_t baseAddress;
 
@@ -139,8 +185,8 @@ namespace drivers::dma
             return static_cast<std::uint32_t>(baseAddress + numberStream + offset);
         }
 
-        constexpr std::uint32_t getAddress(std::ptrdiff_t offset) const noexcept {
-            return static_cast<std::uint32_t>(baseAddress + offset);
+        constexpr std::uintptr_t getAddress(std::ptrdiff_t offset) const noexcept {
+            return (baseAddress + offset);
         }
 
         constexpr std::uint8_t getFlagFIFOcontrolValue(const drivers::dma::constants::FLAG_FIFO_CONTROL_REGISTER &flagFifoControlRegister, std::uint32_t value) const noexcept {
@@ -196,8 +242,9 @@ namespace drivers::dma
         void setFlagFIFOcontrol(const constants::NUMBER_STREAM&, const constants::FLAG_FIFO_CONTROL_REGISTER&, std::uint8_t) const noexcept;
 
         void enable(const constants::NUMBER_STREAM&) const noexcept;
-        void deseable(const constants::NUMBER_STREAM&) const noexcept;
+        void disable(const constants::NUMBER_STREAM&) const noexcept;
 
+        std::uintptr_t getBaseAddress() const noexcept;
     };
 }
 
