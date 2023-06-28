@@ -255,60 +255,12 @@ namespace drivers::usart {
     }
 
     //---------------------------------------------------------------------------------
-    bool USART::ReadFlag_CTS() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, CTS);
+    bool USART::ReadFlag(SR_poz flag) {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, flag);
     }
 
-    void USART::ClearFlag_CTS() {
+    void USART::ClearFlag(SR_clear_flag flag) {
         libs::MWR::resetBit(baseAddress + SR, CTS);
-    }
-
-    bool USART::ReadFlag_LBD() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, LBD);
-    }
-
-    void USART::ClearFlag_LBD(){
-        return libs::MWR::resetBit(baseAddress + SR, LBD);
-    }
-
-    bool USART::ReadFlag_TXE(){
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, TXE);
-    }
-
-    bool USART::ReadFlag_TC() {
-        return  libs::MWR::readBit<std::uint32_t>(baseAddress + SR, TC);
-    }
-
-    void USART::ClearFlag_TC() {
-        libs::MWR::resetBit(baseAddress + SR, TC);
-    }
-
-    bool USART::ReadFlag_RXNE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, RXNE);
-    }
-
-    void USART::ClearFlag_RXNE() {
-        return libs::MWR::resetBit(baseAddress + SR, RXNE);
-    }
-
-    bool USART::ReadFlag_IDLE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, IDLE);
-    }
-
-    bool USART::ReadFlag_ORE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, ORE);
-    }
-
-    bool USART::ReadFlag_NF() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, NF);
-    }
-
-    bool USART::ReadFlag_FE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, FE);
-    }
-
-    bool USART::ReadFlag_PE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, PE);
     }
     //---------------------------------------------------------------------------------
 
@@ -651,79 +603,81 @@ namespace drivers::usart {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, EIE);
     }
 
-    bool USART::InitUsartDma(const drivers::dma::DMA &usartDma ,bool isTransmit, bool isReceive) {
+    bool USART::InitUsartDma(const drivers::dma::DMA &usartDma, drivers::dma::DMA_Config dmaConfig, bool isTransmit, bool isReceive) {
         bool rezultInit = false;
+
         switch (baseAddress) {
+
             case USART1:
-                break;
-            case USART2:
-                if (usartDma.getBaseAddress() == dma::ADDRESSES_DMA::DMA_1)
+                if (usartDma.getBaseAddress() == dma::ADDRESSES_DMA::DMA_2)
                 {
-                    //dma1 = usartDma;
                     if(isTransmit == true)
                     {
-                        usartDma.disable(dma::constants::Stream_6);
-
-                        //Set channel selection
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::CHANNEL, dma::constants::CHANNEL_4);
-                        //Set transfer direction
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::DATA_TRANSFER_DIRECTION, dma::constants::MEMORY_TO_PERIPHERAL);
-                        //Set stream priority level
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::PRIORITY_LEVEL, dma::constants::LOW);
-                        //Set mode
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::CIRCULAR_MODE, 0);
-                        //Set peripheral increment mode
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::PERIPHERAL_INCREMENT_MODE, 0);
-                        //Set memory increment mode
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::MEMORY_INCREMENT_MODE, 1);
-                        //Set peripheral size
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::PERIPHERAL_DATA_SIZE, dma::constants::BYTE);
-                        //Set memory size
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::MEMORY_DATA_SIZE, dma::constants::BYTE);
-                        //Disable FIFO
-                        usartDma.setFlagFIFOcontrol(dma::constants::Stream_6, dma::constants::DIRECT_MODE_DISABLE, 1);
-
-                        this->DMAEnableTransmitter(ENABLE);
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_6, dma::constants::TRANSFER_COMPLETE_INTERRUPT_ENABLE, 1);
-
+                        dmaConfig.stream = dma::constants::Stream_7;
+                        dmaConfig.channel = dma::constants::CHANNEL_4;
+                        dmaConfig.peripheralIncrement = dma::constants::DISABLE;
+                        dmaConfig.memoryIncrement = dma::constants::ENABLE;
+                        dmaConfig.dataTransferDirection = dma::constants::MEMORY_TO_PERIPHERAL;
+                        dmaConfig.peripheralDataSize = dma::constants::BYTE;
+                        dmaConfig.memoryDataSize = dma::constants::BYTE;
+                        dmaConfig.peripheralIncrementOffsetSize = dma::constants::DISABLE;
+                        DMAEnableTransmitter(ENABLE);
+                        usartDma.ConfigurationDma(dmaConfig);
                     }
                     if(isReceive == true)
                     {
-                        usartDma.disable(dma::constants::Stream_5);
-
-                        //Set channel selection
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::CHANNEL, dma::constants::CHANNEL_4);
-                        //Set transfer direction
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::DATA_TRANSFER_DIRECTION, dma::constants::PERIPHERAL_TO_MEMORY);
-                        //Set stream priority level
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::PRIORITY_LEVEL, dma::constants::LOW);
-                        //Set mode
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::CIRCULAR_MODE, 0);
-                        //Set peripheral increment mode
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::PERIPHERAL_INCREMENT_MODE, 0);
-                        //Set memory increment mode
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::MEMORY_INCREMENT_MODE, 1);
-                        //Set peripheral size
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::PERIPHERAL_DATA_SIZE, dma::constants::BYTE);
-                        //Set memory size
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::MEMORY_DATA_SIZE, dma::constants::BYTE);
-                        //Disable FIFO
-                        usartDma.setFlagFIFOcontrol(dma::constants::Stream_5, dma::constants::DIRECT_MODE_DISABLE, 1);
-
-                        this->DMAEnableReceiver(ENABLE);
-                        usartDma.setStreamConfigurationRegister(dma::constants::Stream_5, dma::constants::TRANSFER_COMPLETE_INTERRUPT_ENABLE, 1);
+                        dmaConfig.channel = dma::constants::CHANNEL_4;
+                        dmaConfig.peripheralIncrement = dma::constants::DISABLE;
+                        dmaConfig.memoryIncrement = dma::constants::ENABLE;
+                        dmaConfig.dataTransferDirection = dma::constants::PERIPHERAL_TO_MEMORY;
+                        dmaConfig.peripheralDataSize = dma::constants::BYTE;
+                        dmaConfig.memoryDataSize = dma::constants::BYTE;
+                        dmaConfig.peripheralIncrementOffsetSize = dma::constants::DISABLE;
+                        DMAEnableReceiver(ENABLE);
+                        usartDma.ConfigurationDma(dmaConfig);
                     }
-
                     rezultInit = true;
                 }
                 break;
+
+            case USART2:
+                if (usartDma.getBaseAddress() == dma::ADDRESSES_DMA::DMA_1) {
+
+                    if(isTransmit == true)
+                    {
+                        dmaConfig.stream = dma::constants::Stream_6;
+                        dmaConfig.channel = dma::constants::CHANNEL_4;
+                        dmaConfig.peripheralIncrement = dma::constants::DISABLE;
+                        dmaConfig.memoryIncrement = dma::constants::ENABLE;
+                        dmaConfig.dataTransferDirection = dma::constants::MEMORY_TO_PERIPHERAL;
+                        dmaConfig.peripheralDataSize = dma::constants::BYTE;
+                        dmaConfig.memoryDataSize = dma::constants::BYTE;
+                        dmaConfig.peripheralIncrementOffsetSize = dma::constants::DISABLE;
+                        DMAEnableTransmitter(ENABLE);
+                        usartDma.ConfigurationDma(dmaConfig);
+                    }
+                    if(isReceive == true)
+                    {
+                        dmaConfig.stream = dma::constants::Stream_5;
+                        dmaConfig.channel = dma::constants::CHANNEL_4;
+                        dmaConfig.peripheralIncrement = dma::constants::DISABLE;
+                        dmaConfig.memoryIncrement = dma::constants::ENABLE;
+                        dmaConfig.dataTransferDirection = dma::constants::PERIPHERAL_TO_MEMORY;
+                        dmaConfig.peripheralDataSize = dma::constants::BYTE;
+                        dmaConfig.memoryDataSize = dma::constants::BYTE;
+                        dmaConfig.peripheralIncrementOffsetSize = dma::constants::DISABLE;
+                        DMAEnableReceiver(ENABLE);
+                        usartDma.ConfigurationDma(dmaConfig);
+                    }
+                    rezultInit = true;
+                }
+                break;
+
             case USART3:
-                break;
-            case UART4:
-                break;
-            case UART5:
-                break;
-            case USART6:
+                if (usartDma.getBaseAddress() == dma::ADDRESSES_DMA::DMA_1)
+                {
+
+                }
                 break;
         }
         return rezultInit;

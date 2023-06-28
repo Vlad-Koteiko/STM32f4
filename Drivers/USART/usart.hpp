@@ -111,6 +111,14 @@ namespace drivers::usart {
         CTS  = 9    //CTS flag
     };
 
+    enum class SR_clear_flag : std::uint8_t
+    {
+        RXNE = 5,
+        TC   = 6,
+        LBD  = 8,
+        CTS  = 9
+    };
+
     enum BRR_poz
     {
         DIV_Fraction = 0,
@@ -268,20 +276,8 @@ namespace drivers::usart {
         void DeInit() noexcept;
 
         //SR
-        bool ReadFlag_CTS();
-        void ClearFlag_CTS();
-        bool ReadFlag_LBD();
-        void ClearFlag_LBD();
-        bool ReadFlag_TXE();
-        bool ReadFlag_TC();
-        void ClearFlag_TC();
-        bool ReadFlag_RXNE();
-        void ClearFlag_RXNE();
-        bool ReadFlag_IDLE();
-        bool ReadFlag_ORE();
-        bool ReadFlag_NF();
-        bool ReadFlag_FE();
-        bool ReadFlag_PE();
+        bool ReadFlag(SR_poz flag);
+        void ClearFlag(SR_clear_flag flag);
 
         //CR1
         /**
@@ -395,7 +391,7 @@ namespace drivers::usart {
         void SetEIE(STATUS x);
         bool GetEIE();
 
-        bool InitUsartDma(const dma::DMA &usartDma ,bool isTransmit, bool isReceive);
+        bool InitUsartDma(const drivers::dma::DMA &usartDma, drivers::dma::DMA_Config dmaConfig, bool isTransmit, bool isReceive);
         bool TransmitDataDma(dma::DMA &dma, std::uint8_t *sendBuffer, std::uint16_t size);
         bool ReceiveDataDma(dma::DMA &dma, std::uint8_t *recvBuffer, std::uint16_t size);
     };

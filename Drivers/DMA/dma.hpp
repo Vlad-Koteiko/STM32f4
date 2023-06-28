@@ -113,8 +113,8 @@ namespace drivers::dma
 
         enum STATUS : std::uint8_t
         {
-            DISABLED = 0,
-            ENABLED = 1
+            DISABLE = 0,
+            ENABLE = 1
         };
 
         enum  TARGET : std::uint8_t
@@ -137,6 +137,7 @@ namespace drivers::dma
         constants::STATUS directModeErrorInterrupt;
         constants::STATUS transferErrorInterrupt;
         constants::STATUS halfTransferInterrupt;
+        constants::STATUS transferCompleteInterrupt;
         constants::STATUS peripheralFlowController;
         constants::DATA_DIRECTION dataTransferDirection;
         constants::STATUS circularMode;
@@ -226,7 +227,7 @@ namespace drivers::dma
             baseAddress == DMA_1 ?  clockControl.EnablePeripherals(drivers::clock::constants::DMA1_MODULE) :  clockControl.EnablePeripherals(drivers::clock::constants::DMA2_MODULE);
         }
 
-        /* Interuuupt status register */
+        /* Interrupt status register */
         [[nodiscard]] bool getFlagInterrupt(const constants::NUMBER_STREAM&, const constants::FLAG_INTERRUPT_STATUS&) const noexcept;
         void clearFlagInterrupt(const constants::NUMBER_STREAM&, const constants::FLAG_INTERRUPT_STATUS&) const noexcept;
 
@@ -245,6 +246,8 @@ namespace drivers::dma
         void disable(const constants::NUMBER_STREAM&) const noexcept;
 
         std::uintptr_t getBaseAddress() const noexcept;
+
+        void ConfigurationDma(DMA_Config dmaConfig) const noexcept;
     };
 }
 

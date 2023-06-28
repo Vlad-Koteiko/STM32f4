@@ -72,7 +72,28 @@ void Bass::main() noexcept {
 
         drivers::dma::DMA dma1(clockControl, drivers::dma::ADDRESSES_DMA::DMA_1);
         globalDma1 = &dma1;
-        usart2.InitUsartDma(dma1, true, true);
+
+
+        drivers::dma::DMA_Config dmaConf;
+
+        dmaConf.directModeErrorInterrupt = drivers::dma::constants::DISABLE;
+        dmaConf.transferErrorInterrupt = drivers::dma::constants::DISABLE;
+        dmaConf.halfTransferInterrupt = drivers::dma::constants::DISABLE;
+        dmaConf.transferCompleteInterrupt = drivers::dma::constants::ENABLE;
+        dmaConf.peripheralFlowController = drivers::dma::constants::DISABLE;
+        dmaConf.circularMode = drivers::dma::constants::DISABLE;
+        dmaConf.priorityLevel = drivers::dma::constants::LOW;
+        dmaConf.doubleBufferMode = drivers::dma::constants::DISABLE;
+        dmaConf.currentTarget = drivers::dma::constants::MEMORY0;
+        dmaConf.peripheralBurstTransferConfiguration = drivers::dma::constants::SINGLE_TRANSFER;
+        dmaConf.memoryBurstTransferConfiguration = drivers::dma::constants::SINGLE_TRANSFER;
+        dmaConf.FIFOThresholdSelection = drivers::dma::constants::FIFO_0_25;
+        dmaConf.directModeDisableInvers = drivers::dma::constants::ENABLE;
+        dmaConf.fifoErrorInterrupt = drivers::dma::constants::DISABLE;
+
+        //usart2.InitUsartDma(dma1, true, true);
+        usart2.InitUsartDma(dma1, dmaConf, true, true);
+
         std::uint8_t  buf[] = "Transmit dma\n\r\0";
         usart2.TransmitDataDma(dma1, buf, 14);
         usart2.ReceiveDataDma(dma1, recvDma, 5);
@@ -112,7 +133,7 @@ void Bass::main() noexcept {
     void USART2_IRQHandler()
     {
     //        bufferReceve = drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
-        uart_p_2->ClearFlag_RXNE();
+        uart_p_2->ClearFlag(drivers::usart::SR_clear_flag::RXNE);
         bufferReceve = uart_p_2->ReceiveData();
     }
 

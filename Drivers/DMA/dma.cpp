@@ -89,6 +89,33 @@ namespace drivers::dma
     std::uintptr_t DMA::getBaseAddress() const noexcept {
         return baseAddress;
     }
+
+    void DMA::ConfigurationDma(DMA_Config dmaConfig)  const noexcept{
+        disable(dmaConfig.stream);
+
+        setStreamConfigurationRegister(dmaConfig.stream, constants::DIRECT_MODE_ERROR_INTERRUPT_ENABLE, dmaConfig.directModeErrorInterrupt);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::TRANSFER_ERROR_INTERRUPT_ENABLE, dmaConfig.transferErrorInterrupt);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::HALF_TRANSFER_INTERRUPT_ENABLE, dmaConfig.halfTransferInterrupt);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::TRANSFER_COMPLETE_INTERRUPT_ENABLE, dmaConfig.transferCompleteInterrupt);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::PERIPHERAL_FLOW_CONTROLLER, dmaConfig.peripheralFlowController);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::DATA_TRANSFER_DIRECTION, dmaConfig.dataTransferDirection);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::CIRCULAR_MODE, dmaConfig.circularMode);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::PERIPHERAL_INCREMENT_MODE, dmaConfig.peripheralIncrement);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::MEMORY_INCREMENT_MODE, dmaConfig.memoryIncrement);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::PERIPHERAL_DATA_SIZE, dmaConfig.peripheralDataSize);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::MEMORY_DATA_SIZE, dmaConfig.memoryDataSize);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::PERIPHERAL_INCREMENT_OFFSET_SIZE, dmaConfig.peripheralIncrementOffsetSize);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::PRIORITY_LEVEL, dmaConfig.priorityLevel);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::DOUBLE_BUFFER_MODE, dmaConfig.doubleBufferMode);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::CURRENT_TARGET, dmaConfig.currentTarget);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::PERIPHERAL_BURST_TRANSFER_CONFIGURATION, dmaConfig.peripheralBurstTransferConfiguration);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::MEMORY_BURST_TRANSFER_CONFIGURATION, dmaConfig.memoryBurstTransferConfiguration);
+        setStreamConfigurationRegister(dmaConfig.stream, constants::CHANNEL, dmaConfig.channel);
+
+        setFlagFIFOcontrol(dmaConfig.stream, constants::FIFO_THRESHOLD_SELECTION, dmaConfig.FIFOThresholdSelection);
+        setFlagFIFOcontrol(dmaConfig.stream, constants::DIRECT_MODE_DISABLE, dmaConfig.directModeDisableInvers);
+        setFlagFIFOcontrol(dmaConfig.stream, constants::FIFO_ERROR_INTERRUPT_ENABLE, dmaConfig.fifoErrorInterrupt);
+    }
 }
 
 
