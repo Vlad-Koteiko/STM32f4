@@ -135,6 +135,8 @@ namespace drivers::port
         void InitPin(PIN_NUMBER pinNumber,PORT_MODER portModer) const noexcept;
         void TogglePin(PIN_NUMBER pinNumber) const;
         void DeinitPin(PIN_NUMBER pinNumber) const;
+        std::uint8_t ReadPin(PIN_NUMBER pin) noexcept;
+        std::uint32_t ReadPort() noexcept;
 
     };
 

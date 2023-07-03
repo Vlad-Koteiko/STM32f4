@@ -117,7 +117,3 @@ namespace drivers::dma
         setFlagFIFOcontrol(dmaConfig.stream, constants::FIFO_ERROR_INTERRUPT_ENABLE, dmaConfig.fifoErrorInterrupt);
     }
 }
-
-
-
-

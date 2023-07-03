@@ -150,7 +150,6 @@ void Reset_Handler() {
      void __attribute__((weak)) HASH_RNG_IRQHandler(void)                   {Default_Handler();}  // Hash and Rng
      void __attribute__((weak)) FPU_IRQHandler(void)                        {Default_Handler();}  // FPU
 
-
     // Interrupt vector table
     __attribute__((section(".isr_vector")))
      vector VectorTable[] = {                       // void (*VectorTable[])(void)
