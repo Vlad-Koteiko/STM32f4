@@ -480,17 +480,17 @@ namespace drivers::spi
     }
 
     void SPI::ClearFlag_MODF() noexcept {
-        libs::MWR::read_register<std::uint32_t>(baseAddress + SR);
+        std::uint32_t reset = libs::MWR::read_register<std::uint32_t>(baseAddress + SR);
         libs::MWR::resetBit(baseAddress + CR1, SPE);
     }
 
     void SPI::ClearFlag_OVR() noexcept {
-        libs::MWR::read_register<std::uint32_t>(baseAddress + DR);
-        libs::MWR::read_register<std::uint32_t>(baseAddress + SR);
+        std::uint32_t reset = libs::MWR::read_register<std::uint32_t>(baseAddress + DR);
+        reset = libs::MWR::read_register<std::uint32_t>(baseAddress + SR);
     }
 
     void SPI::ClearFlag_FRE() noexcept {
-        libs::MWR::read_register<std::uint32_t>(baseAddress + SR);
+        std::uint32_t reset = libs::MWR::read_register<std::uint32_t>(baseAddress + SR);
     }
 
     void SPI::EnableIT_ERR() noexcept {
