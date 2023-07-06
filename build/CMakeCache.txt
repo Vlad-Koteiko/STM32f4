@@ -18,7 +18,7 @@
 CMAKE_ADDR2LINE:FILEPATH=E:/tools/bin/arm-none-eabi-addr2line.exe
 
 //No help, variable specified on the command line.
-CMAKE_BUILD_TYPE:STRING=Release
+CMAKE_BUILD_TYPE:STRING=Debug
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler

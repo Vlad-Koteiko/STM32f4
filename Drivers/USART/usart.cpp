@@ -60,7 +60,7 @@ namespace drivers::usart {
 //        UsartEnable(ENABLE);
 //    }
 
-    void USART::RemapUsart1(std::uint8_t remap)
+    void USART::RemapUsart1(USART1_Remap remap)
     {
         switch (remap) {
             case U1_TX_PA9_RX_PA10:
@@ -74,7 +74,7 @@ namespace drivers::usart {
         }
     }
 
-    void USART::RemapUsart2(std::uint8_t remap)
+    void USART::RemapUsart2(USART2_Remap remap)
     {
         switch (remap)
         {
@@ -89,7 +89,7 @@ namespace drivers::usart {
         }
     }
 
-    void USART::RemapUsart3(std::uint8_t remap) {
+    void USART::RemapUsart3(USART3_Remap remap) {
         switch (remap) {
             case U3_TX_PB10_RX_PB11:
                 ConfigGpioForUart(drivers::port::PORTB, drivers::port::PORTB, drivers::port::PIN_10, drivers::port::PIN_11, drivers::port::AF7); break;
@@ -112,7 +112,7 @@ namespace drivers::usart {
         }
     }
 
-    void USART::RemapUart4(std::uint8_t remap)
+    void USART::RemapUart4(UART4_Remap remap)
     {
         switch (remap) {
             case U4_TX_PA0_RX_PA1:
@@ -126,7 +126,7 @@ namespace drivers::usart {
         }
     }
 
-    void USART::RemapUsart6(std::uint8_t remap)
+    void USART::RemapUsart6(USART6_Remap remap)
     {
         switch (remap) {
             case U6_TX_PC6_RX_PC7:
@@ -137,6 +137,35 @@ namespace drivers::usart {
                 ConfigGpioForUart(drivers::port::PORTG, drivers::port::PORTC, drivers::port::PIN_14, drivers::port::PIN_7, drivers::port::AF8); break;
             case U6_TX_PG14_RX_PG_9:
                 ConfigGpioForUart(drivers::port::PORTG, drivers::port::PORTG, drivers::port::PIN_14, drivers::port::PIN_9, drivers::port::AF8); break;
+        }
+    }
+
+    void USART::Remap(std::uint8_t remapPins)
+    {
+        switch (this->baseAddress)
+        {
+        case USART1:
+            RemapUsart1(static_cast<USART1_Remap>(remapPins));
+            break;
+
+        case USART2:
+            RemapUsart2(static_cast<USART2_Remap>(remapPins));
+            break;
+
+        case USART3:
+            RemapUsart3(static_cast<USART3_Remap>(remapPins));
+            break;
+
+        case UART4:
+            RemapUart4(static_cast<UART4_Remap>(remapPins));
+            break;
+
+        case USART6:
+            RemapUsart6(static_cast<USART6_Remap>(remapPins));
+            break;
+        
+        default:
+            break;
         }
     }
 
@@ -158,33 +187,33 @@ namespace drivers::usart {
     void USART::SetWordLength(WORD_LENGTH wordLength) noexcept     // This bit determines the word length. It is set or cleared by software.
     {
         if(wordLength == BIT_8)
-            readWrite::resetBit(baseAddress + CR1, M);
+            libs::MWR::resetBit(baseAddress + CR1, M);
         else
-            readWrite::setBit(baseAddress + CR1, M);
+            libs::MWR::setBit(baseAddress + CR1, M);
     }
 
     void USART::ReceiverEnable(STATUS receiver) noexcept           // This bit enables the receiver. It is set and cleared by software
     {
         if(receiver == DISABLE)
-            readWrite::resetBit(baseAddress + CR1, RE);
+            libs::MWR::resetBit(baseAddress + CR1, RE);
         else
-            readWrite::setBit(baseAddress + CR1, RE);
+            libs::MWR::setBit(baseAddress + CR1, RE);
     }
 
     void USART::TransmitterEnable(STATUS transmitter) noexcept  // This bit enables the transmitter. It is set and cleared by software
     {
         if(transmitter == DISABLE)
-            readWrite::resetBit(baseAddress + CR1, TE);
+            libs::MWR::resetBit(baseAddress + CR1, TE);
         else
-            readWrite::setBit(baseAddress + CR1, TE);
+            libs::MWR::setBit(baseAddress + CR1, TE);
     }
 
     void USART::UsartEnable(STATUS usartEnable) noexcept   // USART prescalers and outputs are stopped and the end of the current byte transfer in order to reduce power consumption
     {
         if(usartEnable == DISABLE)
-            readWrite::resetBit(baseAddress + CR1, UE);
+            libs::MWR::resetBit(baseAddress + CR1, UE);
         else
-            readWrite::setBit(baseAddress + CR1, UE);
+            libs::MWR::setBit(baseAddress + CR1, UE);
     }
 
     void USART::SetStopBitsLength(STOP_BIT stopBit) noexcept      // These bits are used for programming the stop bits.
@@ -193,8 +222,8 @@ namespace drivers::usart {
 //        bufReg = (bufReg & 0xFFFCFFF) | (stopBit << CR2_poz::STOP);
 //        readWrite::write_register<std::uint32_t>(baseAddress + CR2, bufReg);
 
-        readWrite::modifyResetRegister(baseAddress + CR2, 3 << STOP);
-        readWrite::modifySetRegister(baseAddress + CR2, stopBit << STOP);
+        libs::MWR::modifyResetRegister(baseAddress + CR2, 3 << STOP);
+        libs::MWR::modifySetRegister(baseAddress + CR2, stopBit << STOP);
     }
 
      void USART::SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept
@@ -208,7 +237,7 @@ namespace drivers::usart {
 
     void USART::TransmitData(std::uint8_t value) noexcept
     {
-        readWrite::write_register(baseAddress + DR, value);
+        libs::MWR::write_register(baseAddress + DR, value);
     }
 
     void USART::TransmitString(void* value, std::size_t size) noexcept
@@ -224,12 +253,12 @@ namespace drivers::usart {
 
     std::uint8_t USART::ReceiveData() noexcept
     {
-        return readWrite::read_register<std::uint8_t>(baseAddress + DR);
+        return libs::MWR::read_register<std::uint8_t>(baseAddress + DR);
     }
 
     bool USART::IsBusyFlag() noexcept
     {
-        return readWrite::readBit<std::uint32_t>(baseAddress + SR,TXE);
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR,TXE);
     }
 
     void USART::DeInit() noexcept
@@ -308,61 +337,6 @@ namespace drivers::usart {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, PS);
     }
 
-    void USART::SetPEIE(STATUS x){
-        if(x == DISABLE)
-            libs::MWR::resetBit(baseAddress + CR1, PEIE);
-        else
-            libs::MWR::setBit(baseAddress + CR1, PEIE);
-    }
-
-    bool USART::GetPEIE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, PEIE);
-    }
-
-    void USART::SetTXEIE(STATUS x){
-        if(x == DISABLE)
-            libs::MWR::resetBit(baseAddress + CR1, TXEIE);
-        else
-            libs::MWR::setBit(baseAddress + CR1, TXEIE);
-    }
-
-    bool USART::GetTXEIE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, TXEIE);
-    }
-
-    void USART::SetTCIE(STATUS x){
-        if(x == DISABLE)
-            libs::MWR::resetBit(baseAddress + CR1, TCIE);
-        else
-            libs::MWR::setBit(baseAddress + CR1, TCIE);
-    }
-
-    bool USART::GetTCIE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, TCIE);
-    }
-
-    void USART::SetRXNEIE(STATUS x){
-        if(x == DISABLE)
-            libs::MWR::resetBit(baseAddress + CR1, RXNEIE);
-        else
-            libs::MWR::setBit(baseAddress + CR1, RXNEIE);
-    }
-
-    bool USART::GetRXNEIE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, RXNEIE);
-    }
-
-    void USART::SetIDLEIE(STATUS x){
-        if(x == DISABLE)
-            libs::MWR::resetBit(baseAddress + CR1, IDLEIE);
-        else
-            libs::MWR::setBit(baseAddress + CR1, IDLEIE);
-    }
-
-    bool USART::GetIDLEIE() {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, IDLEIE);
-    }
-
     void USART::ReceiverWakeup(std::uint8_t x){
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR1, RWU);
@@ -383,6 +357,21 @@ namespace drivers::usart {
 
     bool USART::GetSendBreak() {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, SBK);
+    }
+
+    void USART::EnableInterrupt(INTERRUPT i)
+    {
+        libs::MWR::setBit(baseAddress + CR1, i);
+    }
+
+    void USART::DisableInterrupt(INTERRUPT i)
+    {
+        libs::MWR::resetBit(baseAddress + CR1, i);
+    }
+
+    bool USART::GetSourceInterrupt(INTERRUPT i)
+    {
+        return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, i);
     }
 
     void USART::LinModeEnable(STATUS x) {

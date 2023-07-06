@@ -25,9 +25,9 @@ void Bass::main() noexcept {
     portdRef = &gpioA;
     //Init(clockControl);
     //-----------------------------------------USART INIT---------------------------------
-    drivers::usart::USART usart2(clockControl, drivers::usart::USART2, drivers::usart::USART2_Remap::U2_TX_PA2_RX_PA3);
+    drivers::usart::USART usart2(clockControl, drivers::usart::USART2);
     uart_p_2 = &usart2;
-    usart2.SetRXNEIE(drivers::usart::ENABLE);
+    usart2.EnableInterrupt(drivers::usart::INTERRUPT::RXNEIE);
     char test[20] = "Test UART main\n\r";
     usart2.TransmitString(test, 16);
     libs::Cout cout(usart2);
