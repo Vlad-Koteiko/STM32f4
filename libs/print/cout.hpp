@@ -64,7 +64,7 @@ namespace  libs
 
         inline  void printChar(char ch) noexcept
         {
-          while (!debugUart.IsBusyFlag())
+          while (!debugUart.ReadFlag(drivers::usart::USART::SR_poz::TXE))
           {}
             debugUart.TransmitData(ch);
         }

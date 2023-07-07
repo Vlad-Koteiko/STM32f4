@@ -86,13 +86,6 @@ namespace images
             "⠄⠄⠄⠄⠄⠄⢸⡇⠄⠄⠄⠄⠄⠄⠄⠄⣿⠄⠄⠄⠄⠄⠠⡿\n\r"
             "⠄⠄⠄⠄⠄⠄⠄⠛⠄⠄⠄⠄⠄⠄⠄⠰⠇⠄⠄⠄⠄⠄⠟\n\r"
     };
-
-//    for (std::size_t i = 0; i < strWorf.size(); ++i) {
-//        while (!usart.IsBusyFlag())
-//        {}
-//        usart.TransmitData(strWorf[i]);
-//        }
-
 }
 
 

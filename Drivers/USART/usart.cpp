@@ -245,7 +245,7 @@ namespace drivers::usart {
         std::size_t temp = 0;
         while (size--)
         {
-            while (!IsBusyFlag())
+            while (!ReadFlag(TXE))
             {}
             TransmitData(*(static_cast<char *>(value) + temp++));
         }
@@ -254,11 +254,6 @@ namespace drivers::usart {
     std::uint8_t USART::ReceiveData() noexcept
     {
         return libs::MWR::read_register<std::uint8_t>(baseAddress + DR);
-    }
-
-    bool USART::IsBusyFlag() noexcept
-    {
-        return libs::MWR::readBit<std::uint32_t>(baseAddress + SR,TXE);
     }
 
     void USART::DeInit() noexcept
