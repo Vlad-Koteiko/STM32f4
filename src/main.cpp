@@ -110,7 +110,7 @@ void Bass::main() noexcept {
         //            gpioA.TogglePin(drivers::port::PIN_1);
         //            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
         //
-        //            clockControl.mDelay(500);
+                    clockControl.mDelay(500);
         //            cout<<counter<<cout.ENDL;
     }
 
