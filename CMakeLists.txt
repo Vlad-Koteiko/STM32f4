@@ -72,6 +72,7 @@ include_directories(Core/Inc
         Drivers/CMSIS/Include
         libs/print
         libs/MWR
+        libs/uartbuf
         Drivers/ClokControl
         Drivers/GPIO
         Drivers/USART
@@ -103,8 +104,9 @@ add_link_options(-T ${LINKER_SCRIPT})
 #--------------------------------------------------------------CPP------------------------------------------------------------------------------
 set(PROJECT_NAME_CPP stm32f4 )
 
-set(SORUCE_CPP src/main.cpp
+set(SOURCE_CPP src/main.cpp
                libs/print/cout.cpp
+
                Drivers/GPIO/gpio.cpp
                Drivers/USART/usart.cpp
                Drivers/NVIC/nvic.cpp
@@ -127,9 +129,10 @@ set(SORUCE_CPP src/main.cpp
         devices/display/consolas_9pt_bold.cpp
         libs/print/printf.c
         devices/adc/ad7705.cpp
-        )
+        libs/uartbuf/uartbuf.hpp
+        libs/uartbuf/uartbuf.cpp)
 
-add_executable(${PROJECT_NAME_CPP}.elf ${SORUCE_CPP} ${LINKER_SCRIPT})
+add_executable(${PROJECT_NAME_CPP}.elf ${SOURCE_CPP} ${LINKER_SCRIPT})
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME_CPP}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME_CPP}.bin)
