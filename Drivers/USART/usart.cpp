@@ -240,14 +240,14 @@ namespace drivers::usart {
         libs::MWR::write_register(baseAddress + DR, value);
     }
 
-    void USART::TransmitString(void* value, std::size_t size) noexcept
+    void USART::TransmitString(const void* value, std::size_t size) noexcept
     {
         std::size_t temp = 0;
         while (size--)
         {
             while (!ReadFlag(TXE))
             {}
-            TransmitData(*(static_cast<char *>(value) + temp++));
+            TransmitData(*(static_cast<const char *>(value) + temp++));
         }
     }
 

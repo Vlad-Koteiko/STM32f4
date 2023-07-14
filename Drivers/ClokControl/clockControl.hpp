@@ -332,7 +332,7 @@ public:
 
     ClockControl() = delete;
 
-    constexpr ClockControl(const Frequency& f) : variables(f)
+    ClockControl(const Frequency& f) : variables(f)
     {
         drivers::flash::Flash flash;
         flash.SetLatency(5);

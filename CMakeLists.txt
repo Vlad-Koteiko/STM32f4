@@ -30,6 +30,13 @@ endif()
 project(STM32F4 CXX C)
 set(CMAKE_CXX_STANDARD 17)
 
+
+set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIR})
+
+
 #Uncomment for hardware floating point
 #add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
 add_compile_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
@@ -71,6 +78,7 @@ include_directories(Core/Inc
         Drivers/CMSIS/Device/ST/STM32F4xx/Include
         Drivers/CMSIS/Include
         libs/print
+        libs/logger
         libs/MWR
         libs/uartbuf
         Drivers/ClokControl
@@ -130,7 +138,7 @@ set(SOURCE_CPP src/main.cpp
         libs/print/printf.c
         devices/adc/ad7705.cpp
         libs/uartbuf/uartbuf.hpp
-        libs/uartbuf/uartbuf.cpp)
+        libs/uartbuf/uartbuf.cpp libs/logger/format_check.hpp libs/logger/logger.hpp)
 
 add_executable(${PROJECT_NAME_CPP}.elf ${SOURCE_CPP} ${LINKER_SCRIPT})
 
@@ -142,3 +150,23 @@ add_custom_command(TARGET ${PROJECT_NAME_CPP}.elf POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${PROJECT_NAME_CPP}.elf> ${BIN_FILE}
         COMMENT "Building ${HEX_FILE}
 Building ${BIN_FILE}")
+
+find_program(UPLOADER st-flash )
+
+if( UPLOADER)
+
+    add_custom_target(upload
+    WORKING_DIRECTORY
+        ${CMAKE_BINARY_DIR}
+    COMMAND
+        ${UPLOADER} --reset write ${BIN_FILE} 0x8000000
+    DEPENDS
+        ${BIN_FILE}
+    COMMENT
+        "upload via st-flash"
+    VERBATIM
+  )
+
+add_dependencies(upload ${PROJECT_NAME_CPP}.elf )
+
+endif()

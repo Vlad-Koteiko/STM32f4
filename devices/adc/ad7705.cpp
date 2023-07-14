@@ -112,7 +112,7 @@ namespace devices::ad7705
     std::uint8_t Ad7705::ReadTestReg() noexcept {
         WriteCommunicationReg(TEST, 1, 0);
         std::uint8_t reg = 0;
-        printf("Reg for %x ", reg);
+        printf( "Reg for %x ", reg);
         LowCS();
         spi.TransmitReceiveArray(&reg, &reg, 1);
         HighCS();

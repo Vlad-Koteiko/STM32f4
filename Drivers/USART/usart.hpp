@@ -255,7 +255,7 @@ namespace drivers::usart {
         /// @brief Constructor for USART/UART
         /// @param _clockControl Reference ClockControl
         /// @param adr Address USART/UART
-        constexpr USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr) : clockControl(_clockControl), baseAddress(adr)
+        USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr) : clockControl(_clockControl), baseAddress(adr)
         {
             switch (adr)
             {
@@ -354,7 +354,7 @@ namespace drivers::usart {
         /// @brief Trinsmit string
         /// @param value Value for transmission
         /// @param size Size value
-        void TransmitString(void* value, std::size_t size) noexcept;
+        void TransmitString(const void* value, std::size_t size) noexcept;
 
         /// @brief Receive data
         /// @return Return value
