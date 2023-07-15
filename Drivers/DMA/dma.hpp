@@ -221,7 +221,7 @@ namespace drivers::dma
 
     public:
 
-        constexpr DMA(const drivers::clock::ClockControl &clockControl, const drivers::dma::ADDRESSES_DMA addressesDma)
+        DMA(const drivers::clock::ClockControl &clockControl, const drivers::dma::ADDRESSES_DMA addressesDma)
                 : clockControl(clockControl), baseAddress(addressesDma) {
 
             baseAddress == DMA_1 ?  clockControl.EnablePeripherals(drivers::clock::constants::DMA1_MODULE) :  clockControl.EnablePeripherals(drivers::clock::constants::DMA2_MODULE);

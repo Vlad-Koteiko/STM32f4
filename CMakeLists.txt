@@ -30,6 +30,13 @@ endif()
 project(STM32F4 CXX C)
 set(CMAKE_CXX_STANDARD 17)
 
+
+set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+
+#find_package(Boost)                           // enable for logger
+#include_directories(${Boost_INCLUDE_DIR})     // enable for logger
+
 #Uncomment for hardware floating point
 #add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
 add_compile_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
@@ -71,7 +78,9 @@ include_directories(Core/Inc
         Drivers/CMSIS/Device/ST/STM32F4xx/Include
         Drivers/CMSIS/Include
         libs/print
+        libs/logger
         libs/MWR
+        libs/uartbuf
         Drivers/ClokControl
         Drivers/GPIO
         Drivers/USART
@@ -103,8 +112,9 @@ add_link_options(-T ${LINKER_SCRIPT})
 #--------------------------------------------------------------CPP------------------------------------------------------------------------------
 set(PROJECT_NAME_CPP stm32f4 )
 
-set(SORUCE_CPP src/main.cpp
+set(SOURCE_CPP src/main.cpp
                libs/print/cout.cpp
+
                Drivers/GPIO/gpio.cpp
                Drivers/USART/usart.cpp
                Drivers/NVIC/nvic.cpp
@@ -127,9 +137,10 @@ set(SORUCE_CPP src/main.cpp
         devices/display/consolas_9pt_bold.cpp
         libs/print/printf.c
         devices/adc/ad7705.cpp
-        )
+        libs/uartbuf/uartbuf.hpp
+        libs/uartbuf/uartbuf.cpp libs/logger/format_check.hpp libs/logger/logger.hpp)
 
-add_executable(${PROJECT_NAME_CPP}.elf ${SORUCE_CPP} ${LINKER_SCRIPT})
+add_executable(${PROJECT_NAME_CPP}.elf ${SOURCE_CPP} ${LINKER_SCRIPT})
 
 set(HEX_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME_CPP}.hex)
 set(BIN_FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME_CPP}.bin)
@@ -139,3 +150,22 @@ add_custom_command(TARGET ${PROJECT_NAME_CPP}.elf POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${PROJECT_NAME_CPP}.elf> ${BIN_FILE}
         COMMENT "Building ${HEX_FILE}
 Building ${BIN_FILE}")
+
+find_program(UPLOADER st-flash )
+
+if( UPLOADER)
+    add_custom_target(upload
+    WORKING_DIRECTORY
+        ${CMAKE_BINARY_DIR}
+    COMMAND
+        ${UPLOADER} --reset write ${BIN_FILE} 0x8000000
+    DEPENDS
+        ${BIN_FILE}
+    COMMENT
+        "upload via st-flash"
+    VERBATIM
+  )
+
+add_dependencies(upload ${PROJECT_NAME_CPP}.elf )
+
+endif()
