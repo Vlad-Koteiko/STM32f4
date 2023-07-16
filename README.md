@@ -1,10 +1,10 @@
-For build. In build directory:
+Build. In build directory:
 ```sh
 conan install .. -of . 
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../cmake/stm32-toolchain.cmake
 cmake --build . 
 ```
-For upload
+Upload via stlink-tools
 ```sh
 cmake --build . --target upload
 ```

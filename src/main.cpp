@@ -122,12 +122,14 @@ void Bass::main() noexcept {
 
     while (1)
     {
-      
+              
+      clockControl.mDelay(500);
+      gpioA.TogglePin(drivers::port::PIN_1);
       LOG("hello world!\n");
-      // LOG("%s\n", "hi"_hash);
-      // LOG("%s %d", "What the fuck"_hash, 1);
-      //float c = 1.43;
-      //LOG("%d %u %f %f %c", -1, 12u, c, 1.33f, 'c');
+      LOG("%s\n", "hi"_hash);
+      LOG("%s %d", "What the fuck"_hash, 1);
+      float c = 1.43;
+      LOG("%d %u %f %f %c", -1, 12u, c, 1.33f, 'c');
 
 
 //      uartOut << "hello\n\r";
