@@ -85,7 +85,6 @@ void Bass::main() noexcept {
 
     while (1)
     {
-      //printf("hello\n\r");
         //            gpioD.TogglePin(drivers::port::PIN_12);
         //            clockControl.mDelay(500);
         //            gpioD.TogglePin(drivers::port::PIN_13);

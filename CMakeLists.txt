@@ -113,23 +113,23 @@ add_link_options(-T ${LINKER_SCRIPT})
 set(PROJECT_NAME_CPP stm32f4 )
 
 set(SOURCE_CPP src/main.cpp
-               libs/print/cout.cpp
+        libs/print/cout.cpp
 
-               Drivers/GPIO/gpio.cpp
-               Drivers/USART/usart.cpp
-               Drivers/NVIC/nvic.cpp
-               Drivers/GPIO/gpio.cpp
-               Drivers/Startup/StartupSTM32F407.cpp
-               Drivers/EXTI/exti.cpp
-               Drivers/SYSCFG/syscfg.cpp
-               Drivers/ClokControl/clockControl.cpp
-               Drivers/ClokControl/systick.cpp
-               Drivers/EXTI/exti.cpp
-               Drivers/FLASH/flash.cpp
-               Drivers/IWDG/iwdg.cpp
-               Drivers/PWR/pwr.cpp
-               Drivers/TIMERS/basictimer.cpp
-               Drivers/DMA/dma.cpp
+        Drivers/GPIO/gpio.cpp
+        Drivers/USART/usart.cpp
+        Drivers/NVIC/nvic.cpp
+        Drivers/GPIO/gpio.cpp
+        Drivers/Startup/StartupSTM32F407.cpp
+        Drivers/EXTI/exti.cpp
+        Drivers/SYSCFG/syscfg.cpp
+        Drivers/ClokControl/clockControl.cpp
+        Drivers/ClokControl/systick.cpp
+        Drivers/EXTI/exti.cpp
+        Drivers/FLASH/flash.cpp
+        Drivers/IWDG/iwdg.cpp
+        Drivers/PWR/pwr.cpp
+        Drivers/TIMERS/basictimer.cpp
+        Drivers/DMA/dma.cpp
         Drivers/RNG/rng.cpp
         Drivers/SPI/spi.cpp
         devices/flash/w25q16.cpp
@@ -155,17 +155,17 @@ find_program(UPLOADER st-flash )
 
 if( UPLOADER)
     add_custom_target(upload
-    WORKING_DIRECTORY
-        ${CMAKE_BINARY_DIR}
-    COMMAND
-        ${UPLOADER} --reset write ${BIN_FILE} 0x8000000
-    DEPENDS
-        ${BIN_FILE}
-    COMMENT
-        "upload via st-flash"
-    VERBATIM
-  )
+            WORKING_DIRECTORY
+            ${CMAKE_BINARY_DIR}
+            COMMAND
+            ${UPLOADER} --reset write ${BIN_FILE} 0x8000000
+            DEPENDS
+            ${BIN_FILE}
+            COMMENT
+            "upload via st-flash"
+            VERBATIM
+            )
 
-add_dependencies(upload ${PROJECT_NAME_CPP}.elf )
+    add_dependencies(upload ${PROJECT_NAME_CPP}.elf )
 
 endif()
