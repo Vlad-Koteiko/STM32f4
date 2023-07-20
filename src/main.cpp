@@ -18,24 +18,25 @@ std::uint8_t recvDma[5];
 void Bass::main() noexcept {
 
     drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
-    libs::MWR::write_register(0xE000ED88, 0xF00000);
-    drivers::port::GPIO gpioA(clockControl, drivers::port::PORTA);
-    auto portdRef = &gpioA;
+    clockControl.init();
+    libs::MWR::write_register(0xE000ED88, 0xF00000); // support FPU math
+    drivers::port::GPIO gpioD(clockControl, drivers::port::PORTD);
+    auto portdRef = &gpioD;
     //Init(clockControl);
     //-----------------------------------------USART INIT---------------------------------
-    drivers::usart::USART usart2(clockControl, drivers::usart::USART2);
-    uart_p_2 = &usart2;
-    usart2.EnableInterrupt(drivers::usart::INTERRUPT::RXNEIE);
+//    drivers::usart::USART usart2(clockControl, drivers::usart::USART2);
+//    uart_p_2 = &usart2;
+//    usart2.EnableInterrupt(drivers::usart::INTERRUPT::RXNEIE);
 
-    gpioA.InitPin(drivers::port::PIN_1, drivers::port::OUTPUT);
-    //        gpioD.InitPin(drivers::port::PIN_13, drivers::port::OUTPUT);
-    //        gpioD.InitPin(drivers::port::PIN_14, drivers::port::OUTPUT);
-    //        gpioD.InitPin(drivers::port::PIN_15, drivers::port::OUTPUT);
+    gpioD.InitPin(drivers::port::PIN_12, drivers::port::OUTPUT);
+            gpioD.InitPin(drivers::port::PIN_13, drivers::port::OUTPUT);
+            gpioD.InitPin(drivers::port::PIN_14, drivers::port::OUTPUT);
+            gpioD.InitPin(drivers::port::PIN_15, drivers::port::OUTPUT);
 
-    gpioA.SetPin(drivers::port::PIN_1, drivers::port::PIN_SET);
-    //        gpioD.SetPin(drivers::port::PIN_13, drivers::port::PIN_SET);
-    //        gpioD.SetPin(drivers::port::PIN_14, drivers::port::PIN_SET);
-    //        gpioD.SetPin(drivers::port::PIN_15, drivers::port::PIN_SET);
+    gpioD.SetPin(drivers::port::PIN_12, drivers::port::PIN_SET);
+            gpioD.SetPin(drivers::port::PIN_13, drivers::port::PIN_SET);
+            gpioD.SetPin(drivers::port::PIN_14, drivers::port::PIN_SET);
+            gpioD.SetPin(drivers::port::PIN_15, drivers::port::PIN_SET);
     //        clockControl.mDelay(500);
 
     //------------------------------------------------------------------------------------
@@ -55,8 +56,8 @@ void Bass::main() noexcept {
     //        timer6.EnableARRPreload();
     //        timer6.EnableCounter();
 
-    drivers::dma::DMA dma1(clockControl, drivers::dma::ADDRESSES_DMA::DMA_1);
-    auto globalDma1 = &dma1;
+//    drivers::dma::DMA dma1(clockControl, drivers::dma::ADDRESSES_DMA::DMA_1);
+//    auto globalDma1 = &dma1;
 
 //
 //    drivers::dma::DMA_Config dmaConf;
@@ -85,11 +86,13 @@ void Bass::main() noexcept {
 
     while (1)
     {
-        //            gpioD.TogglePin(drivers::port::PIN_12);
-        //            clockControl.mDelay(500);
-        //            gpioD.TogglePin(drivers::port::PIN_13);
-        //            clockControl.mDelay(500);
-        //            gpioD.TogglePin(drivers::port::PIN_14);
+                    gpioD.TogglePin(drivers::port::PIN_12);
+                    clockControl.mDelay(500);
+                    gpioD.TogglePin(drivers::port::PIN_13);
+                    clockControl.mDelay(500);
+                    gpioD.TogglePin(drivers::port::PIN_14);
+                    clockControl.mDelay(500);
+                    gpioD.TogglePin(drivers::port::PIN_15);
         //            clockControl.mDelay(500);
         //            gpioA.TogglePin(drivers::port::PIN_1);
         //            cout << "bufferReceve = " << bufferReceve << cout.ENDL;

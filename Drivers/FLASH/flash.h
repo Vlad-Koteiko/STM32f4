@@ -98,42 +98,42 @@ namespace drivers::flash
 
     public:
 
-        void SetLatency(std::uint8_t latency) noexcept;
-        std::uint8_t GetLatency() noexcept;
+        void SetLatency(std::uint8_t latency) const noexcept;
+       [[nodiscard]] std::uint8_t GetLatency() const noexcept;
 
-        void EnablePrefetch() noexcept;
-        void DisablePrefetch() noexcept;
-        bool IsPrefetchEnabled() noexcept;
-        void EnableInstCache() noexcept;
-        void DisableInstCache() noexcept;
-        void EnableDataCache() noexcept;
-        void DisableDataCache() noexcept;
-        void EnableInstCacheReset() noexcept;
-        void DisableInstCacheReset() noexcept;
-        void EnableDataCacheReset() noexcept;
-        void DisableDataCacheReset() noexcept;
+        void EnablePrefetch() const noexcept;
+        void DisablePrefetch() const noexcept;
+        bool IsPrefetchEnabled() const noexcept;
+        void EnableInstCache() const noexcept;
+        void DisableInstCache() const noexcept;
+        void EnableDataCache() const noexcept;
+        void DisableDataCache() const noexcept;
+        void EnableInstCacheReset() const noexcept;
+        void DisableInstCacheReset() const noexcept;
+        void EnableDataCacheReset() const noexcept;
+        void DisableDataCacheReset() const noexcept;
 
-        void Unlock();
-        void Lock();
-        void ObUnlock();
-        void ObLock();
+        void Unlock() const noexcept;
+        void Lock() const noexcept;
+        void ObUnlock() const noexcept;
+        void ObLock() const noexcept;
 
-        void ProgrammDoubleWord(std::uintptr_t address, std::uint64_t data);
-        void ProgrammWord(std::uintptr_t address, std::uint32_t data);
-        void ProgrammHalfWord(std::uintptr_t address, std::uint16_t data);
-        void ProgrammByte(std::uintptr_t address, std::uint8_t data);
+        void ProgrammDoubleWord(std::uintptr_t address, std::uint64_t data) const noexcept;
+        void ProgrammWord(std::uintptr_t address, std::uint32_t data) const noexcept;
+        void ProgrammHalfWord(std::uintptr_t address, std::uint16_t data) const noexcept;
+        void ProgrammByte(std::uintptr_t address, std::uint8_t data) const noexcept;
 
-        std::uint64_t ReadDoubleWord(std::uintptr_t address);
-        std::uint32_t ReadWord(std::uintptr_t address);
-        std::uint16_t ReadHalfWord(std::uintptr_t address);
-        std::uint8_t ReadByte(std::uintptr_t address);
+        [[nodiscard]] std::uint64_t ReadDoubleWord(std::uintptr_t address) const noexcept;
+        [[nodiscard]] std::uint32_t ReadWord(std::uintptr_t address) const noexcept;
+        [[nodiscard]] std::uint16_t ReadHalfWord(std::uintptr_t address) const noexcept;
+        [[nodiscard]] std::uint8_t ReadByte(std::uintptr_t address) const noexcept;
 
-        void EraseSector(std::uint16_t sector, VOLTAGE voltage);
+        void EraseSector(std::uint16_t sector, VOLTAGE voltage) const noexcept;
 
-        void SetERRIE(STATUS x);
-        bool GetERRIE();
-        void SetEOPIE(STATUS x);
-        bool GetEOPIE();
+        void SetERRIE(STATUS x) const noexcept;
+        bool GetERRIE() const noexcept;
+        void SetEOPIE(STATUS x) const noexcept;
+        bool GetEOPIE() const noexcept;
     };
 }
 

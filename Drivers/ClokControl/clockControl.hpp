@@ -213,9 +213,9 @@ enum PERIPHERALS : std::uint8_t {
 };
 }
 
-constexpr auto countFreqHCLK =         [](const Frequency& f) constexpr noexcept -> std::uint32_t {return f;};
-constexpr auto countSystemCoreClock =  [](const Frequency& f) constexpr noexcept -> std::uint32_t {return f;};
-constexpr auto countFreqAPB1 =         [](const Frequency& f) constexpr noexcept -> std::uint32_t {
+constexpr auto countFreqHCLK =         [](const Frequency f) constexpr noexcept -> std::uint32_t {return f;};
+constexpr auto countSystemCoreClock =  [](const Frequency f) constexpr noexcept -> std::uint32_t {return f;};
+constexpr auto countFreqAPB1 =         [](const Frequency f) constexpr noexcept -> std::uint32_t {
     std::uint32_t temp = f;
     switch (f) {
     case FREQ_48000000:
@@ -258,11 +258,18 @@ constexpr auto countFreqAPB2 =         [](const Frequency& f) constexpr noexcept
 
 class ClockControl
 {
+    using ReadWriteRegister = libs::MWR;
+
     static constexpr std::uintptr_t baseRegisterRCC     = 0x40023800;
     static constexpr std::uintptr_t baseRegisterSysTick = 0xE000E010;
     static constexpr std::uint8_t   AHB_2               = 32;
     static constexpr std::uint8_t   AHP_1               = 64;
     static constexpr std::uint8_t   AHP_2               = 96;
+
+    std::uint32_t  systemCoreClock; //Hz
+    std::uint32_t  freqAPB1;        //Hz
+    std::uint32_t  freqAPB2;        //Hz
+    std::uint32_t  freqHCLK;        //Hz
 
     enum RegisterRCC : std::uintptr_t
     {
@@ -299,93 +306,54 @@ class ClockControl
         CALIB = baseRegisterSysTick + 0x0C    // Offset: 0x00C (R/ )  SysTick Calibration Register
     };
 
-    class Variables
-    {
-    public:
-        constexpr Variables(const Frequency& f) : systemCoreClock(countSystemCoreClock(f)), freqAPB1(countFreqAPB1(f)),
-            freqAPB2(countFreqAPB2(f)),               freqHCLK(countFreqHCLK(f))
-            {};
+    constexpr std::uint8_t getPeripheralsNumber(const std::uint8_t ,const std::uint8_t) const noexcept;
 
-        std::uint32_t  systemCoreClock; //Hz
-        std::uint32_t  freqAPB1;        //Hz
-        std::uint32_t  freqAPB2;        //Hz
-        std::uint32_t  freqHCLK;        //Hz
-    };
+    void setBaseConfig(std::array<std::uint8_t,4>, const constants::PrescalerAHB, const constants::PrescalerAPB,
+                       const constants::PrescalerAPB) noexcept;
 
-    Variables variables;
-
-    constexpr std::uint8_t getPeripheralsNumber(const std::uint8_t& ,const std::uint8_t&) const noexcept;
-
-    void setBaseConfig(std::array<std::uint8_t,4>, const constants::PrescalerAHB&, const constants::PrescalerAPB&,
-                       const constants::PrescalerAPB&) noexcept;
-
-    void AHB1EnableClock( const std::uint8_t &typeEnableClock)  const noexcept;
-    void AHB1DisableClock(const std::uint8_t &disableClock)     const noexcept;
-    void AHB2EnableClock( const std::uint8_t &typeEnableClock)  const noexcept;
-    void AHB2DisableClock(const std::uint8_t &disableClock)     const noexcept;
-    void APB1EnableClock( const std::uint8_t &typeEnableClock)  const noexcept;
-    void APB1DisableClock(const std::uint8_t &disableClock)     const noexcept;
-    void APB2EnableClock( const std::uint8_t &typeEnableClock)  const noexcept;
-    void APB2DisableClock(const std::uint8_t &disableClock)     const noexcept;
+    void AHB1EnableClock( const std::uint8_t typeEnableClock)  const noexcept;
+    void AHB1DisableClock(const std::uint8_t disableClock)     const noexcept;
+    void AHB2EnableClock( const std::uint8_t typeEnableClock)  const noexcept;
+    void AHB2DisableClock(const std::uint8_t disableClock)     const noexcept;
+    void APB1EnableClock( const std::uint8_t typeEnableClock)  const noexcept;
+    void APB1DisableClock(const std::uint8_t disableClock)     const noexcept;
+    void APB2EnableClock( const std::uint8_t typeEnableClock)  const noexcept;
+    void APB2DisableClock(const std::uint8_t disableClock)     const noexcept;
 
 public:
 
     ClockControl() = delete;
 
-    ClockControl(const Frequency& f) : variables(f)
+    constexpr ClockControl(const Frequency f) : systemCoreClock(countSystemCoreClock(f)),
+                                                 freqAPB1(countFreqAPB1(f)),
+                                                 freqAPB2(countFreqAPB2(f)),
+                                                 freqHCLK(countFreqHCLK(f))
     {
-        drivers::flash::Flash flash;
-        flash.SetLatency(5);
-        while (flash.GetLatency() != 5)
-        {}
 
-        HSE_Enable();
-
-        while (!HSE_IsReady())
-        {}
-
-        HSI_Disable();
-
-        switch (f) {
-        case FREQ_48000000:
-            setBaseConfig({96,4,0,4}, constants::AHB_DIVISOR_BY_2, constants::APB_DIVISOR_BY_2, constants::APB_OFF);
-            break;
-
-        case FREQ_50000000:
-            setBaseConfig({50,4,0,4},constants::AHB_OFF,constants::APB_DIVISOR_BY_2,constants::APB_DIVISOR_BY_2);
-            break;
-
-        case FREQ_100000000:
-            setBaseConfig({100,4,0,4},constants::AHB_OFF,constants::APB_DIVISOR_BY_4,constants::APB_DIVISOR_BY_2);
-            break;
-
-        case FREQ_168000000:
-            setBaseConfig({168,4,0,7},constants::AHB_OFF,constants::APB_DIVISOR_BY_4,constants::APB_DIVISOR_BY_2);
-            break;
-        }
-        InitTickSysTick(variables.freqHCLK,1000);
     }
 
+    void init() noexcept;
+
     constexpr std::uint32_t GetFreqSystemCoreClock() const noexcept  {
-        return variables.systemCoreClock;
+        return systemCoreClock;
     }
 
     constexpr std::uint32_t GetFreqHCLK()  const noexcept{
-        return variables.freqHCLK;
+        return freqHCLK;
     }
 
     constexpr std::uint32_t GetFreqAPB1() const noexcept  {
-        return variables.freqAPB1;
+        return freqAPB1;
     }
 
     constexpr std::uint32_t GetFreqAPB2()  const noexcept {
-        return variables.freqAPB2;
+        return freqAPB2;
     }
 
     void SetCalibTrimming(std::uint32_t value) const noexcept;
-    void SetAHBPrescaler(const constants::PrescalerAHB& prescaler) const noexcept;
-    void SetAPB1Prescaler(const constants::PrescalerAPB& prescaler) const noexcept;
-    void SetAPB2Prescaler(const constants::PrescalerAPB& prescaler) const noexcept;
+    void SetAHBPrescaler(const constants::PrescalerAHB prescaler) const noexcept;
+    void SetAPB1Prescaler(const constants::PrescalerAPB prescaler) const noexcept;
+    void SetAPB2Prescaler(const constants::PrescalerAPB prescaler) const noexcept;
     void SetSysClkSource(std::uint32_t value) const noexcept;
     void InitTickSysTick(std::uint32_t HCLKFrequency, std::uint32_t ticks) const noexcept;
 
@@ -425,8 +393,8 @@ public:
     void PLL_SetSource(std::uint8_t bit) const noexcept;
     void mDelay(std::uint32_t Delay) const noexcept;
 
-    void EnablePeripherals(const  constants::PERIPHERALS &name) const noexcept;
-    void DisablePeripherals(const constants::PERIPHERALS &name) const noexcept;
+    void EnablePeripherals(const  constants::PERIPHERALS name) const noexcept;
+    void DisablePeripherals(const constants::PERIPHERALS name) const noexcept;
 
     /**
          * Включить внутренний генератор

@@ -151,9 +151,9 @@ add_custom_command(TARGET ${PROJECT_NAME_CPP}.elf POST_BUILD
         COMMENT "Building ${HEX_FILE}
 Building ${BIN_FILE}")
 
-find_program(UPLOADER st-flash )
+find_program(UPLOADER st-flash)
 
-if( UPLOADER)
+if(UPLOADER)
     add_custom_target(upload
             WORKING_DIRECTORY
             ${CMAKE_BINARY_DIR}
