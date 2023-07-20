@@ -6,10 +6,11 @@
 
 #include "MWR.hpp"
 #include "clockControl.hpp"
-#include "syscfg.h"
 #include "exti.h"
+#include "syscfg.h"
 
-namespace drivers::nvic {
+namespace drivers::nvic
+{
 
     enum LINE_IRQn : std::uint8_t
     {
@@ -97,18 +98,19 @@ namespace drivers::nvic {
         FPU
     };
 
-    class NVIC {
-
+    class NVIC
+    {
         static constexpr std::uint32_t baseAddress = 0xE000E100;
 
-        enum RegisterNVIC : std::uintptr_t {
-            ISER = baseAddress,         // Interrupt Set Enable Register,
-            ICER = baseAddress + 0x080, // Interrupt Clear Enable Register,
-            ISPR = baseAddress + 0x100, // Interrupt Set Pending Register,
-            ICPR = baseAddress + 0x180, // Interrupt Clear Pending Register
-            IABR = baseAddress + 0x200, // Interrupt Active bit Register
-            IP   = baseAddress + 0x300, // Interrupt Priority Register (8Bit wide)
-            STIR = baseAddress + 0x18   // Software Trigger Interrupt Register
+        enum RegisterNVIC : std::uintptr_t
+        {
+            ISER = baseAddress,            // Interrupt Set Enable Register,
+            ICER = baseAddress + 0x080,    // Interrupt Clear Enable Register,
+            ISPR = baseAddress + 0x100,    // Interrupt Set Pending Register,
+            ICPR = baseAddress + 0x180,    // Interrupt Clear Pending Register
+            IABR = baseAddress + 0x200,    // Interrupt Active bit Register
+            IP   = baseAddress + 0x300,    // Interrupt Priority Register (8Bit wide)
+            STIR = baseAddress + 0x18      // Software Trigger Interrupt Register
         };
 
     public:
@@ -118,7 +120,7 @@ namespace drivers::nvic {
         static void NVIC_DisableIRQ(LINE_IRQn irq) noexcept;
         static bool NVIC_GetEnabledIRQ(LINE_IRQn irq) noexcept;
 
-        static void NVIC_SetPriority(LINE_IRQn irq, std::uint32_t priority) noexcept;
+        static void         NVIC_SetPriority(LINE_IRQn irq, std::uint32_t priority) noexcept;
         static std::uint8_t NVIC_GetPriority(LINE_IRQn irq) noexcept;
 
         static bool NVIC_GetPendingIRQ(LINE_IRQn irq) noexcept;
@@ -129,6 +131,6 @@ namespace drivers::nvic {
         static void NVIC_SetPriorityGrouping(std::uint32_t priority_grouping) noexcept;
         static void NVIC_SystemReset() noexcept;
     };
-}
+}    // namespace drivers::nvic
 
-#endif //UART_NVIC_H
+#endif    // UART_NVIC_H

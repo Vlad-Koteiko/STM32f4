@@ -38,7 +38,7 @@ namespace drivers::dma
             TRANSFER_COMPLETE_INTERRUPT = 5
         };
 
-        enum FLAG_STREAM_CONFIGURATION: std::uint8_t
+        enum FLAG_STREAM_CONFIGURATION : std::uint8_t
         {
             STREAM_ENABLE                           = 0,
             DIRECT_MODE_ERROR_INTERRUPT_ENABLE      = 1,
@@ -61,7 +61,7 @@ namespace drivers::dma
             CHANNEL                                 = 25
         };
 
-        enum FLAG_FIFO_CONTROL_REGISTER: std::uint8_t
+        enum FLAG_FIFO_CONTROL_REGISTER : std::uint8_t
         {
             FIFO_THRESHOLD_SELECTION    = 0,
             DIRECT_MODE_DISABLE         = 2,
@@ -114,10 +114,10 @@ namespace drivers::dma
         enum STATUS : std::uint8_t
         {
             DISABLE = 0,
-            ENABLE = 1
+            ENABLE  = 1
         };
 
-        enum  TARGET : std::uint8_t
+        enum TARGET : std::uint8_t
         {
             MEMORY0,
             MEMORY1
@@ -130,50 +130,52 @@ namespace drivers::dma
             FIFO_0_75 = 2,
             FIFO_FULL = 3
         };
-    };
+    };    // namespace constants
 
     struct DMA_Config
     {
-        constants::STATUS directModeErrorInterrupt;
-        constants::STATUS transferErrorInterrupt;
-        constants::STATUS halfTransferInterrupt;
-        constants::STATUS transferCompleteInterrupt;
-        constants::STATUS peripheralFlowController;
-        constants::DATA_DIRECTION dataTransferDirection;
-        constants::STATUS circularMode;
-        constants::STATUS peripheralIncrement;
-        constants::STATUS memoryIncrement;
-        constants::DATA_SIZE peripheralDataSize;
-        constants::DATA_SIZE memoryDataSize;
-        constants::STATUS peripheralIncrementOffsetSize;
-        constants::PRIORITY priorityLevel;
-        constants::STATUS doubleBufferMode;
-        constants::TARGET currentTarget;
-        constants::PERIPHERAL_BURST peripheralBurstTransferConfiguration;
-        constants::PERIPHERAL_BURST memoryBurstTransferConfiguration;
+        constants::STATUS            directModeErrorInterrupt;
+        constants::STATUS            transferErrorInterrupt;
+        constants::STATUS            halfTransferInterrupt;
+        constants::STATUS            transferCompleteInterrupt;
+        constants::STATUS            peripheralFlowController;
+        constants::DATA_DIRECTION    dataTransferDirection;
+        constants::STATUS            circularMode;
+        constants::STATUS            peripheralIncrement;
+        constants::STATUS            memoryIncrement;
+        constants::DATA_SIZE         peripheralDataSize;
+        constants::DATA_SIZE         memoryDataSize;
+        constants::STATUS            peripheralIncrementOffsetSize;
+        constants::PRIORITY          priorityLevel;
+        constants::STATUS            doubleBufferMode;
+        constants::TARGET            currentTarget;
+        constants::PERIPHERAL_BURST  peripheralBurstTransferConfiguration;
+        constants::PERIPHERAL_BURST  memoryBurstTransferConfiguration;
         constants::CHANNEL_SELECTION channel;
 
-        constants::FIFO_THRESHOLD  FIFOThresholdSelection;
-        constants::STATUS directModeDisableInvers;
-        constants::STATUS fifoErrorInterrupt;
+        constants::FIFO_THRESHOLD FIFOThresholdSelection;
+        constants::STATUS         directModeDisableInvers;
+        constants::STATUS         fifoErrorInterrupt;
 
         constants::NUMBER_STREAM stream;
     };
 
-    class DMA {
-
+    class DMA
+    {
         using readWriteRegister = libs::MWR;
         const drivers::clock::ClockControl &clockControl;
-        const std::uintptr_t baseAddress;
+        const std::uintptr_t                baseAddress;
 
-        enum RegisterDMA : std::ptrdiff_t {
-            LISR    = 0,    /*!< DMA low interrupt status register,       Address offset: 0x00 */
-            HISR    = 0x04, /*!< DMA high interrupt status register,      Address offset: 0x04 */
-            LIFCR   = 0x08, /*!< DMA low interrupt flag clear register,   Address offset: 0x08 */
-            HIFCR   = 0x0C, /*!< DMA high interrupt flag clear register,  Address offset: 0x0C */
+        enum RegisterDMA : std::ptrdiff_t
+        {
+            LISR  = 0,    /*!< DMA low interrupt status register,       Address offset: 0x00 */
+            HISR  = 0x04, /*!< DMA high interrupt status register,      Address offset: 0x04 */
+            LIFCR = 0x08, /*!< DMA low interrupt flag clear register,   Address offset: 0x08 */
+            HIFCR = 0x0C, /*!< DMA high interrupt flag clear register,  Address offset: 0x0C */
         };
 
-        enum RegisterSTREAM : std::ptrdiff_t {
+        enum RegisterSTREAM : std::ptrdiff_t
+        {
             CR   = 0,    /*!< DMA stream 0 configuration register            Address offset: 0x0 */
             NDTR = 0x04, /*!< DMA stream 0 number of data register        Address offset: 0x04 */
             PAR  = 0x08, /*!< DMA stream 0 peripheral address register    Address offset: 0x08 */
@@ -182,73 +184,108 @@ namespace drivers::dma
             FCR  = 0x14, /*!< DMA stream 0 FIFO control register          Address offset: 0x14 */
         };
 
-        constexpr std::uint32_t getAddress(const drivers::dma::constants::NUMBER_STREAM &numberStream, std::ptrdiff_t offset) const noexcept {
+        constexpr std::uint32_t getAddress(
+            const drivers::dma::constants::NUMBER_STREAM &numberStream,
+            std::ptrdiff_t                                offset) const noexcept
+        {
             return static_cast<std::uint32_t>(baseAddress + numberStream + offset);
         }
 
-        constexpr std::uintptr_t getAddress(std::ptrdiff_t offset) const noexcept {
+        constexpr std::uintptr_t getAddress(std::ptrdiff_t offset) const noexcept
+        {
             return (baseAddress + offset);
         }
 
-        constexpr std::uint8_t getFlagFIFOcontrolValue(const drivers::dma::constants::FLAG_FIFO_CONTROL_REGISTER &flagFifoControlRegister, std::uint32_t value) const noexcept {
+        constexpr std::uint8_t getFlagFIFOcontrolValue(
+            const drivers::dma::constants::FLAG_FIFO_CONTROL_REGISTER &flagFifoControlRegister,
+            std::uint32_t                                              value) const noexcept
+        {
             return ((value >> flagFifoControlRegister) & flagFifoControlRegister);
         }
 
-        constexpr std::uint8_t getNumberStream(const constants::NUMBER_STREAM& numberStream) const noexcept {
-            switch (numberStream) {
-                case constants::Stream_0: return 0;
+        constexpr std::uint8_t getNumberStream(
+            const constants::NUMBER_STREAM &numberStream) const noexcept
+        {
+            switch(numberStream)
+            {
+                case constants::Stream_0:
+                    return 0;
                     break;
-                case constants::Stream_1: return 6;
+                case constants::Stream_1:
+                    return 6;
                     break;
-                case constants::Stream_2: return 16;
+                case constants::Stream_2:
+                    return 16;
                     break;
-                case constants::Stream_3: return 22;
+                case constants::Stream_3:
+                    return 22;
                     break;
-                case constants::Stream_4: return 0;
+                case constants::Stream_4:
+                    return 0;
                     break;
-                case constants::Stream_5: return 6;
+                case constants::Stream_5:
+                    return 6;
                     break;
-                case constants::Stream_6: return 16;
+                case constants::Stream_6:
+                    return 16;
                     break;
-                case constants::Stream_7: return 22;
+                case constants::Stream_7:
+                    return 22;
                     break;
-                default:       return 99;
+                default:
+                    return 99;
                     break;
             }
         }
 
-        bool getFlagInterruptStatus(const constants::NUMBER_STREAM&,const std::uint8_t&, bool) const noexcept;
+        bool getFlagInterruptStatus(const constants::NUMBER_STREAM &,
+                                    const std::uint8_t &,
+                                    bool) const noexcept;
 
     public:
-
-        DMA(const drivers::clock::ClockControl &clockControl, const drivers::dma::ADDRESSES_DMA addressesDma)
-                : clockControl(clockControl), baseAddress(addressesDma) {
-
-            baseAddress == DMA_1 ?  clockControl.EnablePeripherals(drivers::clock::constants::DMA1_MODULE) :  clockControl.EnablePeripherals(drivers::clock::constants::DMA2_MODULE);
+        DMA(const drivers::clock::ClockControl &clockControl,
+            const drivers::dma::ADDRESSES_DMA   addressesDma) :
+            clockControl(clockControl), baseAddress(addressesDma)
+        {
+            baseAddress == DMA_1 ?
+                clockControl.EnablePeripherals(drivers::clock::constants::DMA1_MODULE) :
+                clockControl.EnablePeripherals(drivers::clock::constants::DMA2_MODULE);
         }
 
         /* Interrupt status register */
-        [[nodiscard]] bool getFlagInterrupt(const constants::NUMBER_STREAM&, const constants::FLAG_INTERRUPT_STATUS&) const noexcept;
-        void clearFlagInterrupt(const constants::NUMBER_STREAM&, const constants::FLAG_INTERRUPT_STATUS&) const noexcept;
+        [[nodiscard]] bool getFlagInterrupt(
+            const constants::NUMBER_STREAM &,
+            const constants::FLAG_INTERRUPT_STATUS &) const noexcept;
+        void clearFlagInterrupt(const constants::NUMBER_STREAM &,
+                                const constants::FLAG_INTERRUPT_STATUS &) const noexcept;
 
         /* DMA stream x configuration register */
-        void setStreamConfigurationRegister(const constants::NUMBER_STREAM&, const constants::FLAG_STREAM_CONFIGURATION&, std::uint8_t) const noexcept;
-        void setNumberDataRegister(const constants::NUMBER_STREAM&, std::uint16_t) const noexcept;
-        void setPeripheralAddressRegister(const constants::NUMBER_STREAM&, std::uint32_t) const noexcept;
-        void setMemoryAddressRegister_0(const constants::NUMBER_STREAM&, std::uint32_t) const noexcept;
-        void setMemoryAddressRegister_1(const constants::NUMBER_STREAM&, std::uint32_t) const noexcept;
+        void setStreamConfigurationRegister(const constants::NUMBER_STREAM &,
+                                            const constants::FLAG_STREAM_CONFIGURATION &,
+                                            std::uint8_t) const noexcept;
+        void setNumberDataRegister(const constants::NUMBER_STREAM &, std::uint16_t) const noexcept;
+        void setPeripheralAddressRegister(const constants::NUMBER_STREAM &,
+                                          std::uint32_t) const noexcept;
+        void setMemoryAddressRegister_0(const constants::NUMBER_STREAM &,
+                                        std::uint32_t) const noexcept;
+        void setMemoryAddressRegister_1(const constants::NUMBER_STREAM &,
+                                        std::uint32_t) const noexcept;
 
         /* FIFO status register */
-        [[nodiscard]] std::uint8_t getFlagFIFOcontrol(const constants::NUMBER_STREAM&, const constants::FLAG_FIFO_CONTROL_REGISTER&) const noexcept;
-        void setFlagFIFOcontrol(const constants::NUMBER_STREAM&, const constants::FLAG_FIFO_CONTROL_REGISTER&, std::uint8_t) const noexcept;
+        [[nodiscard]] std::uint8_t getFlagFIFOcontrol(
+            const constants::NUMBER_STREAM &,
+            const constants::FLAG_FIFO_CONTROL_REGISTER &) const noexcept;
+        void setFlagFIFOcontrol(const constants::NUMBER_STREAM &,
+                                const constants::FLAG_FIFO_CONTROL_REGISTER &,
+                                std::uint8_t) const noexcept;
 
-        void enable(const constants::NUMBER_STREAM&) const noexcept;
-        void disable(const constants::NUMBER_STREAM&) const noexcept;
+        void enable(const constants::NUMBER_STREAM &) const noexcept;
+        void disable(const constants::NUMBER_STREAM &) const noexcept;
 
         std::uintptr_t getBaseAddress() const noexcept;
 
         void ConfigurationDma(DMA_Config dmaConfig) const noexcept;
     };
-}
+}    // namespace drivers::dma
 
-#endif //STM32F4_DMA_HPP
+#endif    // STM32F4_DMA_HPP

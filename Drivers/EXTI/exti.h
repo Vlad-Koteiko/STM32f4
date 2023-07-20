@@ -8,21 +8,26 @@
 
 namespace drivers::exti
 {
-    class EXIT_RTSR {
+    class EXIT_RTSR
+    {
+        static constexpr std::uint32_t baseAddress = 0x40013C00;
 
-        static constexpr std::uint32_t baseAddress = 0x40013C00 ;
-
-        enum RegisterEXIT_RTSR : std::uintptr_t {
-            IMR   = baseAddress,        // EXTI Interrupt mask register,            Address offset: 0x00
-            EMR   = baseAddress + 0x04, // EXTI Event mask register,                Address offset: 0x04
-            RTSR  = baseAddress + 0x08, // EXTI Rising trigger selection register,  Address offset: 0x08
-            FTSR  = baseAddress + 0x0C, // EXTI Falling trigger selection register, Address offset: 0x0C
-            SWIER = baseAddress + 0x10, // EXTI Software interrupt event register,  Address offset: 0x10
-            PR    = baseAddress + 0x14, // EXTI Pending register,                   Address offset: 0x14
+        enum RegisterEXIT_RTSR : std::uintptr_t
+        {
+            IMR = baseAddress,    // EXTI Interrupt mask register,            Address offset: 0x00
+            EMR = baseAddress +
+                  0x04,    // EXTI Event mask register,                Address offset: 0x04
+            RTSR = baseAddress +
+                   0x08,    // EXTI Rising trigger selection register,  Address offset: 0x08
+            FTSR = baseAddress +
+                   0x0C,    // EXTI Falling trigger selection register, Address offset: 0x0C
+            SWIER = baseAddress +
+                    0x10,    // EXTI Software interrupt event register,  Address offset: 0x10
+            PR = baseAddress +
+                 0x14,    // EXTI Pending register,                   Address offset: 0x14
         };
 
     public:
-
         enum LINE_NUMBER : std::uint8_t
         {
             LINE_0  = 0,
@@ -68,6 +73,6 @@ namespace drivers::exti
         bool IsActiveFlag(LINE_NUMBER line) noexcept;
         void ClearFlag(LINE_NUMBER line) noexcept;
     };
-}
+}    // namespace drivers::exti
 
-#endif //UART_EXTI_H
+#endif    // UART_EXTI_H

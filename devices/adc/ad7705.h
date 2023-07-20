@@ -1,11 +1,8 @@
 #ifndef AD7705_H
 #define AD7705_H
 
-#include "spi.h"
 #include "gpio.h"
-
-
-
+#include "spi.h"
 
 /*
 drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
@@ -30,61 +27,61 @@ namespace devices::ad7705
 {
     enum Registers : std::uint8_t
     {
-        COMMUNICATION = 0x00,
-        SETUP = 0x10,
-        CLOCK = 0x20,
-        DATA = 0x30,
-        TEST = 0x40,
+        COMMUNICATION          = 0x00,
+        SETUP                  = 0x10,
+        CLOCK                  = 0x20,
+        DATA                   = 0x30,
+        TEST                   = 0x40,
         ZERO_SCALE_CALIBRATION = 0x60,
         FULL_SCALE_CALIBRATION = 0x70
     };
 
     enum Channel : std::uint8_t
     {
-        AIN1_PLUS_AIN1_MINUS = 0x00,
-        AIN2_PLUS_AIN2_MINUS = 0x01,
+        AIN1_PLUS_AIN1_MINUS  = 0x00,
+        AIN2_PLUS_AIN2_MINUS  = 0x01,
         AIN1_MINUS_AIN1_MINUS = 0x02,
         AIN1_MINUS_AIN2_MINUS = 0x03
     };
 
     enum Modes : std::uint8_t
     {
-        NORMAL = 0x00,
+        NORMAL           = 0x00,
         SELF_CALIBRATION = 0x40,
-        ZERO_SCALE = 0x80,
-        FULL_SCALE = 0xC0
+        ZERO_SCALE       = 0x80,
+        FULL_SCALE       = 0xC0
     };
 
     enum Gain : std::uint8_t
     {
-        G1 = 0x00,
-        G2 = 0x08,
-        G4 = 0x10,
-        G8 = 0x18,
-        G16 = 0x20,
-        G32 = 0x28,
-        G64 = 0x30,
+        G1   = 0x00,
+        G2   = 0x08,
+        G4   = 0x10,
+        G8   = 0x18,
+        G16  = 0x20,
+        G32  = 0x28,
+        G64  = 0x30,
         G128 = 0x38
     };
 
     enum OutputUpadateRate : std::uint8_t
     {
-        FIN_24576_20Hz = 0x00,
-        FIN_24579_25Hz = 0x01,
+        FIN_24576_20Hz  = 0x00,
+        FIN_24579_25Hz  = 0x01,
         FIN_24579_100Hz = 0x02,
         FIN_24579_200Hz = 0x03,
-        FIN_49152_50Hz = 0x04,
-        FIN_49152_60Hz = 0x05,
+        FIN_49152_50Hz  = 0x04,
+        FIN_49152_60Hz  = 0x05,
         FIN_49152_250Hz = 0x06,
         FIN_49152_500Hz = 0x07
     };
 
     class Ad7705
     {
-        drivers::spi::SPI &spi;
-        drivers::port::GPIO &portRST;
-        drivers::port::GPIO &portCS;
-        drivers::port::GPIO &portDRDY;
+        drivers::spi::SPI        &spi;
+        drivers::port::GPIO      &portRST;
+        drivers::port::GPIO      &portCS;
+        drivers::port::GPIO      &portDRDY;
         drivers::port::PIN_NUMBER pinRST;
         drivers::port::PIN_NUMBER pinCS;
         drivers::port::PIN_NUMBER pinDRDY;
@@ -93,25 +90,34 @@ namespace devices::ad7705
         void HighCS() noexcept;
 
     public:
-        Ad7705(drivers::spi::SPI &spiADC,
-               drivers::port::GPIO &portRST, drivers::port::PIN_NUMBER pinRST,
-               drivers::port::GPIO &portCS, drivers::port::PIN_NUMBER pinCS,
-               drivers::port::GPIO &portDRDY, drivers::port::PIN_NUMBER pinDRDY);
-        void Init(Modes m, Gain g, OutputUpadateRate uor) noexcept;
-        void WriteCommunicationReg(Registers reg, std::uint8_t readOrWrite, std::uint8_t channel) noexcept;
+        Ad7705(drivers::spi::SPI        &spiADC,
+               drivers::port::GPIO      &portRST,
+               drivers::port::PIN_NUMBER pinRST,
+               drivers::port::GPIO      &portCS,
+               drivers::port::PIN_NUMBER pinCS,
+               drivers::port::GPIO      &portDRDY,
+               drivers::port::PIN_NUMBER pinDRDY);
+        void         Init(Modes m, Gain g, OutputUpadateRate uor) noexcept;
+        void         WriteCommunicationReg(Registers    reg,
+                                           std::uint8_t readOrWrite,
+                                           std::uint8_t channel) noexcept;
         std::uint8_t ReadCommunicationReg() noexcept;
-        void WriteSetup(Modes m, Gain g, std::uint8_t bu, std::uint8_t buf, std::uint8_t fsync) noexcept;
+        void         WriteSetup(Modes        m,
+                                Gain         g,
+                                std::uint8_t bu,
+                                std::uint8_t buf,
+                                std::uint8_t fsync) noexcept;
         std::uint8_t ReadSetup() noexcept;
         void WriteClock(std::uint8_t clkdis, std::uint8_t clkdiv, OutputUpadateRate our) noexcept;
-        std::uint8_t ReadClock() noexcept;
-        bool ReadyData() noexcept;
+        std::uint8_t  ReadClock() noexcept;
+        bool          ReadyData() noexcept;
         std::uint16_t ReadData(Channel ch) noexcept;
-        std::uint8_t ReadTestReg() noexcept;
+        std::uint8_t  ReadTestReg() noexcept;
         std::uint32_t ReadZeroScaleCalibrReg(Channel ch) noexcept;
-        void WriteZeroScaleCalibrReg(std:: uint32_t reg, Channel ch) noexcept;
+        void          WriteZeroScaleCalibrReg(std::uint32_t reg, Channel ch) noexcept;
         std::uint32_t ReadFullScaleCalibrReg(Channel ch) noexcept;
-        void WriteFullScaleCalibrReg(std::uint32_t reg, Channel ch) noexcept;
+        void          WriteFullScaleCalibrReg(std::uint32_t reg, Channel ch) noexcept;
     };
-}
+}    // namespace devices::ad7705
 
-#endif //AD7705_H
+#endif    // AD7705_H

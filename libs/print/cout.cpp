@@ -3,70 +3,67 @@
 //
 #include "cout.hpp"
 
-namespace  libs
+namespace libs
 {
 
-    Cout::Cout(drivers::usart::USART &msgUart) : debugUart(msgUart){
-    }
+    Cout::Cout(drivers::usart::USART& msgUart) : debugUart(msgUart)
+    {}
 
-    Cout& Cout::operator << (std::string string) noexcept
+    Cout& Cout::operator<<(std::string string) noexcept
     {
         pritnString(string.data());
         return *this;
     }
 
-    Cout& Cout::operator << (std::uint32_t value) noexcept
+    Cout& Cout::operator<<(std::uint32_t value) noexcept
     {
-        std::fill_n(buff.begin(),11,0);
+        std::fill_n(buff.begin(), 11, 0);
         std::size_t index = 10;
         do
         {
             index--;
             buff[index] = (value % 10 + '0');
             value /= 10;
-        }
-        while (value != 0);
+        } while(value != 0);
         pritnValue();
         return *this;
     }
 
-    Cout& Cout::operator << (std::uint16_t value) noexcept
+    Cout& Cout::operator<<(std::uint16_t value) noexcept
     {
-        std::fill_n(buff.begin(),11,0);
+        std::fill_n(buff.begin(), 11, 0);
         std::size_t index = 10;
         do
         {
             index--;
             buff[index] = (value % 10 + '0');
             value /= 10;
-        }
-        while (value != 0);
+        } while(value != 0);
         pritnValue();
         return *this;
     }
 
-    Cout& Cout::operator << (std::uint8_t value) noexcept
+    Cout& Cout::operator<<(std::uint8_t value) noexcept
     {
-        std::fill_n(buff.begin(),11,0);
+        std::fill_n(buff.begin(), 11, 0);
         std::size_t index = 10;
         do
         {
             index--;
             buff[index] = (value % 10 + '0');
             value /= 10;
-        }
-        while (value != 0);
+        } while(value != 0);
         pritnValue();
         return *this;
     }
 
-    Cout& Cout::operator << (char string) noexcept
+    Cout& Cout::operator<<(char string) noexcept
     {
         printChar(string);
         return *this;
     }
 
-    Cout& Cout::operator << (Commands command) noexcept
+    Cout& Cout::operator<<(Commands command) noexcept
     {
         if(command == ENDL)
         {
@@ -75,4 +72,4 @@ namespace  libs
         return *this;
     }
 
-}
+}    // namespace libs

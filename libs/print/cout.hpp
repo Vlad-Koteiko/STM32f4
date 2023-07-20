@@ -4,70 +4,71 @@
 #ifndef COUT_H
 #define COUT_H
 
+#include <array>
 #include <cstdint>
 #include <string>
-#include <array>
+
 #include "usart.hpp"
 
-namespace  libs
+namespace libs
 {
-        class Cout
+    class Cout
+    {
+        std::uint8_t           endString = '\0';
+        std::array<char, 11>   buff { 0 };
+        drivers::usart::USART& debugUart;
+
+        inline void pritnString(char* ptr) noexcept
         {
-            std::uint8_t endString = '\0';
-            std::array<char,11> buff {0};
-            drivers::usart::USART &debugUart;
-
-            inline void pritnString(char *ptr) noexcept
+            while(*ptr != endString)
             {
-                while (*ptr != endString)
-                {
-                    printChar(*ptr);
-                    ptr++;
-                }
+                printChar(*ptr);
+                ptr++;
             }
+        }
 
-            inline void pritnValue() noexcept
+        inline void pritnValue() noexcept
+        {
+            for(std::size_t i = 0; i < buff.size();)
             {
-                for(std::size_t i = 0; i < buff.size();)
-                {
-                    printChar(buff[i]);
-                    i++;
-                }
+                printChar(buff[i]);
+                i++;
             }
+        }
 
-          void endlString() noexcept
-          {
-              printChar('\n');
-              printChar('\r');
-          }
+        void endlString() noexcept
+        {
+            printChar('\n');
+            printChar('\r');
+        }
 
     public:
-
-        Cout(drivers::usart::USART &msgUart);
+        Cout(drivers::usart::USART& msgUart);
 
         enum Commands
-         {
-           ENDL
-         };
-
-        Cout& operator << (std::string string) noexcept;
-
-        Cout& operator << (std::uint32_t value) noexcept;
-
-        Cout& operator << (std::uint16_t value) noexcept;
-
-        Cout& operator << (std::uint8_t value) noexcept;
-
-        Cout& operator << (char string) noexcept;
-
-        Cout& operator << (Commands command) noexcept;
-
-        inline  void printChar(char ch) noexcept
         {
-          while (!debugUart.ReadFlag(drivers::usart::USART::SR_poz::TXE))
-          {}
+            ENDL
+        };
+
+        Cout& operator<<(std::string string) noexcept;
+
+        Cout& operator<<(std::uint32_t value) noexcept;
+
+        Cout& operator<<(std::uint16_t value) noexcept;
+
+        Cout& operator<<(std::uint8_t value) noexcept;
+
+        Cout& operator<<(char string) noexcept;
+
+        Cout& operator<<(Commands command) noexcept;
+
+        inline void printChar(char ch) noexcept
+        {
+            while(!debugUart.ReadFlag(drivers::usart::USART::SR_poz::TXE))
+            {
+            }
             debugUart.TransmitData(ch);
         }
     };
-}
-#endif //UART_COUT_H
+}    // namespace libs
+#endif    // UART_COUT_H

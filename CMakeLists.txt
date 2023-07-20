@@ -3,6 +3,29 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_VERSION 1)
 cmake_minimum_required(VERSION 3.21)
 
+function(clang_format SOURCE_TARGET SRC_DIRS CONFIG_FILE_DIR)
+    foreach(item ${${SRC_DIRS}})
+        file(GLOB_RECURSE _FILES ${item}/*.cpp ${item}/*.hpp ${item}/*.h ${item}/*.c)
+        list(APPEND INPUT_FILES ${_FILES})
+    endforeach()
+    find_program(CLANG_FORMAT "clang-format")
+    if(CLANG_FORMAT)
+        if(CONFIG_FILE_DIR)
+            file(COPY ${CONFIG_FILE_DIR}/.clang-format DESTINATION ${CMAKE_SOURCE_DIR})
+        else()
+            file(COPY .clang-format DESTINATION ${CMAKE_SOURCE_DIR})
+        endif()
+        add_custom_target(
+                "${SOURCE_TARGET}Formatter"
+                COMMAND ${CLANG_FORMAT}
+                -i
+                -style=file
+                ${INPUT_FILES})
+        add_dependencies(${SOURCE_TARGET}   "${SOURCE_TARGET}Formatter")
+    endif()
+endfunction(clang_format)
+
+
 if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
     set(CMAKE_C_COMPILER E:/tools/bin/arm-none-eabi-gcc.exe)
     set(CMAKE_CXX_COMPILER E:/tools/bin/arm-none-eabi-g++.exe)
@@ -73,7 +96,8 @@ else ()
     add_compile_options(-Og -g)
 endif ()
 
-include_directories(Core/Inc
+set(MAIN_COMMON_DIRS
+        Core/Inc
         Drivers/STM32F4xx_HAL_Driver/Inc
         Drivers/CMSIS/Device/ST/STM32F4xx/Include
         Drivers/CMSIS/Include
@@ -98,6 +122,9 @@ include_directories(Core/Inc
         devices/adc
         Drivers/DMA
         src/)
+
+include_directories(${MAIN_COMMON_DIRS})
+
 
 add_definitions(-DDEBUG -DSTM32F407xx -DUSE_FULL_LL_DRIVER -DHSE_VALUE=25000000 -DHSE_STARTUP_TIMEOUT=100 -DLSE_STARTUP_TIMEOUT=5000 -DLSE_VALUE=32768 -DEXTERNAL_CLOCK_VALUE=12288000 -DHSI_VALUE=16000000 -DLSI_VALUE=32000 -DVDD_VALUE=3300 -DPREFETCH_ENABLE=1 -DINSTRUCTION_CACHE_ENABLE=1 -DDATA_CACHE_ENABLE=1)
 
@@ -150,6 +177,9 @@ add_custom_command(TARGET ${PROJECT_NAME_CPP}.elf POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${PROJECT_NAME_CPP}.elf> ${BIN_FILE}
         COMMENT "Building ${HEX_FILE}
 Building ${BIN_FILE}")
+
+set(CLANG_FORMAT_DIRS ${MAIN_COMMON_DIRS})
+clang_format(${PROJECT_NAME_CPP}.elf CLANG_FORMAT_DIRS clang_format)
 
 find_program(UPLOADER st-flash)
 

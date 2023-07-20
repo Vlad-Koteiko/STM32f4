@@ -101,44 +101,44 @@ namespace drivers::port
 
     class GPIO
     {
-        const drivers::clock::ClockControl &clockControl;
-        std::uintptr_t baseAddress;
+        const drivers::clock::ClockControl& clockControl;
+        std::uintptr_t                      baseAddress;
 
-        [[nodiscard]] static constexpr std::uint16_t pin(std::uint8_t numberPin) {
+        [[nodiscard]] static constexpr std::uint16_t pin(std::uint8_t numberPin)
+        {
             return (1 << numberPin);
         }
 
         enum RegisterGPIO : std::uintptr_t
         {
-            MODER    = 0x00,        // GPIO port mode register,               Address offset: 0x00
-            OTYPER   = 0x04, // GPIO port output type register,        Address offset: 0x04
-            OSPEEDR  = 0x08, // GPIO port output speed register,       Address offset: 0x08
-            PUPDR    = 0x0C, // GPIO port pull-up/pull-down register,  Address offset: 0x0C
-            IDR      = 0x10, // GPIO port input data register,         Address offset: 0x10
-            ODR      = 0x14, // GPIO port output data register,        Address offset: 0x14
-            BSRR     = 0x18, // GPIO port bit set/reset register,      Address offset: 0x18
-            LCKR     = 0x1C, // GPIO port configuration lock register, Address offset: 0x1C
-            AFRLOW   = 0x20, // GPIO port alternate function low reg,  Address offset: 0x20
-            AFRLHIGH = 0x24, // GPIO port alternate function high reg, Address offset: 0x24
+            MODER    = 0x00,    // GPIO port mode register,               Address offset: 0x00
+            OTYPER   = 0x04,    // GPIO port output type register,        Address offset: 0x04
+            OSPEEDR  = 0x08,    // GPIO port output speed register,       Address offset: 0x08
+            PUPDR    = 0x0C,    // GPIO port pull-up/pull-down register,  Address offset: 0x0C
+            IDR      = 0x10,    // GPIO port input data register,         Address offset: 0x10
+            ODR      = 0x14,    // GPIO port output data register,        Address offset: 0x14
+            BSRR     = 0x18,    // GPIO port bit set/reset register,      Address offset: 0x18
+            LCKR     = 0x1C,    // GPIO port configuration lock register, Address offset: 0x1C
+            AFRLOW   = 0x20,    // GPIO port alternate function low reg,  Address offset: 0x20
+            AFRLHIGH = 0x24,    // GPIO port alternate function high reg, Address offset: 0x24
         };
 
     public:
         GPIO(const drivers::clock::ClockControl& clockControl, ADDRESSES_PORT port);
-        void SetPinSpeed(PIN_NUMBER numberPin, PIN_SEED pinSeed) const  noexcept;
+        void SetPinSpeed(PIN_NUMBER numberPin, PIN_SEED pinSeed) const noexcept;
         void SetPinOutputType(PIN_NUMBER numberPin, OUTPUT_TYPE outputType) const noexcept;
         void SetPinPull(PIN_NUMBER numberPin, TYPE_PUPDR typePupdr) const noexcept;
-        void SetAFPin(PIN_NUMBER numberPin,ALTERNATE_FUNCTION alternateFunction) const noexcept;
+        void SetAFPin(PIN_NUMBER numberPin, ALTERNATE_FUNCTION alternateFunction) const noexcept;
         void SetPinMode(PIN_NUMBER numberPin, PORT_MODER portModer) const noexcept;
         void SetOutputPin(PIN_NUMBER pinNumber) const noexcept;
         void ResetOutputPin(PIN_NUMBER pinNumber) const noexcept;
         void SetPin(PIN_NUMBER pinNumber, STATUS_PIN modePin) const noexcept;
-        void InitPin(PIN_NUMBER pinNumber,PORT_MODER portModer) const noexcept;
+        void InitPin(PIN_NUMBER pinNumber, PORT_MODER portModer) const noexcept;
         void TogglePin(PIN_NUMBER pinNumber) const;
         void DeinitPin(PIN_NUMBER pinNumber) const;
-        std::uint8_t ReadPin(PIN_NUMBER pin) noexcept;
+        std::uint8_t  ReadPin(PIN_NUMBER pin) noexcept;
         std::uint32_t ReadPort() noexcept;
-
     };
 
-}    // namespace drivers
-#endif //UART_GPIO_H
+}    // namespace drivers::port
+#endif    // UART_GPIO_H

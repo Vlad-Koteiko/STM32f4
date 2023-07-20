@@ -1,6 +1,6 @@
 /*! \file usart.hpp
     \brief class USART
-    
+
     Header file with a description of the USART class
 */
 
@@ -9,47 +9,47 @@
 
 #include "MWR.hpp"
 #include "clockControl.hpp"
-#include "nvic.h"
-#include "gpio.h"
 #include "dma.hpp"
+#include "gpio.h"
+#include "nvic.h"
 
-namespace drivers::usart {
+namespace drivers::usart
+{
 
-    
     /*! UARTs addresses*/
     enum ADDRESSES_USART : std::uintptr_t
     {
-        USART1 = 0x40011000, ///< address USART1
-        USART2 = 0x40004400, ///< address USART2
-        USART3 = 0x40004800, ///< address USART3
-        UART4  = 0x40004C00, ///< address UART4
-        UART5  = 0x40005000, ///< address UART5
-        USART6 = 0x40011400, ///< address USART6
-        UART7  = 0x40007800, ///< address UART7
-        UART8  = 0x40007C00  ///< address UART8
+        USART1 = 0x40011000,    ///< address USART1
+        USART2 = 0x40004400,    ///< address USART2
+        USART3 = 0x40004800,    ///< address USART3
+        UART4  = 0x40004C00,    ///< address UART4
+        UART5  = 0x40005000,    ///< address UART5
+        USART6 = 0x40011400,    ///< address USART6
+        UART7  = 0x40007800,    ///< address UART7
+        UART8  = 0x40007C00     ///< address UART8
     };
 
     /*! Word length*/
     enum WORD_LENGTH : std::uint8_t
     {
-        BIT_8 = 0, ///< 8 bit
-        BIT_9 = 1  ///< 9 bit
+        BIT_8 = 0,    ///< 8 bit
+        BIT_9 = 1     ///< 9 bit
     };
 
     /*! Stop bit*/
     enum STOP_BIT : std::uint8_t
     {
-        STOP_BIT_1    = 0,  ///< 1 stop bit
-        STOP_BIT_0_5  = 1,  ///< 0.5 stop bit
-        STOP_BIT_2    = 2,  ///< 2 stop bit
-        STOP_BIT_1_5  = 3,  ///< 1.5 stop bit
+        STOP_BIT_1   = 0,    ///< 1 stop bit
+        STOP_BIT_0_5 = 1,    ///< 0.5 stop bit
+        STOP_BIT_2   = 2,    ///< 2 stop bit
+        STOP_BIT_1_5 = 3,    ///< 1.5 stop bit
     };
 
     /*! Baudrate*/
     enum BAUD_RATE : std::uint32_t
     {
-        RATE_115200 = 115200,   ///< 115200
-        RATE_9600   = 9600      ///< 9600
+        RATE_115200 = 115200,    ///< 115200
+        RATE_9600   = 9600       ///< 9600
     };
 
     /*! Status*/
@@ -62,84 +62,80 @@ namespace drivers::usart {
     /*! Remap for USART1*/
     enum USART1_Remap : std::uint8_t
     {
-        U1_TX_PA9_RX_PA10,      ///< Tx - PA9, Rx - PA10
-        U1_TX_PA9_RX_PB7,       ///< Tx - PA9, Rx - PB7
-        U1_TX_PB6_RX_PA10,      ///< Tx - PB6, Rx - PA10
-        U1_TX_PB6_RX_PB7        ///< Tx - PB6, Rx - PB7
+        U1_TX_PA9_RX_PA10,    ///< Tx - PA9, Rx - PA10
+        U1_TX_PA9_RX_PB7,     ///< Tx - PA9, Rx - PB7
+        U1_TX_PB6_RX_PA10,    ///< Tx - PB6, Rx - PA10
+        U1_TX_PB6_RX_PB7      ///< Tx - PB6, Rx - PB7
     };
 
     /*! Remap for USART2*/
     enum USART2_Remap : std::uint8_t
     {
-        U2_TX_PA2_RX_PA3,       ///< Tx - PA2, Rx - PA3
-        U2_TX_PA2_RX_PD6,       ///< Tx - PA2, Rx - PD6
-        U2_TX_PD5_RX_PA3,       ///< Tx - PD5, Rx - PA3
-        U2_TX_PD5_RX_PD6        ///< Tx - PD5, Rx - PD6
+        U2_TX_PA2_RX_PA3,    ///< Tx - PA2, Rx - PA3
+        U2_TX_PA2_RX_PD6,    ///< Tx - PA2, Rx - PD6
+        U2_TX_PD5_RX_PA3,    ///< Tx - PD5, Rx - PA3
+        U2_TX_PD5_RX_PD6     ///< Tx - PD5, Rx - PD6
     };
 
     /*! Remap for USART3*/
     enum USART3_Remap : std::uint8_t
     {
-        U3_TX_PB10_RX_PB11,     ///< Tx - PB10, Rx - PB11
-        U3_TX_PB10_RX_PC11,     ///< Tx - PB10, Rx - PC11
-        U3_TX_PB10_RX_PD9,      ///< Tx - PB10, Rx - PD9
-        U3_TX_PC10_RX_PB11,     ///< Tx - PC10, Rx - PB11
-        U3_TX_PC10_RX_PC11,     ///< Tx - PC10, Rx - PC11
-        U3_TX_PC10_RX_PD9,      ///< Tx - PC10, Rx - PD9
-        U3_TX_PD8_RX_PB11,      ///< Tx - PD8, Rx - PB11
-        U3_TX_PD8_RX_PC11,      ///< Tx - PD8, Rx - PC11
-        U3_TX_PD8_RX_PD9        ///< Tx - PD8, Rx - PD9
+        U3_TX_PB10_RX_PB11,    ///< Tx - PB10, Rx - PB11
+        U3_TX_PB10_RX_PC11,    ///< Tx - PB10, Rx - PC11
+        U3_TX_PB10_RX_PD9,     ///< Tx - PB10, Rx - PD9
+        U3_TX_PC10_RX_PB11,    ///< Tx - PC10, Rx - PB11
+        U3_TX_PC10_RX_PC11,    ///< Tx - PC10, Rx - PC11
+        U3_TX_PC10_RX_PD9,     ///< Tx - PC10, Rx - PD9
+        U3_TX_PD8_RX_PB11,     ///< Tx - PD8, Rx - PB11
+        U3_TX_PD8_RX_PC11,     ///< Tx - PD8, Rx - PC11
+        U3_TX_PD8_RX_PD9       ///< Tx - PD8, Rx - PD9
     };
 
     /*! Ramap for UART4*/
     enum UART4_Remap : std::uint8_t
     {
-        U4_TX_PA0_RX_PA1,       ///< Tx - PA0, Rx - PA1
-        U4_TX_PA0_RX_PC11,      ///< Tx - PA0, Rx - PC11
-        U4_TX_PC10_RX_PA1,      ///< Tx - PC10, Rx - PA1
-        U4_TX_PC10_RX_PC11      ///< Tx - PC10, Rx - PC11
+        U4_TX_PA0_RX_PA1,     ///< Tx - PA0, Rx - PA1
+        U4_TX_PA0_RX_PC11,    ///< Tx - PA0, Rx - PC11
+        U4_TX_PC10_RX_PA1,    ///< Tx - PC10, Rx - PA1
+        U4_TX_PC10_RX_PC11    ///< Tx - PC10, Rx - PC11
     };
 
     /*! Remap for USART6*/
     enum USART6_Remap : std::uint8_t
     {
-        U6_TX_PC6_RX_PC7,       ///< Tx - PC6, Rx - PC7
-        U6_TX_PC6_RX_PG9,       ///< Tx - PC6, Rx - PG9
-        U6_TX_PG14_RX_PC7,      ///< Tx - PG14, Rx - PC7
-        U6_TX_PG14_RX_PG_9      ///< Tx - PG14, Rx - PG9
+        U6_TX_PC6_RX_PC7,     ///< Tx - PC6, Rx - PC7
+        U6_TX_PC6_RX_PG9,     ///< Tx - PC6, Rx - PG9
+        U6_TX_PG14_RX_PC7,    ///< Tx - PG14, Rx - PC7
+        U6_TX_PG14_RX_PG_9    ///< Tx - PG14, Rx - PG9
     };
 
     /*! Clear flags in status register*/
     enum SR_clear_flag : std::uint8_t
     {
-        RXNE = 5,       ///< Flag RXNE
-        TC   = 6,       ///< Flag TC
-        LBD  = 8,       ///< Flag LBD
-        CTS  = 9        ///< Flag CTS
+        RXNE = 5,    ///< Flag RXNE
+        TC   = 6,    ///< Flag TC
+        LBD  = 8,    ///< Flag LBD
+        CTS  = 9     ///< Flag CTS
     };
-
 
     /*! Enable/disable interrupt*/
     enum INTERRUPT : std::uint8_t
     {
-        IDLEIE = 4,     ///< IDLE interrupt
-        RXNEIE = 5,     ///< RXNE interrupt
-        TCIE   = 6,     ///< Transmission complete interrupt
-        TXEIE  = 7,     ///< TXE interrupt
-        PEIE   = 8,     ///< PE interrupt
+        IDLEIE = 4,    ///< IDLE interrupt
+        RXNEIE = 5,    ///< RXNE interrupt
+        TCIE   = 6,    ///< Transmission complete interrupt
+        TXEIE  = 7,    ///< TXE interrupt
+        PEIE   = 8,    ///< PE interrupt
     };
-
 
     /// @brief Class for working with USART/UART
     class USART
     {
-        
-
         /*! Baud rate register*/
         enum BRR_poz
         {
-            DIV_Fraction = 0,   ///< Fraction
-            DIV_Mantissa = 4    ///< Mantissa
+            DIV_Fraction = 0,    ///< Fraction
+            DIV_Mantissa = 4     ///< Mantissa
         };
 
         /*! Control register 1*/
@@ -165,15 +161,15 @@ namespace drivers::usart {
         /*! Control register 2*/
         enum CR2_poz
         {
-            ADD   = 0,      ///< Address of the USART node
-            LBDL  = 5,      ///< lin break detection length
-            LBDIE = 6,      ///< LIN break detection interrupt enable
-            LBCL  = 8,      ///< Last bit clock pulse
-            CPHA  = 9,      ///< Clock phase
-            CPOL  = 10,     ///< Clock polarity
-            CLKEN = 11,     ///< Clock enable
-            STOP  = 12,     ///< STOP bits
-            LINEN = 14      ///< LIN mode enable
+            ADD   = 0,     ///< Address of the USART node
+            LBDL  = 5,     ///< lin break detection length
+            LBDIE = 6,     ///< LIN break detection interrupt enable
+            LBCL  = 8,     ///< Last bit clock pulse
+            CPHA  = 9,     ///< Clock phase
+            CPOL  = 10,    ///< Clock polarity
+            CLKEN = 11,    ///< Clock enable
+            STOP  = 12,    ///< STOP bits
+            LINEN = 14     ///< LIN mode enable
         };
 
         /*! Control register 3*/
@@ -200,22 +196,21 @@ namespace drivers::usart {
             GT  = 8     ///< Guard time value
         };
 
-        drivers::clock::ClockControl &clockControl;     ///< Link to class ClockControl
-        std::uintptr_t baseAddress;                     ///< Base address USART/UART
+        drivers::clock::ClockControl &clockControl;    ///< Link to class ClockControl
+        std::uintptr_t                baseAddress;     ///< Base address USART/UART
 
         /*! Registers USART/UART*/
         enum RegisterUSART : std::ptrdiff_t
         {
-            SR    = 0x00,       ///< USART Status register,                   Address offset: 0x00
-            DR    = 0x04,       ///< USART Data register,                     Address offset: 0x04
-            BRR   = 0x08,       ///< USART Baud rate register,                Address offset: 0x08
-            CR1   = 0x0C,       ///< USART Control register 1,                Address offset: 0x0C
-            CR2   = 0x10,       ///< USART Control register 2,                Address offset: 0x10
-            CR3   = 0x14,       ///< USART Control register 3,                Address offset: 0x14
-            GTPR  = 0x18        ///< USART Guard time and prescaler register, Address offset: 0x18
+            SR   = 0x00,    ///< USART Status register,                   Address offset: 0x00
+            DR   = 0x04,    ///< USART Data register,                     Address offset: 0x04
+            BRR  = 0x08,    ///< USART Baud rate register,                Address offset: 0x08
+            CR1  = 0x0C,    ///< USART Control register 1,                Address offset: 0x0C
+            CR2  = 0x10,    ///< USART Control register 2,                Address offset: 0x10
+            CR3  = 0x14,    ///< USART Control register 3,                Address offset: 0x14
+            GTPR = 0x18     ///< USART Guard time and prescaler register, Address offset: 0x18
         };
 
-        
         /// @brief Remap for USART1
         /// @param remap All variants in enum USART1_Remap
         void RemapUsart1(USART1_Remap remap);
@@ -240,24 +235,25 @@ namespace drivers::usart {
         /*! Status register*/
         enum SR_poz
         {
-            PE   = 0,   ///< Parity error
-            FE   = 1,   ///< Framing error
-            NF   = 2,   ///< Noise detected flag
-            ORE  = 3,   ///< Overrun error
-            IDLE = 4,   ///< IDLE line detected
-            RXNE = 5,   ///< Read data register not empty
-            TC   = 6,   ///< Transmission complete
-            TXE  = 7,   ///< Transmit data register empty
-            LBD  = 8,   ///< LIN break detection flag
-            CTS  = 9    ///< CTS flag
+            PE   = 0,    ///< Parity error
+            FE   = 1,    ///< Framing error
+            NF   = 2,    ///< Noise detected flag
+            ORE  = 3,    ///< Overrun error
+            IDLE = 4,    ///< IDLE line detected
+            RXNE = 5,    ///< Read data register not empty
+            TC   = 6,    ///< Transmission complete
+            TXE  = 7,    ///< Transmit data register empty
+            LBD  = 8,    ///< LIN break detection flag
+            CTS  = 9     ///< CTS flag
         };
 
         /// @brief Constructor for USART/UART
         /// @param _clockControl Reference ClockControl
         /// @param adr Address USART/UART
-        USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr) : clockControl(_clockControl), baseAddress(adr)
+        USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr) :
+            clockControl(_clockControl), baseAddress(adr)
         {
-            switch (adr)
+            switch(adr)
             {
                 case USART1:
                 {
@@ -291,7 +287,11 @@ namespace drivers::usart {
                 case UART5:
                 {
                     clockControl.EnablePeripherals(drivers::clock::constants::UART5_MODULE);
-                    ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTD, drivers::port::PIN_12, drivers::port::PIN_2, drivers::port::AF8);
+                    ConfigGpioForUart(drivers::port::PORTC,
+                                      drivers::port::PORTD,
+                                      drivers::port::PIN_12,
+                                      drivers::port::PIN_2,
+                                      drivers::port::AF8);
                     SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
                     break;
                 }
@@ -320,7 +320,11 @@ namespace drivers::usart {
         /// @param pinTX Pin number GPIO TX
         /// @param pinRX Pin number GPIO RX
         /// @param af Alternative function number
-        void ConfigGpioForUart(drivers::port::ADDRESSES_PORT portTX, drivers::port::ADDRESSES_PORT portRX, drivers::port::PIN_NUMBER pinTX, drivers::port::PIN_NUMBER pinRX, drivers::port::ALTERNATE_FUNCTION af) noexcept;
+        void ConfigGpioForUart(drivers::port::ADDRESSES_PORT     portTX,
+                               drivers::port::ADDRESSES_PORT     portRX,
+                               drivers::port::PIN_NUMBER         pinTX,
+                               drivers::port::PIN_NUMBER         pinRX,
+                               drivers::port::ALTERNATE_FUNCTION af) noexcept;
 
         /// @brief This bit determines the word length. It is set or cleared by software.
         /// @param wordLength enum WORD_LENGTH
@@ -334,7 +338,8 @@ namespace drivers::usart {
         /// @param transmitter enum STATUS
         void TransmitterEnable(STATUS transmitter) noexcept;
 
-        /// @brief USART prescalers and outputs are stopped and the end of the current byte transfer in order to reduce power consumption
+        /// @brief USART prescalers and outputs are stopped and the end of the current byte transfer
+        /// in order to reduce power consumption
         /// @param usartEnable enum STATUS
         void UsartEnable(STATUS usartEnable) noexcept;
 
@@ -354,7 +359,7 @@ namespace drivers::usart {
         /// @brief Trinsmit string
         /// @param value Value for transmission
         /// @param size Size value
-        void TransmitString(const void* value, std::size_t size) noexcept;
+        void TransmitString(const void *value, std::size_t size) noexcept;
 
         /// @brief Receive data
         /// @return Return value
@@ -363,7 +368,7 @@ namespace drivers::usart {
         /// @brief Deinit USART/UART
         void DeInit() noexcept;
 
-        //SR
+        // SR
 
         /// @brief Read flags status register
         /// @param flag Name flag
@@ -374,7 +379,7 @@ namespace drivers::usart {
         /// @param flag Name flag
         void ClearFlag(SR_clear_flag flag);
 
-        //CR1
+        // CR1
         /// @brief Oversampling mode
         /// @param mode 0 - 16, 1 - 8
         void SetOversamplingMode(std::uint8_t mode);
@@ -382,7 +387,7 @@ namespace drivers::usart {
         /// @brief Get oversampling mode
         /// @return true - 8, false - 16
         bool GetOversamplingMode();
-        
+
         /// @brief Wakeup method
         /// @param x 0 - Idle Line, 1 -  Address Mark
         void SetWakeUpMethod(std::uint8_t x);
@@ -390,7 +395,7 @@ namespace drivers::usart {
         /// @brief Get wakeup method
         /// @return false - Idle Line, true -  Address Mark
         bool GetWakeUpMethod();
-        
+
         /// @brief Parity control enable
         /// @param x DISABLE - off, ENABLE - on
         void SetParityControl(STATUS x);
@@ -414,7 +419,7 @@ namespace drivers::usart {
         /// @brief Get receiver wakeup
         /// @return false - active mode, true - mute mode
         bool GetReceiverWakeup();
-    
+
         /// @brief Send break
         /// @param x DISABLE - off, ENABLE - on
         void SendBreak(STATUS x);
@@ -436,7 +441,7 @@ namespace drivers::usart {
         /// @return current status
         bool GetSourceInterrupt(INTERRUPT i);
 
-        //CR2
+        // CR2
 
         /// @brief LIN mode enable
         /// @param x enum STATUS
@@ -502,7 +507,7 @@ namespace drivers::usart {
         /// @return address
         std::uint8_t GetAddressUsartNode();
 
-        //CR3
+        // CR3
 
         /// @brief One sample bit method enable
         /// @param x 0 - three, 1 - one
@@ -569,11 +574,11 @@ namespace drivers::usart {
         bool GetSmartcardNACKEnable();
 
         /// @brief Half-duplex selection
-        /// @param x 0 - Half duplex mode is not selected, 1 - Half duplex mode is selected 
+        /// @param x 0 - Half duplex mode is not selected, 1 - Half duplex mode is selected
         void HalfDuplexSelection(std::uint8_t x);
 
         /// @brief Get Half-duplex selection
-        /// @return 0 - Half duplex mode is not selected, 1 - Half duplex mode is selected 
+        /// @return 0 - Half duplex mode is not selected, 1 - Half duplex mode is selected
         bool GetHalfDuplexSelection();
 
         /// @brief  IrDA low-power
@@ -606,9 +611,12 @@ namespace drivers::usart {
         /// @param isTransmit Enable transmit
         /// @param isReceive Enable receive
         /// @return Rezult opration
-        bool InitUsartDma(const drivers::dma::DMA &usartDma, drivers::dma::DMA_Config dmaConfig, bool isTransmit, bool isReceive);
+        bool InitUsartDma(const drivers::dma::DMA &usartDma,
+                          drivers::dma::DMA_Config dmaConfig,
+                          bool                     isTransmit,
+                          bool                     isReceive);
 
-        /// @brief Transmit DMA 
+        /// @brief Transmit DMA
         /// @param dma Description DMA
         /// @param sendBuffer Send buffer
         /// @param size Size buffer
@@ -621,6 +629,6 @@ namespace drivers::usart {
         /// @param size Size buffer
         /// @return Rezult operation
         bool ReceiveDataDma(dma::DMA &dma, std::uint8_t *recvBuffer, std::uint16_t size);
-    }; //end class
-} // end namespace
-#endif //UART_USART_H
+    };    // end class
+}    // namespace drivers::usart
+#endif    // UART_USART_H

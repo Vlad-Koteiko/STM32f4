@@ -5,17 +5,18 @@
 #define UART_MAIN_H
 
 #include <cstdint>
+
 #include "MWR.hpp"
-#include "cout.hpp"
+#include "basictimer.hpp"
 #include "clockControl.hpp"
+#include "cout.hpp"
+#include "dma.hpp"
+#include "exti.h"
 #include "gpio.h"
-#include "usart.hpp"
+#include "iwdg.h"
 #include "nvic.h"
 #include "syscfg.h"
-#include "exti.h"
-#include "iwdg.h"
-#include "dma.hpp"
-#include "basictimer.hpp"
+#include "usart.hpp"
 
 class Bass
 {
