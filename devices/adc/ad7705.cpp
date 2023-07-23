@@ -120,8 +120,7 @@ namespace devices::ad7705
     std::uint16_t Ad7705::ReadData(Channel ch) noexcept
     {
         while(!ReadyData())
-        {
-        }
+        {}
         WriteCommunicationReg(DATA, 1, ch);
         std::uint8_t val[2];
         LowCS();

@@ -15,8 +15,7 @@ int uartbuf::overflow(int c)
         return traits_type::eof();
     }
     while(!uart->ReadFlag(drivers::usart::USART::SR_poz::TXE))
-    {
-    }
+    {}
     uart->TransmitData(c);
     return c;
 }
