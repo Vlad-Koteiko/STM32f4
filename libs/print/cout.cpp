@@ -6,7 +6,7 @@
 namespace libs
 {
 
-    Cout::Cout(drivers::usart::USART& msgUart) : debugUart(msgUart)
+    Cout::Cout(drivers::usart::Usart& msgUart) : debugUart(msgUart)
     {}
 
     Cout& Cout::operator<<(std::string string) noexcept

@@ -7,10 +7,10 @@
 
 class uartbuf : public std::streambuf
 {
-    drivers::usart::USART* uart;
+    drivers::usart::Usart* uart;
 
 public:
-    explicit uartbuf(drivers::usart::USART* uart);
+    explicit uartbuf(drivers::usart::Usart* uart);
 
     // write multiple characters  MUST USE CONST CHAR* ?
 

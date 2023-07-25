@@ -25,7 +25,7 @@ namespace devices::flash
     }
 
     W25Q16::W25Q16(drivers::spi::SPI        &flashSPI,
-                   drivers::port::GPIO      &csPorT,
+                   drivers::port::Gpio      &csPorT,
                    drivers::port::PIN_NUMBER csPiN) :
         flashSpi(flashSPI), csPort(csPorT), csPin(csPiN)
     {

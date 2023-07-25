@@ -28,7 +28,7 @@ namespace devices::flash
     class W25Q16
     {
         drivers::spi::SPI        &flashSpi;
-        drivers::port::GPIO      &csPort;
+        drivers::port::Gpio      &csPort;
         drivers::port::PIN_NUMBER csPin;
 
         void UnSelect() noexcept;
@@ -37,7 +37,7 @@ namespace devices::flash
 
     public:
         W25Q16(drivers::spi::SPI        &flashSPI,
-               drivers::port::GPIO      &csPorT,
+               drivers::port::Gpio      &csPorT,
                drivers::port::PIN_NUMBER csPiN);
         std::uint32_t ReadID() noexcept;
         std::uint8_t  ReadStatusRegister1() noexcept;

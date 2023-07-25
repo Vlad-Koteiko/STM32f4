@@ -8,6 +8,7 @@
 #define USART_H
 
 #include "MWR.hpp"
+#include "base_interface.h"
 #include "clockControl.hpp"
 #include "dma.hpp"
 #include "gpio.h"
@@ -128,8 +129,23 @@ namespace drivers::usart
         PEIE   = 8,    ///< PE interrupt
     };
 
+    constexpr auto setInteget = [](BAUD_RATE     baudRate,
+                                   std::uint32_t FPCLK) constexpr noexcept -> std::uint16_t {
+        float         resalt  = (static_cast<float>(FPCLK) / static_cast<float>(16 * baudRate));
+        std::uint16_t integet = static_cast<std::uint16_t>(resalt);
+        return integet;
+    };
+
+    constexpr auto setFraction = [](BAUD_RATE     baudRate,
+                                    std::uint32_t FPCLK) constexpr noexcept -> std::uint16_t {
+        float         resalt   = (static_cast<float>(FPCLK) / static_cast<float>(16 * baudRate));
+        std::uint16_t integet  = static_cast<std::uint16_t>(resalt);
+        std::uint16_t fraction = (static_cast<float>(resalt - static_cast<float>(integet)) * 16);
+        return fraction;
+    };
+
     /// @brief Class for working with USART/UART
-    class USART
+    class Usart : public base::BaseInterface
     {
         /*! Baud rate register*/
         enum BRR_poz
@@ -196,8 +212,20 @@ namespace drivers::usart
             GT  = 8     ///< Guard time value
         };
 
-        drivers::clock::ClockControl &clockControl;    ///< Link to class ClockControl
-        std::uintptr_t                baseAddress;     ///< Base address USART/UART
+        struct BaundRate
+        {
+            std::uint16_t integet;
+            std::uint16_t fraction;
+
+            constexpr BaundRate(BAUD_RATE baudRate, std::uint32_t FPCLK) :
+                integet(setInteget(baudRate, FPCLK)), fraction(setFraction(baudRate, FPCLK))
+            {}
+        };
+
+        const drivers::clock::ClockControl &clockControl;    ///< Link to class ClockControl
+        std::uintptr_t                      baseAddress;     ///< Base address USART/UART
+        BaundRate                           baundRateAPB2;
+        BaundRate                           baundRateAPB1;
 
         /*! Registers USART/UART*/
         enum RegisterUSART : std::ptrdiff_t
@@ -250,65 +278,14 @@ namespace drivers::usart
         /// @brief Constructor for USART/UART
         /// @param _clockControl Reference ClockControl
         /// @param adr Address USART/UART
-        USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr) :
-            clockControl(_clockControl), baseAddress(adr)
-        {
-            switch(adr)
-            {
-                case USART1:
-                {
-                    clockControl.EnablePeripherals(drivers::clock::constants::USART1_MODULE);
-                    RemapUsart1(U1_TX_PA9_RX_PA10);
-                    SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
-                    break;
-                }
-                case USART2:
-                {
-                    clockControl.EnablePeripherals(drivers::clock::constants::USART2_MODULE);
-                    RemapUsart2(U2_TX_PA2_RX_PA3);
-                    SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-                    break;
-                }
-                case USART3:
-                {
-                    clockControl.EnablePeripherals(drivers::clock::constants::USART3_MODULE);
-                    RemapUsart3(U3_TX_PB10_RX_PB11);
-                    SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-                    break;
-                }
-                case UART4:
-                {
-                    clockControl.EnablePeripherals(drivers::clock::constants::UART4_MODULE);
-                    RemapUart4(U4_TX_PA0_RX_PA1);
-                    SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-                    break;
-                }
+        constexpr Usart(drivers::clock::ClockControl &clockControlInit, ADDRESSES_USART address) :
+            clockControl(clockControlInit),
+            baseAddress(address),
+            baundRateAPB1(RATE_115200, clockControlInit.GetFreqAPB1()),
+            baundRateAPB2(RATE_115200, clockControlInit.GetFreqAPB2())
+        {}
 
-                case UART5:
-                {
-                    clockControl.EnablePeripherals(drivers::clock::constants::UART5_MODULE);
-                    ConfigGpioForUart(drivers::port::PORTC,
-                                      drivers::port::PORTD,
-                                      drivers::port::PIN_12,
-                                      drivers::port::PIN_2,
-                                      drivers::port::AF8);
-                    SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-                    break;
-                }
-
-                case USART6:
-                {
-                    clockControl.EnablePeripherals(drivers::clock::constants::USART6_MODULE);
-                    RemapUsart6(U6_TX_PC6_RX_PC7);
-                    SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
-                    break;
-                }
-            }
-            SetWordLength(BIT_8);
-            ReceiverEnable(ENABLE);
-            TransmitterEnable(ENABLE);
-            UsartEnable(ENABLE);
-        }
+        void init() noexcept;
 
         /// @brief Remap pins for USART/UART
         /// @param remapPins enum USART{X}_Remap
@@ -350,11 +327,12 @@ namespace drivers::usart
         /// @brief Set baud rate USART/UART
         /// @param baudRate enum BAUD_RATE
         /// @param FPCLK Frequnce FPCLK
-        void SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept;
+        void SetBaudRate(const BaundRate &baundRate) noexcept;
 
         /// @brief Transmit data
         /// @param value Value for transmission
-        void TransmitData(std::uint8_t value) noexcept;
+        //        void TransmitData(std::uint8_t value) noexcept;
+        void sendByte(std::byte byte) noexcept override;
 
         /// @brief Trinsmit string
         /// @param value Value for transmission
@@ -363,7 +341,8 @@ namespace drivers::usart
 
         /// @brief Receive data
         /// @return Return value
-        std::uint8_t ReceiveData() noexcept;
+        //        std::uint8_t ReceiveData() noexcept;
+        std::byte readByte() noexcept override;
 
         /// @brief Deinit USART/UART
         void DeInit() noexcept;

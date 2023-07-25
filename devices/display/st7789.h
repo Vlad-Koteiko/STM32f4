@@ -94,7 +94,7 @@ namespace devices::st7789
     class St7789
     {
         drivers::spi::SPI        &spiScr;
-        drivers::port::GPIO      &port;
+        drivers::port::Gpio      &port;
         drivers::port::PIN_NUMBER DC;
         drivers::port::PIN_NUMBER RES;
         drivers::port::PIN_NUMBER BCK;
@@ -103,7 +103,7 @@ namespace devices::st7789
 
     public:
         St7789(drivers::spi::SPI        &spiScreen,
-               drivers::port::GPIO      &port,
+               drivers::port::Gpio      &port,
                drivers::port::PIN_NUMBER dc,
                drivers::port::PIN_NUMBER res,
                drivers::port::PIN_NUMBER bck,

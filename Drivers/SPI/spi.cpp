@@ -67,19 +67,19 @@ namespace drivers::spi
                                drivers::port::ALTERNATE_FUNCTION af)
     {
         // MOSI
-        drivers::port::GPIO port_mosi(clock, portMOSI);
+        drivers::port::Gpio port_mosi(clock, portMOSI);
         port_mosi.SetPinMode(pinMOSI, drivers::port::ALTERNATE_FUNCT);
         port_mosi.SetPinSpeed(pinMOSI, drivers::port::VERY_HIGH_SPEED);
         port_mosi.SetAFPin(pinMOSI, af);
 
         // MISO
-        drivers::port::GPIO port_miso(clock, portMISO);
+        drivers::port::Gpio port_miso(clock, portMISO);
         port_miso.SetPinMode(pinMISO, drivers::port::ALTERNATE_FUNCT);
         port_miso.SetPinSpeed(pinMOSI, drivers::port::VERY_HIGH_SPEED);
         port_miso.SetAFPin(pinMISO, af);
 
         // SCK
-        drivers::port::GPIO port_sck(clock, portSCK);
+        drivers::port::Gpio port_sck(clock, portSCK);
         port_sck.SetPinMode(pinSCK, drivers::port::ALTERNATE_FUNCT);
         port_sck.SetPinSpeed(pinSCK, drivers::port::VERY_HIGH_SPEED);
         port_sck.SetAFPin(pinSCK, af);
@@ -98,7 +98,7 @@ namespace drivers::spi
         ConfigGpioForSpi(portMOSI, pinMOSI, portMISO, pinMISO, portSCK, pinSCK, af);
 
         // NSS
-        drivers::port::GPIO port_nss(clock, portNSS);
+        drivers::port::Gpio port_nss(clock, portNSS);
         port_nss.SetPinMode(pinNSS, drivers::port::ALTERNATE_FUNCT);
         port_nss.SetPinSpeed(pinNSS, drivers::port::VERY_HIGH_SPEED);
         port_nss.SetAFPin(pinNSS, af);
@@ -763,14 +763,16 @@ namespace drivers::spi
     void SPI::TransmitData8(std::uint8_t txData) noexcept
     {
         while(IsActiveFlag_TXE() == 0)
-        {}
+        {
+        }
         libs::MWR::write_register(baseAddress + DR, txData);
     }
 
     void SPI::TransmitData16(std::uint16_t txData) noexcept
     {
         while(IsActiveFlag_TXE())
-        {}
+        {
+        }
         libs::MWR::write_register(baseAddress + DR, txData);
     }
 
@@ -780,7 +782,8 @@ namespace drivers::spi
         while(sizeArray--)
         {
             while(!IsActiveFlag_TXE())
-            {}
+            {
+            }
             TransmitData8(txData[temp]);
             temp++;
         }
@@ -792,10 +795,12 @@ namespace drivers::spi
         while(size--)
         {
             while(!IsActiveFlag_TXE())
-            {}
+            {
+            }
             TransmitData8(txData[temp]);
             while(!IsActiveFlag_RXNE())
-            {}
+            {
+            }
             rxData[temp] = ReceiveData8();
             temp++;
         }
@@ -809,7 +814,8 @@ namespace drivers::spi
         while(size--)
         {
             while(!IsActiveFlag_TXE())
-            {}
+            {
+            }
             if(dw == BIT8)
             {
                 TransmitData8(*(static_cast<uint8_t *>(txData) + temp));
@@ -822,7 +828,8 @@ namespace drivers::spi
             }
 
             while(!IsActiveFlag_RXNE())
-            {}
+            {
+            }
 
             if(dw == BIT8)
             {

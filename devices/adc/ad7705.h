@@ -79,9 +79,9 @@ namespace devices::ad7705
     class Ad7705
     {
         drivers::spi::SPI        &spi;
-        drivers::port::GPIO      &portRST;
-        drivers::port::GPIO      &portCS;
-        drivers::port::GPIO      &portDRDY;
+        drivers::port::Gpio      &portRST;
+        drivers::port::Gpio      &portCS;
+        drivers::port::Gpio      &portDRDY;
         drivers::port::PIN_NUMBER pinRST;
         drivers::port::PIN_NUMBER pinCS;
         drivers::port::PIN_NUMBER pinDRDY;
@@ -91,11 +91,11 @@ namespace devices::ad7705
 
     public:
         Ad7705(drivers::spi::SPI        &spiADC,
-               drivers::port::GPIO      &portRST,
+               drivers::port::Gpio      &portRST,
                drivers::port::PIN_NUMBER pinRST,
-               drivers::port::GPIO      &portCS,
+               drivers::port::Gpio      &portCS,
                drivers::port::PIN_NUMBER pinCS,
-               drivers::port::GPIO      &portDRDY,
+               drivers::port::Gpio      &portDRDY,
                drivers::port::PIN_NUMBER pinDRDY);
         void         Init(Modes m, Gain g, OutputUpadateRate uor) noexcept;
         void         WriteCommunicationReg(Registers    reg,

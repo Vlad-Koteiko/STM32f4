@@ -111,7 +111,7 @@ namespace drivers::port
     };
 
     /// @brief Class for working with GPIO
-    class GPIO
+    class Gpio
     {
         const drivers::clock::ClockControl& clockControl;    ///< Link to class ClockControl
         std::uintptr_t                      baseAddress;     ///< Base addres GPIO
@@ -140,7 +140,7 @@ namespace drivers::port
         /// @brief Constructor for GPIO
         /// @param clockControl Reference ClockControl
         /// @param port Address port
-        GPIO(const drivers::clock::ClockControl& clockControl, ADDRESSES_PORT port);
+        Gpio(const drivers::clock::ClockControl& clockControl, const ADDRESSES_PORT portInit);
 
         /// @brief Set pin speed
         /// @param numberPin Number pin
@@ -196,11 +196,11 @@ namespace drivers::port
         /// @brief Read pin
         /// @param pin Number pin
         /// @return 0 - Reset, 1 - Set
-        std::uint8_t ReadPin(PIN_NUMBER pin) noexcept;
+        [[nodiscard]] std::uint8_t ReadPin(PIN_NUMBER pin) noexcept;
 
         /// @brief Read port
         /// @return Value pins port
-        std::uint32_t ReadPort() noexcept;
+        [[nodiscard]] std::uint32_t ReadPort() noexcept;
     };
 
 }    // namespace drivers::port
