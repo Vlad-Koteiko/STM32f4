@@ -7,6 +7,8 @@
 #ifndef USART_H
 #define USART_H
 
+#include <tuple>
+
 #include "MWR.hpp"
 #include "base_interface.h"
 #include "clockControl.hpp"
@@ -212,20 +214,12 @@ namespace drivers::usart
             GT  = 8     ///< Guard time value
         };
 
-        struct BaundRate
-        {
-            std::uint16_t integet;
-            std::uint16_t fraction;
-
-            constexpr BaundRate(BAUD_RATE baudRate, std::uint32_t FPCLK) :
-                integet(setInteget(baudRate, FPCLK)), fraction(setFraction(baudRate, FPCLK))
-            {}
-        };
+        using BaundRateType = std::tuple<std::uint16_t, std::uint16_t>;
 
         const drivers::clock::ClockControl &clockControl;    ///< Link to class ClockControl
         std::uintptr_t                      baseAddress;     ///< Base address USART/UART
-        BaundRate                           baundRateAPB2;
-        BaundRate                           baundRateAPB1;
+        BaundRateType                       baundRateAPB2;
+        BaundRateType                       baundRateAPB1;
 
         /*! Registers USART/UART*/
         enum RegisterUSART : std::ptrdiff_t
@@ -278,11 +272,14 @@ namespace drivers::usart
         /// @brief Constructor for USART/UART
         /// @param _clockControl Reference ClockControl
         /// @param adr Address USART/UART
-        constexpr Usart(drivers::clock::ClockControl &clockControlInit, ADDRESSES_USART address) :
+        constexpr Usart(const drivers::clock::ClockControl &clockControlInit,
+                        ADDRESSES_USART                     address) :
             clockControl(clockControlInit),
             baseAddress(address),
-            baundRateAPB1(RATE_115200, clockControlInit.GetFreqAPB1()),
-            baundRateAPB2(RATE_115200, clockControlInit.GetFreqAPB2())
+            baundRateAPB1(setInteget(RATE_115200, clockControlInit.GetFreqAPB1()),
+                          setFraction(RATE_115200, clockControlInit.GetFreqAPB1())),
+            baundRateAPB2(setInteget(RATE_115200, clockControlInit.GetFreqAPB2()),
+                          setFraction(RATE_115200, clockControlInit.GetFreqAPB2()))
         {}
 
         void init() noexcept;
@@ -327,7 +324,7 @@ namespace drivers::usart
         /// @brief Set baud rate USART/UART
         /// @param baudRate enum BAUD_RATE
         /// @param FPCLK Frequnce FPCLK
-        void SetBaudRate(const BaundRate &baundRate) noexcept;
+        void SetBaudRate(const BaundRateType &baundRate) noexcept;
 
         /// @brief Transmit data
         /// @param value Value for transmission

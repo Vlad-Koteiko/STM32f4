@@ -369,10 +369,11 @@ namespace drivers::usart
         libs::MWR::modifySetRegister(baseAddress + CR2, stopBit << STOP);
     }
 
-    void Usart::SetBaudRate(const drivers::usart::Usart::BaundRate &baundRate) noexcept
+    void Usart::SetBaudRate(const drivers::usart::Usart::BaundRateType &baundRate) noexcept
     {
         libs::MWR::write_register(
-            baseAddress + BRR, (baundRate.integet << DIV_Mantissa) | (baundRate.fraction & 0x000F));
+            baseAddress + BRR,
+            (std::get<0>(baundRate) << DIV_Mantissa) | (std::get<1>(baundRate) & 0x000F));
     }
 
     void Usart::sendByte(std::byte byte) noexcept
