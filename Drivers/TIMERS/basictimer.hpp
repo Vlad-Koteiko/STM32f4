@@ -18,8 +18,8 @@ namespace drivers::timers
     /// @brief Enum basic timers
     enum BASIC_TIMERS : std::uintptr_t
     {
-        TIM6 = 0x40001000,  ///< Timer 6
-        TIM7 = 0x40001400   ///< Timer 7
+        TIM6 = 0x40001000,    ///< Timer 6
+        TIM7 = 0x40001400     ///< Timer 7
     };
 
     /// @brief Control register 1
@@ -32,7 +32,7 @@ namespace drivers::timers
         ARPE = 7,    ///< Auto-reload preload enable
     };
 
-    /// @brief DMA/Interrupt enable register 
+    /// @brief DMA/Interrupt enable register
     enum DIER_poz : std::uint8_t
     {
         UIE = 0,    ///< Update interrupt enable
@@ -49,23 +49,23 @@ namespace drivers::timers
     /// @brief One pulse mode
     enum ONE_PULSE_MODE : std::uint8_t
     {
-        REPETITIVE, ///< Repetitive
-        SINGLE      ///< Single
+        REPETITIVE,    ///< Repetitive
+        SINGLE         ///< Single
     };
 
     /// @brief Mode
     enum MODE : std::uint8_t
     {
-        RESET,      ///< Reset
-        ENABLE,     ///< Enable
-        UPDATE      ///< Update
+        RESET,     ///< Reset
+        ENABLE,    ///< Enable
+        UPDATE     ///< Update
     };
 
     /// @brief Class for working with BasicTimer
     class BasicTimer
     {
-        drivers::clock::ClockControl &clockControl;     ///< Reference Clock Controll
-        std::uintptr_t                baseAddress;      ///< Base address
+        drivers::clock::ClockControl &clockControl;    ///< Reference Clock Controll
+        std::uintptr_t                baseAddress;     ///< Base address
 
         /// @brief Registers BasicTimer
         enum Registers : std::uintptr_t
@@ -97,104 +97,104 @@ namespace drivers::timers
                    bool                          enableInterrupt);
 
         /// @brief Enable counter
-        void           EnableCounter() noexcept;
+        void EnableCounter() noexcept;
 
         /// @brief Disable counter
-        void           DisableCounter() noexcept;
+        void DisableCounter() noexcept;
 
         /// @brief Is enable counter
         /// @return true - enable
-        bool           IsEnabledCounter() noexcept;
+        bool IsEnabledCounter() noexcept;
 
         /// @brief Enbable update event
-        void           EnableUpdateEvent() noexcept;
+        void EnableUpdateEvent() noexcept;
 
         /// @brief Disble update event
-        void           DisableUpdateEvent() noexcept;
+        void DisableUpdateEvent() noexcept;
 
         /// @brief Is enable update event
         /// @return true - enable
-        bool           IsEnabledUpdateEvent() noexcept;
+        bool IsEnabledUpdateEvent() noexcept;
 
         /// @brief Set update source
         /// @param us Enum UPDATE_SOURCE
-        void           SetUpdateSource(UPDATE_SOURCE us) noexcept;
+        void SetUpdateSource(UPDATE_SOURCE us) noexcept;
 
         /// @brief Get update source
         /// @return Enum UPDATE_SOURCE
-        UPDATE_SOURCE  GetUpdateSource() noexcept;
+        UPDATE_SOURCE GetUpdateSource() noexcept;
 
         /// @brief Set one pulse mode
         /// @param opm Enum ONE_PULSE_MODE
-        void           SetOnePulseMode(ONE_PULSE_MODE opm) noexcept;
+        void SetOnePulseMode(ONE_PULSE_MODE opm) noexcept;
 
         /// @brief Get one pulse mode
         /// @return Enum ONE_PULSE_MODE
         ONE_PULSE_MODE GetOnePulseMode() noexcept;
 
         /// @brief Enable ARR preload
-        void           EnableARRPreload() noexcept;
+        void EnableARRPreload() noexcept;
 
         /// @brief Disable ARR preload
-        void           DisableARRPreload() noexcept;
+        void DisableARRPreload() noexcept;
 
         /// @brief Is enabled ARR preload
         /// @return true - enable
-        bool           IsEnabledARRPreload() noexcept;
+        bool IsEnabledARRPreload() noexcept;
 
         /// @brief Enable interrupt
-        void           EnableInterrupt() noexcept;
+        void EnableInterrupt() noexcept;
 
         /// @brief Disable interrupt
-        void           DisableInterrupt() noexcept;
+        void DisableInterrupt() noexcept;
 
         /// @brief Is enabled interrupt
         /// @return true - enable
-        bool           IsEnabledInterrupt() noexcept;
+        bool IsEnabledInterrupt() noexcept;
 
         /// @brief Enble dma request
-        void           EnableDmaRequest() noexcept;
+        void EnableDmaRequest() noexcept;
 
         /// @brief Disable dma request
-        void           DisableDmaRequest() noexcept;
+        void DisableDmaRequest() noexcept;
 
         /// @brief Is enabled dma request
         /// @return true - enable
-        bool           IsEnabledDmaRequest() noexcept;
+        bool IsEnabledDmaRequest() noexcept;
 
         /// @brief Is update interrupt flag
         /// @return true - update
-        bool           IsUpdateInterruptFlag() noexcept;
+        bool IsUpdateInterruptFlag() noexcept;
 
         /// @brief Clear update interrupt flag
-        void           ClearUpdateInterruptFlag() noexcept;
+        void ClearUpdateInterruptFlag() noexcept;
 
         /// @brief Generate event update
-        void           GenerateEventUpdate() noexcept;
+        void GenerateEventUpdate() noexcept;
 
         /// @brief Set counter
         /// @param val value
-        void           SetCounter(std::uint16_t val) noexcept;
+        void SetCounter(std::uint16_t val) noexcept;
 
         /// @brief Get counter
         /// @return value
-        std::uint16_t  GetCounter() noexcept;
+        std::uint16_t GetCounter() noexcept;
 
         /// @brief Set prescaler
         /// @param val value
-        void           SetPrescaler(std::uint16_t val) noexcept;
+        void SetPrescaler(std::uint16_t val) noexcept;
 
         /// @brief Get prescaler
-        /// @return 
-        std::uint16_t  GetPrescaler() noexcept;
+        /// @return
+        std::uint16_t GetPrescaler() noexcept;
 
         /// @brief Set autoreload
         /// @param val value
-        void           SetAutoReload(std::uint16_t val) noexcept;
+        void SetAutoReload(std::uint16_t val) noexcept;
 
         /// @brief Get autoreload
         /// @return value
-        std::uint16_t  GetAutoReload() noexcept;
+        std::uint16_t GetAutoReload() noexcept;
     };
 }    // namespace drivers::timers
 
