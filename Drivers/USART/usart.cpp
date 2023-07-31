@@ -5,65 +5,66 @@
 
 namespace drivers::usart
 {
+    void Usart::init() noexcept
+    {
+        switch(baseAddress)
+        {
+            case USART1:
+            {
+                clockControl.EnablePeripherals(drivers::clock::constants::USART1_MODULE);
+                RemapUsart1(U1_TX_PA9_RX_PA10);
+                SetBaudRate(baundRateAPB2);
+                break;
+            }
+            case USART2:
+            {
+                clockControl.EnablePeripherals(drivers::clock::constants::USART2_MODULE);
+                RemapUsart2(U2_TX_PA2_RX_PA3);
+                SetBaudRate(baundRateAPB1);
+                break;
+            }
+            case USART3:
+            {
+                clockControl.EnablePeripherals(drivers::clock::constants::USART3_MODULE);
+                RemapUsart3(U3_TX_PB10_RX_PB11);
+                SetBaudRate(baundRateAPB1);
+                break;
+            }
+            case UART4:
+            {
+                clockControl.EnablePeripherals(drivers::clock::constants::UART4_MODULE);
+                RemapUart4(U4_TX_PA0_RX_PA1);
+                SetBaudRate(baundRateAPB1);
+                break;
+            }
 
-    //    USART::USART(drivers::clock::ClockControl &_clockControl, ADDRESSES_USART adr,
-    //    std::uint8_t remap) : clockControl(_clockControl), baseAddress(adr)
-    //    {
-    //        switch (adr)
-    //        {
-    //            case USART1:
-    //            {
-    //                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::USART1_MODULE);
-    //                RemapUsart1(remap);
-    //                SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
-    //                break;
-    //            }
-    //            case USART2:
-    //            {
-    //                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::USART2_MODULE);
-    //                RemapUsart2(remap);
-    //                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-    //                break;
-    //            }
-    //            case USART3:
-    //            {
-    //                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::USART3_MODULE);
-    //                RemapUsart3(remap);
-    //                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-    //                break;
-    //            }
-    //            case UART4:
-    //            {
-    //                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::UART4_MODULE);
-    //                RemapUart4(remap);
-    //                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-    //                break;
-    //            }
-    //
-    //            case UART5:
-    //            {
-    //                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::UART5_MODULE);
-    //                ConfigGpioForUart(drivers::port::PORTC, drivers::port::PORTD,
-    //                drivers::port::PIN_12, drivers::port::PIN_2, drivers::port::AF8);
-    //                SetBaudRate(RATE_115200, clockControl.GetFreqAPB1());
-    //                break;
-    //            }
-    //
-    //            case USART6:
-    //            {
-    //                clockControl.EnablePeripherals(drivers::clock::CONSTANTS::USART6_MODULE);
-    //                RemapUsart6(remap);
-    //                SetBaudRate(RATE_115200, clockControl.GetFreqAPB2());
-    //                break;
-    //            }
-    //        }
-    //        SetWordLength(BIT_8);
-    //        ReceiverEnable(ENABLE);
-    //        TransmitterEnable(ENABLE);
-    //        UsartEnable(ENABLE);
-    //    }
+            case UART5:
+            {
+                clockControl.EnablePeripherals(drivers::clock::constants::UART5_MODULE);
+                ConfigGpioForUart(drivers::port::PORTC,
+                                  drivers::port::PORTD,
+                                  drivers::port::PIN_12,
+                                  drivers::port::PIN_2,
+                                  drivers::port::AF8);
+                SetBaudRate(baundRateAPB1);
+                break;
+            }
 
-    void USART::RemapUsart1(USART1_Remap remap)
+            case USART6:
+            {
+                clockControl.EnablePeripherals(drivers::clock::constants::USART6_MODULE);
+                RemapUsart6(U6_TX_PC6_RX_PC7);
+                SetBaudRate(baundRateAPB2);
+                break;
+            }
+        }
+        SetWordLength(BIT_8);
+        ReceiverEnable(ENABLE);
+        TransmitterEnable(ENABLE);
+        UsartEnable(ENABLE);
+    }
+
+    void Usart::RemapUsart1(const USART1_Remap remap)
     {
         switch(remap)
         {
@@ -98,7 +99,7 @@ namespace drivers::usart
         }
     }
 
-    void USART::RemapUsart2(USART2_Remap remap)
+    void Usart::RemapUsart2(const USART2_Remap remap)
     {
         switch(remap)
         {
@@ -133,7 +134,7 @@ namespace drivers::usart
         }
     }
 
-    void USART::RemapUsart3(USART3_Remap remap)
+    void Usart::RemapUsart3(const USART3_Remap remap)
     {
         switch(remap)
         {
@@ -203,7 +204,7 @@ namespace drivers::usart
         }
     }
 
-    void USART::RemapUart4(UART4_Remap remap)
+    void Usart::RemapUart4(const UART4_Remap remap)
     {
         switch(remap)
         {
@@ -238,7 +239,7 @@ namespace drivers::usart
         }
     }
 
-    void USART::RemapUsart6(USART6_Remap remap)
+    void Usart::RemapUsart6(const USART6_Remap remap)
     {
         switch(remap)
         {
@@ -273,9 +274,9 @@ namespace drivers::usart
         }
     }
 
-    void USART::Remap(std::uint8_t remapPins)
+    void Usart::Remap(std::uint8_t remapPins)
     {
-        switch(this->baseAddress)
+        switch(baseAddress)
         {
             case USART1:
                 RemapUsart1(static_cast<USART1_Remap>(remapPins));
@@ -302,26 +303,26 @@ namespace drivers::usart
         }
     }
 
-    void USART::ConfigGpioForUart(drivers::port::ADDRESSES_PORT     portTX,
-                                  drivers::port::ADDRESSES_PORT     portRX,
-                                  drivers::port::PIN_NUMBER         pinTX,
-                                  drivers::port::PIN_NUMBER         pinRX,
-                                  drivers::port::ALTERNATE_FUNCTION af) noexcept
+    void Usart::ConfigGpioForUart(const drivers::port::ADDRESSES_PORT     portTX,
+                                  const drivers::port::ADDRESSES_PORT     portRX,
+                                  const drivers::port::PIN_NUMBER         pinTX,
+                                  const drivers::port::PIN_NUMBER         pinRX,
+                                  const drivers::port::ALTERNATE_FUNCTION af) noexcept
     {
         // init GPIO TX
-        drivers::port::GPIO port_tx(clockControl, portTX);
+        drivers::port::Gpio port_tx(clockControl, portTX);
         port_tx.SetPinMode(pinTX, drivers::port::ALTERNATE_FUNCT);
         port_tx.SetPinSpeed(pinTX, drivers::port::VERY_HIGH_SPEED);
         port_tx.SetAFPin(pinTX, af);
 
         // init GPIO RX
-        drivers::port::GPIO port_rx(clockControl, portRX);
+        drivers::port::Gpio port_rx(clockControl, portRX);
         port_rx.SetPinMode(pinRX, drivers::port::ALTERNATE_FUNCT);
         port_rx.SetPinSpeed(pinRX, drivers::port::VERY_HIGH_SPEED);
         port_rx.SetAFPin(pinRX, af);
     }
 
-    void USART::SetWordLength(
+    void Usart::SetWordLength(
         WORD_LENGTH wordLength) noexcept    // This bit determines the word length. It is set or
                                             // cleared by software.
     {
@@ -331,7 +332,7 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, M);
     }
 
-    void USART::ReceiverEnable(STATUS receiver) noexcept    // This bit enables the receiver. It is
+    void Usart::ReceiverEnable(STATUS receiver) noexcept    // This bit enables the receiver. It is
                                                             // set and cleared by software
     {
         if(receiver == DISABLE)
@@ -340,7 +341,7 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, RE);
     }
 
-    void USART::TransmitterEnable(
+    void Usart::TransmitterEnable(
         STATUS transmitter) noexcept    // This bit enables the transmitter. It is set and cleared
                                         // by software
     {
@@ -350,7 +351,7 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, TE);
     }
 
-    void USART::UsartEnable(
+    void Usart::UsartEnable(
         STATUS
             usartEnable) noexcept    // USART prescalers and outputs are stopped and the end of the
                                      // current byte transfer in order to reduce power consumption
@@ -361,32 +362,26 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, UE);
     }
 
-    void USART::SetStopBitsLength(
+    void Usart::SetStopBitsLength(
         STOP_BIT stopBit) noexcept    // These bits are used for programming the stop bits.
     {
-        //        std::uint32_t bufReg = readWrite::read_register<std::uint32_t>(baseAddress + CR2);
-        //        bufReg = (bufReg & 0xFFFCFFF) | (stopBit << CR2_poz::STOP);
-        //        readWrite::write_register<std::uint32_t>(baseAddress + CR2, bufReg);
-
         libs::MWR::modifyResetRegister(baseAddress + CR2, 3 << STOP);
         libs::MWR::modifySetRegister(baseAddress + CR2, stopBit << STOP);
     }
 
-    void USART::SetBaudRate(BAUD_RATE baudRate, std::uint32_t FPCLK) noexcept
+    void Usart::SetBaudRate(const drivers::usart::Usart::BaundRateType &baundRate) noexcept
     {
-        float         resalt   = (static_cast<float>(FPCLK) / static_cast<float>(16 * baudRate));
-        std::uint16_t integet  = static_cast<std::uint16_t>(resalt);
-        std::uint16_t fraction = (static_cast<float>(resalt - static_cast<float>(integet)) * 16);
-        libs::MWR::write_register(baseAddress + BRR,
-                                  (integet << DIV_Mantissa) | (fraction & 0x000F));
+        libs::MWR::write_register(
+            baseAddress + BRR,
+            (std::get<0>(baundRate) << DIV_Mantissa) | (std::get<1>(baundRate) & 0x000F));
     }
 
-    void USART::TransmitData(std::uint8_t value) noexcept
+    void Usart::sendByte(std::byte byte) noexcept
     {
-        libs::MWR::write_register(baseAddress + DR, value);
+        libs::MWR::write_register(baseAddress + DR, byte);
     }
 
-    void USART::TransmitString(const void *value, std::size_t size) noexcept
+    void Usart::TransmitString(const void *value, std::size_t size) noexcept
     {
         std::size_t temp = 0;
         while(size--)
@@ -394,59 +389,59 @@ namespace drivers::usart
             while(!ReadFlag(TXE))
             {
             }
-            TransmitData(*(static_cast<const char *>(value) + temp++));
+            sendByte(static_cast<std::byte>(*(static_cast<const char *>(value) + temp++)));
         }
     }
 
-    std::uint8_t USART::ReceiveData() noexcept
+    std::byte Usart::readByte() noexcept
     {
-        return libs::MWR::read_register<std::uint8_t>(baseAddress + DR);
+        return libs::MWR::read_register<std::byte>(baseAddress + DR);
     }
 
-    void USART::DeInit() noexcept
+    void Usart::DeInit() noexcept
     {
         switch(baseAddress)
         {
             case USART1:
-                clockControl.EnablePeripherals(drivers::clock::constants::USART1_MODULE);
+                clockControl.DisablePeripherals(drivers::clock::constants::USART1_MODULE);
                 break;
             case USART2:
-                clockControl.EnablePeripherals(drivers::clock::constants::USART2_MODULE);
+                clockControl.DisablePeripherals(drivers::clock::constants::USART2_MODULE);
                 break;
             case USART3:
-                clockControl.EnablePeripherals(drivers::clock::constants::USART3_MODULE);
+                clockControl.DisablePeripherals(drivers::clock::constants::USART3_MODULE);
                 break;
             case UART4:
-                clockControl.EnablePeripherals(drivers::clock::constants::UART4_MODULE);
+                clockControl.DisablePeripherals(drivers::clock::constants::UART4_MODULE);
                 break;
             case UART5:
-                clockControl.EnablePeripherals(drivers::clock::constants::UART5_MODULE);
+                clockControl.DisablePeripherals(drivers::clock::constants::UART5_MODULE);
                 break;
             case USART6:
-                clockControl.EnablePeripherals(drivers::clock::constants::USART6_MODULE);
+                clockControl.DisablePeripherals(drivers::clock::constants::USART6_MODULE);
                 break;
             case UART7:
-                clockControl.EnablePeripherals(drivers::clock::constants::UART7_MODULE);
+                clockControl.DisablePeripherals(drivers::clock::constants::UART7_MODULE);
                 break;
             case UART8:
-                clockControl.EnablePeripherals(drivers::clock::constants::UART8_MODULE);
+                clockControl.DisablePeripherals(drivers::clock::constants::UART8_MODULE);
                 break;
         }
     }
 
     //---------------------------------------------------------------------------------
-    bool USART::ReadFlag(SR_poz flag)
+    bool Usart::ReadFlag(SR_poz flag)
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, flag);
     }
 
-    void USART::ClearFlag(SR_clear_flag flag)
+    void Usart::ClearFlag(SR_clear_flag flag)
     {
         libs::MWR::resetBit(baseAddress + SR, CTS);
     }
     //---------------------------------------------------------------------------------
 
-    void USART::SetOversamplingMode(std::uint8_t mode)
+    void Usart::SetOversamplingMode(std::uint8_t mode)
     {
         if(mode == DISABLE)
             libs::MWR::resetBit(baseAddress + CR1, OVER8);
@@ -454,12 +449,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, OVER8);
     }
 
-    bool USART::GetOversamplingMode()
+    bool Usart::GetOversamplingMode()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, OVER8);
     }
 
-    void USART::SetWakeUpMethod(std::uint8_t x)
+    void Usart::SetWakeUpMethod(std::uint8_t x)
     {
         if(x == 0)
             libs::MWR::resetBit(baseAddress + CR1, WAKE);
@@ -467,12 +462,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, WAKE);
     }
 
-    bool USART::GetWakeUpMethod()
+    bool Usart::GetWakeUpMethod()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, WAKE);
     }
 
-    void USART::SetParityControl(STATUS x)
+    void Usart::SetParityControl(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR1, PCE);
@@ -480,12 +475,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, PCE);
     }
 
-    bool USART::GetParityControl()
+    bool Usart::GetParityControl()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, PCE);
     }
 
-    void USART::SetParitySelection(std::uint8_t x)
+    void Usart::SetParitySelection(std::uint8_t x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR1, PS);
@@ -493,12 +488,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, PS);
     }
 
-    bool USART::GetParitySelection()
+    bool Usart::GetParitySelection()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, PS);
     }
 
-    void USART::ReceiverWakeup(std::uint8_t x)
+    void Usart::ReceiverWakeup(std::uint8_t x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR1, RWU);
@@ -506,12 +501,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, RWU);
     }
 
-    bool USART::GetReceiverWakeup()
+    bool Usart::GetReceiverWakeup()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, RWU);
     }
 
-    void USART::SendBreak(STATUS x)
+    void Usart::SendBreak(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR1, SBK);
@@ -519,27 +514,27 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR1, SBK);
     }
 
-    bool USART::GetSendBreak()
+    bool Usart::GetSendBreak()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, SBK);
     }
 
-    void USART::EnableInterrupt(INTERRUPT i)
+    void Usart::EnableInterrupt(INTERRUPT i)
     {
         libs::MWR::setBit(baseAddress + CR1, i);
     }
 
-    void USART::DisableInterrupt(INTERRUPT i)
+    void Usart::DisableInterrupt(INTERRUPT i)
     {
         libs::MWR::resetBit(baseAddress + CR1, i);
     }
 
-    bool USART::GetSourceInterrupt(INTERRUPT i)
+    bool Usart::GetSourceInterrupt(INTERRUPT i)
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, i);
     }
 
-    void USART::LinModeEnable(STATUS x)
+    void Usart::LinModeEnable(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR2, LINEN);
@@ -547,12 +542,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR2, LINEN);
     }
 
-    bool USART::GetLinModeEnable()
+    bool Usart::GetLinModeEnable()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR2, LINEN);
     }
 
-    void USART::ClockEnable(STATUS x)
+    void Usart::ClockEnable(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR2, CLKEN);
@@ -560,12 +555,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR2, CLKEN);
     }
 
-    bool USART::GetClockEnable()
+    bool Usart::GetClockEnable()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR2, CLKEN);
     }
 
-    void USART::ClockPolarity(std::uint8_t x)
+    void Usart::ClockPolarity(std::uint8_t x)
     {
         if(x == 0)
             libs::MWR::resetBit(baseAddress + CR2, CPOL);
@@ -573,12 +568,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR2, CPOL);
     }
 
-    bool USART::GetClockPolarity()
+    bool Usart::GetClockPolarity()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR2, CPOL);
     }
 
-    void USART::ClockPhase(std::uint8_t x)
+    void Usart::ClockPhase(std::uint8_t x)
     {
         if(x == 0)
             libs::MWR::resetBit(baseAddress + CR2, CPHA);
@@ -586,12 +581,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR2, CPHA);
     }
 
-    bool USART::GetClockPhase()
+    bool Usart::GetClockPhase()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR2, CPHA);
     }
 
-    void USART::LastBitClockPulse(std::uint8_t x)
+    void Usart::LastBitClockPulse(std::uint8_t x)
     {
         if(x == 0)
             libs::MWR::resetBit(baseAddress + CR2, LBCL);
@@ -599,12 +594,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR2, LBCL);
     }
 
-    bool USART::GetLastBitClockPulse()
+    bool Usart::GetLastBitClockPulse()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR2, LBCL);
     }
 
-    void USART::SetLBDIE(STATUS x)
+    void Usart::SetLBDIE(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR2, LBDIE);
@@ -612,12 +607,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR2, LBDIE);
     }
 
-    bool USART::GetLBDIE()
+    bool Usart::GetLBDIE()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR2, LBDIE);
     }
 
-    void USART::LinBreakDetectionLength(std::uint8_t x)
+    void Usart::LinBreakDetectionLength(std::uint8_t x)
     {
         if(x == 0)
             libs::MWR::resetBit(baseAddress + CR2, LBDL);
@@ -625,23 +620,23 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR2, LBDL);
     }
 
-    bool USART::GetLinBreakDetectionLength()
+    bool Usart::GetLinBreakDetectionLength()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR2, LBDL);
     }
 
-    void USART::SetAddressUsartNode(std::uint8_t x)
+    void Usart::SetAddressUsartNode(std::uint8_t x)
     {
         libs::MWR::modifyResetRegister(baseAddress + CR2, 0xF << ADD);
         libs::MWR::modifySetRegister(baseAddress + CR2, x << ADD);
     }
 
-    std::uint8_t USART::GetAddressUsartNode()
+    std::uint8_t Usart::GetAddressUsartNode()
     {
         return libs::MWR::read_register<std::uint32_t>(baseAddress + CR2) & 0x00000000F;
     }
 
-    void USART::OneSampleBitMethod(std::uint8_t x)
+    void Usart::OneSampleBitMethod(std::uint8_t x)
     {
         if(x == 0)
             libs::MWR::resetBit(baseAddress + CR3, ONEBIT);
@@ -649,12 +644,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, ONEBIT);
     }
 
-    bool USART::GetOneSampleBitMethod()
+    bool Usart::GetOneSampleBitMethod()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, ONEBIT);
     }
 
-    void USART::SetCTSIE(STATUS x)
+    void Usart::SetCTSIE(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, CTSIE);
@@ -662,12 +657,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, CTSIE);
     }
 
-    bool USART::GetCTSIE()
+    bool Usart::GetCTSIE()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, CTSIE);
     }
 
-    void USART::CTSEnable(STATUS x)
+    void Usart::CTSEnable(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, CTSE);
@@ -675,12 +670,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, CTSE);
     }
 
-    bool USART::GetCTSEnable()
+    bool Usart::GetCTSEnable()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, CTSE);
     }
 
-    void USART::RTSEnable(STATUS x)
+    void Usart::RTSEnable(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, RTSE);
@@ -688,12 +683,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, RTSE);
     }
 
-    bool USART::GetRTSEnable()
+    bool Usart::GetRTSEnable()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, RTSE);
     }
 
-    void USART::DMAEnableTransmitter(STATUS x)
+    void Usart::DMAEnableTransmitter(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, DMAT);
@@ -701,12 +696,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, DMAT);
     }
 
-    bool USART::GetDMAEnableTransmitter()
+    bool Usart::GetDMAEnableTransmitter()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, DMAT);
     }
 
-    void USART::DMAEnableReceiver(STATUS x)
+    void Usart::DMAEnableReceiver(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, DMAR);
@@ -714,12 +709,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, DMAR);
     }
 
-    bool USART::GetDMAEnableReceiver()
+    bool Usart::GetDMAEnableReceiver()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, DMAR);
     }
 
-    void USART::SmartcardModeEnable(STATUS x)
+    void Usart::SmartcardModeEnable(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, SCEN);
@@ -727,12 +722,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, SCEN);
     }
 
-    bool USART::GetSmartcardModeEnable()
+    bool Usart::GetSmartcardModeEnable()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, SCEN);
     }
 
-    void USART::SmartcardNACKEnable(STATUS x)
+    void Usart::SmartcardNACKEnable(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, NACK);
@@ -740,12 +735,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, NACK);
     }
 
-    bool USART::GetSmartcardNACKEnable()
+    bool Usart::GetSmartcardNACKEnable()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, NACK);
     }
 
-    void USART::HalfDuplexSelection(std::uint8_t x)
+    void Usart::HalfDuplexSelection(std::uint8_t x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, HDSEL);
@@ -753,12 +748,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, HDSEL);
     }
 
-    bool USART::GetHalfDuplexSelection()
+    bool Usart::GetHalfDuplexSelection()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, HDSEL);
     }
 
-    void USART::IrDALowPower(std::uint8_t x)
+    void Usart::IrDALowPower(std::uint8_t x)
     {
         if(x == 0)
             libs::MWR::resetBit(baseAddress + CR3, IRLP);
@@ -766,12 +761,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, IRLP);
     }
 
-    bool USART::GetIrDALowPower()
+    bool Usart::GetIrDALowPower()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, IRLP);
     }
 
-    void USART::IrDAModeEnable(STATUS x)
+    void Usart::IrDAModeEnable(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, IREN);
@@ -779,12 +774,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, IREN);
     }
 
-    bool USART::GetIrDAModeEnable()
+    bool Usart::GetIrDAModeEnable()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, IREN);
     }
 
-    void USART::SetEIE(STATUS x)
+    void Usart::SetEIE(STATUS x)
     {
         if(x == DISABLE)
             libs::MWR::resetBit(baseAddress + CR3, EIE);
@@ -792,12 +787,12 @@ namespace drivers::usart
             libs::MWR::setBit(baseAddress + CR3, EIE);
     }
 
-    bool USART::GetEIE()
+    bool Usart::GetEIE()
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR3, EIE);
     }
 
-    bool USART::InitUsartDma(const drivers::dma::DMA &usartDma,
+    bool Usart::InitUsartDma(const drivers::dma::DMA &usartDma,
                              drivers::dma::DMA_Config dmaConfig,
                              bool                     isTransmit,
                              bool                     isReceive)
@@ -880,7 +875,7 @@ namespace drivers::usart
         return rezultInit;
     }
 
-    bool USART::TransmitDataDma(dma::DMA &dma, std::uint8_t *sendBuffer, std::uint16_t size)
+    bool Usart::TransmitDataDma(dma::DMA &dma, std::uint8_t *sendBuffer, std::uint16_t size)
     {
         bool rezultTransmit = false;
         switch(baseAddress)
@@ -903,7 +898,7 @@ namespace drivers::usart
         return rezultTransmit;
     }
 
-    bool USART::ReceiveDataDma(dma::DMA &dma, std::uint8_t *recvBuffer, std::uint16_t size)
+    bool Usart::ReceiveDataDma(dma::DMA &dma, std::uint8_t *recvBuffer, std::uint16_t size)
     {
         bool rezultReceive = false;
 

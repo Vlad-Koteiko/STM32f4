@@ -105,6 +105,7 @@ set(MAIN_COMMON_DIRS
         libs/logger
         libs/MWR
         libs/uartbuf
+        libs/base
         Drivers/ClokControl
         Drivers/GPIO
         Drivers/USART

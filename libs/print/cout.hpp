@@ -16,7 +16,7 @@ namespace libs
     {
         std::uint8_t           endString = '\0';
         std::array<char, 11>   buff { 0 };
-        drivers::usart::USART& debugUart;
+        drivers::usart::Usart& debugUart;
 
         inline void pritnString(char* ptr) noexcept
         {
@@ -43,7 +43,7 @@ namespace libs
         }
 
     public:
-        Cout(drivers::usart::USART& msgUart);
+        Cout(drivers::usart::Usart& msgUart);
 
         enum Commands
         {
@@ -64,10 +64,10 @@ namespace libs
 
         inline void printChar(char ch) noexcept
         {
-            while(!debugUart.ReadFlag(drivers::usart::USART::SR_poz::TXE))
+            while(!debugUart.ReadFlag(drivers::usart::Usart::SR_poz::TXE))
             {
             }
-            debugUart.TransmitData(ch);
+            debugUart.sendByte(static_cast<std::byte>(ch));
         }
     };
 }    // namespace libs

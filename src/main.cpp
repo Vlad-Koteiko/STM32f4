@@ -8,7 +8,7 @@ std::uint32_t counter      = 0;
 std::uint8_t  bufferReceve = 0;
 
 drivers::timers::BasicTimers *tim6Pointer;
-drivers::usart::USART        *uart_p_2;
+drivers::usart::Usart        *uart_p_2;
 libs::Cout                   *globalCout;
 
 std::uint8_t recvDma[5];
@@ -17,11 +17,12 @@ void Bass::main() noexcept
 {
     drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
     clockControl.init();
-    drivers::port::GPIO gpioD(clockControl, drivers::port::PORTD);
+    drivers::port::Gpio gpioD(clockControl, drivers::port::PORTD);
     auto                portdRef = &gpioD;
     // Init(clockControl);
     //-----------------------------------------USART INIT---------------------------------
-    //    drivers::usart::USART usart2(clockControl, drivers::usart::USART2);
+    drivers::usart::Usart usart2(clockControl, drivers::usart::USART2);
+    usart2.init();
     //    uart_p_2 = &usart2;
     //    usart2.EnableInterrupt(drivers::usart::INTERRUPT::RXNEIE);
 
@@ -94,6 +95,8 @@ void Bass::main() noexcept
         //            gpioA.TogglePin(drivers::port::PIN_1);
         //            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
         //
+
+        usart2.sendByte(static_cast<std::byte>('z'));
         clockControl.mDelay(500);
     }
 }

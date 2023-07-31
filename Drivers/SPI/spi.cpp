@@ -67,19 +67,19 @@ namespace drivers::spi
                                drivers::port::ALTERNATE_FUNCTION af)
     {
         // MOSI
-        drivers::port::GPIO port_mosi(clock, portMOSI);
+        drivers::port::Gpio port_mosi(clock, portMOSI);
         port_mosi.SetPinMode(pinMOSI, drivers::port::ALTERNATE_FUNCT);
         port_mosi.SetPinSpeed(pinMOSI, drivers::port::VERY_HIGH_SPEED);
         port_mosi.SetAFPin(pinMOSI, af);
 
         // MISO
-        drivers::port::GPIO port_miso(clock, portMISO);
+        drivers::port::Gpio port_miso(clock, portMISO);
         port_miso.SetPinMode(pinMISO, drivers::port::ALTERNATE_FUNCT);
         port_miso.SetPinSpeed(pinMOSI, drivers::port::VERY_HIGH_SPEED);
         port_miso.SetAFPin(pinMISO, af);
 
         // SCK
-        drivers::port::GPIO port_sck(clock, portSCK);
+        drivers::port::Gpio port_sck(clock, portSCK);
         port_sck.SetPinMode(pinSCK, drivers::port::ALTERNATE_FUNCT);
         port_sck.SetPinSpeed(pinSCK, drivers::port::VERY_HIGH_SPEED);
         port_sck.SetAFPin(pinSCK, af);
@@ -98,7 +98,7 @@ namespace drivers::spi
         ConfigGpioForSpi(portMOSI, pinMOSI, portMISO, pinMISO, portSCK, pinSCK, af);
 
         // NSS
-        drivers::port::GPIO port_nss(clock, portNSS);
+        drivers::port::Gpio port_nss(clock, portNSS);
         port_nss.SetPinMode(pinNSS, drivers::port::ALTERNATE_FUNCT);
         port_nss.SetPinSpeed(pinNSS, drivers::port::VERY_HIGH_SPEED);
         port_nss.SetAFPin(pinNSS, af);

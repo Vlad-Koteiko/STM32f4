@@ -356,22 +356,22 @@ namespace drivers ::clock
 
         void init() noexcept;
 
-        constexpr std::uint32_t GetFreqSystemCoreClock() const noexcept
+        [[nodiscard]] constexpr std::uint32_t GetFreqSystemCoreClock() const noexcept
         {
             return systemCoreClock;
         }
 
-        constexpr std::uint32_t GetFreqHCLK() const noexcept
+        [[nodiscard]] constexpr std::uint32_t GetFreqHCLK() const noexcept
         {
             return freqHCLK;
         }
 
-        constexpr std::uint32_t GetFreqAPB1() const noexcept
+        [[nodiscard]] constexpr std::uint32_t GetFreqAPB1() const noexcept
         {
             return freqAPB1;
         }
 
-        constexpr std::uint32_t GetFreqAPB2() const noexcept
+        [[nodiscard]] constexpr std::uint32_t GetFreqAPB2() const noexcept
         {
             return freqAPB2;
         }

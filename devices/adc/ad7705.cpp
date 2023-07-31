@@ -6,11 +6,11 @@
 namespace devices::ad7705
 {
     Ad7705::Ad7705(drivers::spi::SPI        &spiADC,
-                   drivers::port::GPIO      &portRST,
+                   drivers::port::Gpio      &portRST,
                    drivers::port::PIN_NUMBER pinRST,
-                   drivers::port::GPIO      &portCS,
+                   drivers::port::Gpio      &portCS,
                    drivers::port::PIN_NUMBER pinCS,
-                   drivers::port::GPIO      &portDRDY,
+                   drivers::port::Gpio      &portDRDY,
                    drivers::port::PIN_NUMBER pinDRDY) :
         spi(spiADC), portRST(portRST), portCS(portCS), portDRDY(portDRDY)
     {

@@ -16,7 +16,7 @@ extern const FONT_INFO      consolas_9ptFontInfo;
 namespace devices::st7789
 {
     St7789::St7789(drivers::spi::SPI        &spiScreen,
-                   drivers::port::GPIO      &port,
+                   drivers::port::Gpio      &port,
                    drivers::port::PIN_NUMBER dc,
                    drivers::port::PIN_NUMBER res,
                    drivers::port::PIN_NUMBER bck,
