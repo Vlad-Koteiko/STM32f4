@@ -6,7 +6,7 @@
 #define STM32F4_USB_H
 
 #include "MWR.hpp"
-#include "gpio.h"
+#include "gpio.hpp"
 #include "clockControl.hpp"
 #include "nvic.h"
 #include <cstdint>

@@ -1,7 +1,7 @@
 #ifndef W25Q16_H
 #define W25Q16_H
 
-#include "gpio.h"
+#include "gpio.hpp"
 #include "spi.h"
 #include "systick.h"
 

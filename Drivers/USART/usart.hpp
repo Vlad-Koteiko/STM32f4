@@ -13,7 +13,7 @@
 #include "base_interface.h"
 #include "clockControl.hpp"
 #include "dma.hpp"
-#include "gpio.h"
+#include "gpio.hpp"
 #include "nvic.h"
 
 namespace drivers::usart

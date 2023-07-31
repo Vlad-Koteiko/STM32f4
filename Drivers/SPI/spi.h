@@ -4,7 +4,7 @@
 
 #include "MWR.hpp"
 #include "clockControl.hpp"
-#include "gpio.h"
+#include "gpio.hpp"
 
 namespace drivers::spi
 {

@@ -1,7 +1,7 @@
 #ifndef AD7705_H
 #define AD7705_H
 
-#include "gpio.h"
+#include "gpio.hpp"
 #include "spi.h"
 
 /*
