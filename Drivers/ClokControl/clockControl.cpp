@@ -8,33 +8,30 @@ namespace drivers::clock
         std::array<std::uint8_t, 4>                   array,
         const drivers::clock::constants::PrescalerAHB prescalerAhb,
         const drivers::clock::constants::PrescalerAPB prescalerApb1,
-        const drivers::clock::constants::PrescalerAPB prescalerApb2) noexcept
+        const drivers::clock::constants::PrescalerAPB prescalerApb2) const noexcept
     {
         PLL_Config_Sys(array[0], array[1], array[2], array[3]);
         while(PLL_IsReady())
-        {
-        }
+        {}
         SetAHBPrescaler(prescalerAhb);
         SetAPB1Prescaler(prescalerApb1);
         SetAPB2Prescaler(prescalerApb2);
         SetSysClkSource(2);
     }
 
-    void ClockControl::init() noexcept
+    void ClockControl::init() const noexcept
     {
         drivers::flash::Flash flash;
         flash.SetLatency(5);
         while(flash.GetLatency() != 5)
-        {
-        }
+        {}
 
         ReadWriteRegister::write_register(0xE000ED88, 0xF00000);    // support FPU math
 
         HSE_Enable();
 
         while(!HSE_IsReady())
-        {
-        }
+        {}
 
         HSI_Disable();
 

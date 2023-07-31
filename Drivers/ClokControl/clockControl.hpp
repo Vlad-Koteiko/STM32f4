@@ -285,10 +285,10 @@ namespace drivers ::clock
         static constexpr std::uint8_t   AHP_1               = 64;
         static constexpr std::uint8_t   AHP_2               = 96;
 
-        std::uint32_t systemCoreClock;    // Hz
-        std::uint32_t freqAPB1;           // Hz
-        std::uint32_t freqAPB2;           // Hz
-        std::uint32_t freqHCLK;           // Hz
+        const std::uint32_t systemCoreClock;    // Hz
+        const std::uint32_t freqAPB1;           // Hz
+        const std::uint32_t freqAPB2;           // Hz
+        const std::uint32_t freqHCLK;           // Hz
 
         // clang-format off
         enum RegisterRCC : std::uintptr_t
@@ -333,7 +333,7 @@ namespace drivers ::clock
         void setBaseConfig(std::array<std::uint8_t, 4>,
                            const constants::PrescalerAHB,
                            const constants::PrescalerAPB,
-                           const constants::PrescalerAPB) noexcept;
+                           const constants::PrescalerAPB) const noexcept;
 
         void AHB1EnableClock(const std::uint8_t typeEnableClock) const noexcept;
         void AHB1DisableClock(const std::uint8_t disableClock) const noexcept;
@@ -354,7 +354,7 @@ namespace drivers ::clock
             freqHCLK(countFreqHCLK(f))
         {}
 
-        void init() noexcept;
+        void init() const noexcept;
 
         [[nodiscard]] constexpr std::uint32_t GetFreqSystemCoreClock() const noexcept
         {

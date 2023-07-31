@@ -65,8 +65,7 @@ namespace libs
         inline void printChar(char ch) noexcept
         {
             while(!debugUart.ReadFlag(drivers::usart::Usart::SR_poz::TXE))
-            {
-            }
+            {}
             debugUart.sendByte(static_cast<std::byte>(ch));
         }
     };
