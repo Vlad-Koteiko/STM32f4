@@ -33,8 +33,8 @@ namespace drivers::rng
     /// @brief Class for working with RNG
     class RNG
     {
-        drivers::clock::ClockControl   &clockControl;                   ///< Link to class ClockControl
-        static constexpr std::uintptr_t baseAddress = 0x50060800;       ///< Base addres RNG
+        drivers::clock::ClockControl   &clockControl;                ///< Link to class ClockControl
+        static constexpr std::uintptr_t baseAddress = 0x50060800;    ///< Base addres RNG
 
         enum RegisterRNG : std::uintptr_t
         {
@@ -48,50 +48,50 @@ namespace drivers::rng
         RNG(drivers::clock::ClockControl &clockControl);
 
         /// @brief Enable RNG
-        void          Enable() noexcept;
+        void Enable() noexcept;
 
         /// @brief Disable RNG
-        void          Disable() noexcept;
+        void Disable() noexcept;
 
         /// @brief Is enabled RNG
         /// @return true - enable, false - disable
-        bool          IsEnabled() noexcept;
+        bool IsEnabled() noexcept;
 
         /// @brief Data ready
         /// @return true - ready, false - not ready
-        bool          IsActiveFlag_DRDY() noexcept;
+        bool IsActiveFlag_DRDY() noexcept;
 
         /// @brief Clock error current status
         /// @return true - not correctly, false - correctly
-        bool          IsActiveFlag_CECS() noexcept;
+        bool IsActiveFlag_CECS() noexcept;
 
         /// @brief Seed error current status
         /// @return false - not detected, true - detected
-        bool          IsActiveFlag_SECS() noexcept;
+        bool IsActiveFlag_SECS() noexcept;
 
         /// @brief Clock error interrupt status
         /// @return false - correctly detected, true - not correctly detected
-        bool          IsActiveFlag_CEIS() noexcept;
+        bool IsActiveFlag_CEIS() noexcept;
 
         /// @brief Seed error interrupt status
         /// @return false - no faulty sequence detected
-        bool          IsActiveFlag_SEIS() noexcept;
+        bool IsActiveFlag_SEIS() noexcept;
 
         /// @brief Clear flag CEIS
-        void          ClearFlag_CEIS() noexcept;
+        void ClearFlag_CEIS() noexcept;
 
         /// @brief Clear flag SEIS
-        void          ClearFlag_SEIS() noexcept;
+        void ClearFlag_SEIS() noexcept;
 
         /// @brief Enable interrupt
-        void          EnableIT() noexcept;
+        void EnableIT() noexcept;
 
         /// @brief Disable interrupt
-        void          DisableIT() noexcept;
+        void DisableIT() noexcept;
 
         /// @brief Is enabled interrupt
         /// @return true - enabled
-        bool          IsEnabledIT() noexcept;
+        bool IsEnabledIT() noexcept;
 
         /// @brief Get random data
         /// @return random data

@@ -7,7 +7,7 @@
 #include <array>
 
 #include "MWR.hpp"
-#include "flash.h"
+#include "flash.hpp"
 
 namespace drivers ::clock
 {
