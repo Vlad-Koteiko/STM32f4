@@ -89,8 +89,8 @@ namespace drivers::flash
 
         enum RegisterFLASH : std::uintptr_t
         {
-            ACR  = baseAddress,           // FLASH access control register,   Address offset: 0x00
-            KEYR = baseAddress + 0x04,    // FLASH key register,              Address offset: 0x04
+            ACR  = baseAddress,            // FLASH access control register,   Address offset: 0x00
+            KEYR = baseAddress + 0x04,     // FLASH key register,              Address offset: 0x04
             OPTKEYR =
                 baseAddress + 0x08,        // FLASH option key register,       Address offset: 0x08
             SR    = baseAddress + 0x0C,    // FLASH status register,           Address offset: 0x0C

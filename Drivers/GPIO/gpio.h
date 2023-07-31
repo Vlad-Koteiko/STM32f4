@@ -10,67 +10,68 @@
 #include "MWR.hpp"
 #include "clockControl.hpp"
 
+/// @brief Namespace for work with GPIO
 namespace drivers::port
 {
     /*! GPIOs addresses*/
     enum ADDRESSES_PORT : std::uintptr_t
     {
-        PORTA = 0x40020000,     ///< address PORTA
-        PORTB = 0x40020400,     ///< address PORTB
-        PORTC = 0x40020800,     ///< address PORTC
-        PORTD = 0x40020C00,     ///< address PORTD
-        PORTE = 0x40021000,     ///< address PORTE
-        PORTF = 0x40021400,     ///< address PORTF
-        PORTG = 0x40021800,     ///< address PORTG
-        PORTH = 0x40021C00,     ///< address PORTH
-        PORTI = 0x40022000,     ///< address PORTI
-        PORTJ = 0x40022400,     ///< address PORTJ
-        PORTK = 0x40022800      ///< address PORTK
+        PORTA = 0x40020000,    ///< address PORTA
+        PORTB = 0x40020400,    ///< address PORTB
+        PORTC = 0x40020800,    ///< address PORTC
+        PORTD = 0x40020C00,    ///< address PORTD
+        PORTE = 0x40021000,    ///< address PORTE
+        PORTF = 0x40021400,    ///< address PORTF
+        PORTG = 0x40021800,    ///< address PORTG
+        PORTH = 0x40021C00,    ///< address PORTH
+        PORTI = 0x40022000,    ///< address PORTI
+        PORTJ = 0x40022400,    ///< address PORTJ
+        PORTK = 0x40022800     ///< address PORTK
     };
 
     /*! Speeds GPIO pin*/
     enum PIN_SEED : std::uint8_t
     {
-        LOW_SPEED       = 0b00000000,   ///< low speed
-        MEDIOM_SPPED    = 0b00000001,   ///< medioum speed
-        HIGH_SPEED      = 0b00000010,   ///< high speed
-        VERY_HIGH_SPEED = 0b00000011    ///< very high speed
+        LOW_SPEED       = 0b00000000,    ///< low speed
+        MEDIOM_SPPED    = 0b00000001,    ///< medioum speed
+        HIGH_SPEED      = 0b00000010,    ///< high speed
+        VERY_HIGH_SPEED = 0b00000011     ///< very high speed
     };
 
     /*! Output type */
     enum OUTPUT_TYPE : std::uint8_t
     {
-        PUSH_PULL  = 0,     ///< push-pull
-        OPEN_DRAIN = 1      ///< open drain
+        PUSH_PULL  = 0,    ///< push-pull
+        OPEN_DRAIN = 1     ///< open drain
     };
-    
+
     /*! Type pull-up or pull-down*/
     enum TYPE_PUPDR : std::uint8_t
     {
-        NO_PULL_UP_PULL_DOWN = 0,           ///< no pull-up and no pull-down
-        PULL_UP              = 1,           ///< pull-up
-        PULL_DOWN            = 0b00000010   ///< pull-down
+        NO_PULL_UP_PULL_DOWN = 0,            ///< no pull-up and no pull-down
+        PULL_UP              = 1,            ///< pull-up
+        PULL_DOWN            = 0b00000010    ///< pull-down
     };
 
     /*! Alternative functions*/
     enum ALTERNATE_FUNCTION : std::uint8_t
     {
-        AF0  = 0,               ///< AF0
-        AF1  = 0b00000001,      ///< AF1
-        AF2  = 0b00000010,      ///< AF2
-        AF3  = 0b00000011,      ///< AF3
-        AF4  = 0b00000100,      ///< AF4
-        AF5  = 0b00000101,      ///< AF5
-        AF6  = 0b00000110,      ///< AF6
-        AF7  = 0b00000111,      ///< AF7
-        AF8  = 0b00001000,      ///< AF8
-        AF9  = 0b00001001,      ///< AF9
-        AF10 = 0b00001010,      ///< AF10
-        AF11 = 0b00001011,      ///< AF11
-        AF12 = 0b00001100,      ///< AF12
-        AF13 = 0b00001101,      ///< AF13
-        AF14 = 0b00001110,      ///< AF14
-        AF15 = 0b00001111,      ///< AF15
+        AF0  = 0,             ///< AF0
+        AF1  = 0b00000001,    ///< AF1
+        AF2  = 0b00000010,    ///< AF2
+        AF3  = 0b00000011,    ///< AF3
+        AF4  = 0b00000100,    ///< AF4
+        AF5  = 0b00000101,    ///< AF5
+        AF6  = 0b00000110,    ///< AF6
+        AF7  = 0b00000111,    ///< AF7
+        AF8  = 0b00001000,    ///< AF8
+        AF9  = 0b00001001,    ///< AF9
+        AF10 = 0b00001010,    ///< AF10
+        AF11 = 0b00001011,    ///< AF11
+        AF12 = 0b00001100,    ///< AF12
+        AF13 = 0b00001101,    ///< AF13
+        AF14 = 0b00001110,    ///< AF14
+        AF15 = 0b00001111,    ///< AF15
     };
 
     /*! Pin number GPIO*/
@@ -106,15 +107,15 @@ namespace drivers::port
     /*! Statis pin*/
     enum STATUS_PIN : std::uint8_t
     {
-        PIN_RESET,      ///< reset
-        PIN_SET         ///< set
+        PIN_RESET,    ///< reset
+        PIN_SET       ///< set
     };
 
     /// @brief Class for working with GPIO
     class GPIO
     {
-        const drivers::clock::ClockControl& clockControl;       ///< Link to class ClockControl
-        std::uintptr_t                      baseAddress;        ///< Base addres GPIO
+        const drivers::clock::ClockControl& clockControl;    ///< Link to class ClockControl
+        std::uintptr_t                      baseAddress;     ///< Base addres GPIO
 
         [[nodiscard]] static constexpr std::uint16_t pin(std::uint8_t numberPin)
         {
@@ -159,7 +160,7 @@ namespace drivers::port
 
         /// @brief Set alternative function
         /// @param numberPin Number pin
-        /// @param alternateFunction 
+        /// @param alternateFunction
         void SetAFPin(PIN_NUMBER numberPin, ALTERNATE_FUNCTION alternateFunction) const noexcept;
 
         /// @brief Set pin mode
@@ -196,7 +197,7 @@ namespace drivers::port
         /// @brief Read pin
         /// @param pin Number pin
         /// @return 0 - Reset, 1 - Set
-        std::uint8_t  ReadPin(PIN_NUMBER pin) noexcept;
+        std::uint8_t ReadPin(PIN_NUMBER pin) noexcept;
 
         /// @brief Read port
         /// @return Value pins port
