@@ -2,7 +2,7 @@
 
 namespace drivers::timers
 {
-    BasicTimers::BasicTimers(clock::ClockControl &curClock, BASIC_TIMERS timer) :
+    BasicTimer::BasicTimer(clock::ClockControl &curClock, BASIC_TIMERS timer) :
         clockControl(curClock), baseAddress(timer)
     {
         switch(timer)
@@ -16,10 +16,10 @@ namespace drivers::timers
         }
     }
 
-    BasicTimers::BasicTimers(clock::ClockControl      &curClock,
-                             BASIC_TIMERS              timer,
-                             std::chrono::milliseconds milliseconds,
-                             bool                      enableInterrupt) :
+    BasicTimer::BasicTimer(clock::ClockControl      &curClock,
+                           BASIC_TIMERS              timer,
+                           std::chrono::milliseconds milliseconds,
+                           bool                      enableInterrupt) :
         clockControl(curClock), baseAddress(timer)
     {
         switch(timer)
@@ -68,144 +68,144 @@ namespace drivers::timers
         EnableCounter();
     }
 
-    void BasicTimers::EnableCounter() noexcept
+    void BasicTimer::EnableCounter() noexcept
     {
         libs::MWR::setBit(baseAddress + CR1, CEN);
     }
 
-    void BasicTimers::DisableCounter() noexcept
+    void BasicTimer::DisableCounter() noexcept
     {
         libs::MWR::resetBit(baseAddress + CR1, CEN);
     }
 
-    bool BasicTimers::IsEnabledCounter() noexcept
+    bool BasicTimer::IsEnabledCounter() noexcept
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, CEN);
     }
 
-    void BasicTimers::EnableUpdateEvent() noexcept
+    void BasicTimer::EnableUpdateEvent() noexcept
     {
         libs::MWR::resetBit(baseAddress + CR1, UDIS);
     }
 
-    void BasicTimers::DisableUpdateEvent() noexcept
+    void BasicTimer::DisableUpdateEvent() noexcept
     {
         libs::MWR::setBit(baseAddress + CR1, UDIS);
     }
 
-    bool BasicTimers::IsEnabledUpdateEvent() noexcept
+    bool BasicTimer::IsEnabledUpdateEvent() noexcept
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, UDIS);
     }
 
-    void BasicTimers::SetUpdateSource(UPDATE_SOURCE us) noexcept
+    void BasicTimer::SetUpdateSource(UPDATE_SOURCE us) noexcept
     {
         libs::MWR::modifyResetRegister(baseAddress + CR1, 1 << URS);
         libs::MWR::modifySetRegister(baseAddress + CR1, us << URS);
     }
 
-    UPDATE_SOURCE BasicTimers::GetUpdateSource() noexcept
+    UPDATE_SOURCE BasicTimer::GetUpdateSource() noexcept
     {
         return (UPDATE_SOURCE)libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, URS);
     }
 
-    void BasicTimers::SetOnePulseMode(ONE_PULSE_MODE opm) noexcept
+    void BasicTimer::SetOnePulseMode(ONE_PULSE_MODE opm) noexcept
     {
         libs::MWR::modifyResetRegister(baseAddress + CR1, 1 << OPM);
         libs::MWR::modifySetRegister(baseAddress + CR1, opm << OPM);
     }
 
-    ONE_PULSE_MODE BasicTimers::GetOnePulseMode() noexcept
+    ONE_PULSE_MODE BasicTimer::GetOnePulseMode() noexcept
     {
         return (ONE_PULSE_MODE)libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, OPM);
     }
 
-    void BasicTimers::EnableARRPreload() noexcept
+    void BasicTimer::EnableARRPreload() noexcept
     {
         libs::MWR::setBit(baseAddress + CR1, ARPE);
     }
 
-    void BasicTimers::DisableARRPreload() noexcept
+    void BasicTimer::DisableARRPreload() noexcept
     {
         libs::MWR::resetBit(baseAddress + CR1, ARPE);
     }
 
-    bool BasicTimers::IsEnabledARRPreload() noexcept
+    bool BasicTimer::IsEnabledARRPreload() noexcept
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + CR1, ARPE);
     }
 
-    void BasicTimers::EnableInterrupt() noexcept
+    void BasicTimer::EnableInterrupt() noexcept
     {
         libs::MWR::setBit(baseAddress + DIER, UIE);
     }
 
-    void BasicTimers::DisableInterrupt() noexcept
+    void BasicTimer::DisableInterrupt() noexcept
     {
         libs::MWR::resetBit(baseAddress + DIER, UIE);
     }
 
-    bool BasicTimers::IsEnabledInterrupt() noexcept
+    bool BasicTimer::IsEnabledInterrupt() noexcept
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + DIER, UIE);
     }
 
-    void BasicTimers::EnableDmaRequest() noexcept
+    void BasicTimer::EnableDmaRequest() noexcept
     {
         libs::MWR::setBit(baseAddress + DIER, UDE);
     }
 
-    void BasicTimers::DisableDmaRequest() noexcept
+    void BasicTimer::DisableDmaRequest() noexcept
     {
         libs::MWR::resetBit(baseAddress + DIER, UDE);
     }
 
-    bool BasicTimers::IsEnabledDmaRequest() noexcept
+    bool BasicTimer::IsEnabledDmaRequest() noexcept
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + DIER, UDE);
     }
 
-    bool BasicTimers::IsUpdateInterruptFlag() noexcept
+    bool BasicTimer::IsUpdateInterruptFlag() noexcept
     {
         return libs::MWR::readBit<std::uint32_t>(baseAddress + SR, 0);
     }
 
-    void BasicTimers::ClearUpdateInterruptFlag() noexcept
+    void BasicTimer::ClearUpdateInterruptFlag() noexcept
     {
         libs::MWR::resetBit(baseAddress + SR, 0);
     }
 
-    void BasicTimers::GenerateEventUpdate() noexcept
+    void BasicTimer::GenerateEventUpdate() noexcept
     {
         libs::MWR::setBit(baseAddress + EGR, 0);
     }
 
-    void BasicTimers::SetCounter(std::uint16_t val) noexcept
+    void BasicTimer::SetCounter(std::uint16_t val) noexcept
     {
         libs::MWR::write_register(baseAddress + CNT, val);
     }
 
-    std::uint16_t BasicTimers::GetCounter() noexcept
+    std::uint16_t BasicTimer::GetCounter() noexcept
     {
         return libs::MWR::read_register<std::uint16_t>(baseAddress + CNT);
     }
 
-    void BasicTimers::SetPrescaler(std::uint16_t val) noexcept
+    void BasicTimer::SetPrescaler(std::uint16_t val) noexcept
     {
         libs::MWR::write_register(baseAddress + PSC, val);
     }
 
-    std::uint16_t BasicTimers::GetPrescaler() noexcept
+    std::uint16_t BasicTimer::GetPrescaler() noexcept
     {
         return libs::MWR::read_register<std::uint16_t>(baseAddress + PSC);
     }
 
-    void BasicTimers::SetAutoReload(std::uint16_t val) noexcept
+    void BasicTimer::SetAutoReload(std::uint16_t val) noexcept
     {
         libs::MWR::write_register(baseAddress + ARR, val);
     }
 
-    std::uint16_t BasicTimers::GetAutoReload() noexcept
+    std::uint16_t BasicTimer::GetAutoReload() noexcept
     {
         return libs::MWR::read_register<std::uint16_t>(baseAddress + ARR);
     }

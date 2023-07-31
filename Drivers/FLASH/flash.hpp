@@ -87,7 +87,7 @@ namespace drivers::flash
     /// @brief Voltage
     enum VOLTAGE : std::uint8_t
     {
-        RANGE1,     
+        RANGE1,
         RANGE2,
         RANGE3,
         RANGE4
@@ -96,7 +96,7 @@ namespace drivers::flash
     /// @brief Class for working with FLASH
     class Flash
     {
-        static constexpr std::uint32_t baseAddress = 0x40023c00; ///< base address
+        static constexpr std::uint32_t baseAddress = 0x40023c00;    ///< base address
 
         // clang-format off
 
@@ -115,8 +115,8 @@ namespace drivers::flash
 
     public:
         /// @brief Set latency
-        /// @param latency 
-        void                       SetLatency(std::uint8_t latency) const noexcept;
+        /// @param latency
+        void SetLatency(std::uint8_t latency) const noexcept;
 
         /// @brief Get latency
         /// @return latency
@@ -132,7 +132,7 @@ namespace drivers::flash
         /// @return true - enable
         bool IsPrefetchEnabled() const noexcept;
 
-        /// @brief Instruction cache enable 
+        /// @brief Instruction cache enable
         void EnableInstCache() const noexcept;
 
         /// @brief Instruction cache disable
@@ -206,14 +206,14 @@ namespace drivers::flash
         /// @brief Read byte
         /// @param address address
         /// @return data
-        [[nodiscard]] std::uint8_t  ReadByte(std::uintptr_t address) const noexcept;
+        [[nodiscard]] std::uint8_t ReadByte(std::uintptr_t address) const noexcept;
 
         /// @brief Erase secotor
         /// @param sector Number secor
         /// @param voltage Level voltage
         void EraseSector(std::uint16_t sector, VOLTAGE voltage) const noexcept;
 
-        /// @brief Error interrupt 
+        /// @brief Error interrupt
         /// @param x ENABLE or DISABLE
         void SetERRIE(STATUS x) const noexcept;
 

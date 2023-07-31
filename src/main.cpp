@@ -7,9 +7,9 @@
 std::uint32_t counter      = 0;
 std::uint8_t  bufferReceve = 0;
 
-drivers::timers::BasicTimers *tim6Pointer;
-drivers::usart::Usart        *uart_p_2;
-libs::Cout                   *globalCout;
+drivers::timers::BasicTimer *tim6Pointer;
+drivers::usart::Usart       *uart_p_2;
+libs::Cout                  *globalCout;
 
 std::uint8_t recvDma[5];
 
