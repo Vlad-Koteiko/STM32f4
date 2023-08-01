@@ -2,7 +2,7 @@
 #define W25Q16_H
 
 #include "gpio.hpp"
-#include "spi.h"
+#include "spi.hpp"
 #include "systick.h"
 
 namespace devices::flash

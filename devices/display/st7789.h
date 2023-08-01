@@ -6,7 +6,7 @@
 #define STM32F4_ST7789_H
 
 #include "printf.h"
-#include "spi.h"
+#include "spi.hpp"
 
 // Пример инициализации SPI
 /*

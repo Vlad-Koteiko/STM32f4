@@ -42,27 +42,27 @@ namespace drivers::pwr
     /// @brief Voltage level
     enum VOLTAGE : std::uint8_t
     {
-        V20,        ///< 2.0 V
-        V21,        ///< 2.1 V
-        V23,        ///< 2.3 V
-        V25,        ///< 2.5 V
-        V26,        ///< 2.6 V
-        V27,        ///< 2.7 V
-        V28,        ///< 2.8 V
-        V29         ///< 2.9 V
+        V20,    ///< 2.0 V
+        V21,    ///< 2.1 V
+        V23,    ///< 2.3 V
+        V25,    ///< 2.5 V
+        V26,    ///< 2.6 V
+        V27,    ///< 2.7 V
+        V28,    ///< 2.8 V
+        V29     ///< 2.9 V
     };
 
     /// @brief Class for working with PWR
     class PWR
     {
-        static constexpr std::uintptr_t baseAddress = 0x40007000;   ///< base address
-        drivers::clock::ClockControl   &clockControl;               ///< Reference clock control
+        static constexpr std::uintptr_t baseAddress = 0x40007000;    ///< base address
+        drivers::clock::ClockControl   &clockControl;                ///< Reference clock control
 
         /// @brief Registers PWR
         enum RegisterPWR : std::uintptr_t
         {
-            CR  = baseAddress,      ///< Control register
-            CSR = baseAddress + 4   ///< Control/status register
+            CR  = baseAddress,       ///< Control register
+            CSR = baseAddress + 4    ///< Control/status register
         };
 
     public:
@@ -71,50 +71,50 @@ namespace drivers::pwr
         PWR(drivers::clock::ClockControl &clockControl);
 
         /// @brief Set low-power deepsleep
-        void         SetLPDS();
+        void SetLPDS();
 
         /// @brief Reset low-power deepslee
-        void         ResetLPDS();
+        void ResetLPDS();
 
         /// @brief Set power-down deepsleep
-        void         SetPDDS();
+        void SetPDDS();
 
         /// @brief Reset power-down deepsleep
-        void         ResetPDDS();
+        void ResetPDDS();
 
         /// @brief Clear wakeup flag
-        void         ClearWakeUp();
+        void ClearWakeUp();
 
         /// @brief  Clear standby flag
-        void         ClearStandbyFlag();
+        void ClearStandbyFlag();
 
         /// @brief  Power voltage detector enable
-        void         PvdEnabled();
+        void PvdEnabled();
 
         /// @brief  Power voltage detector disable
-        void         PvdDisable();
+        void PvdDisable();
 
-        /// @brief  Get status power voltage detector 
+        /// @brief  Get status power voltage detector
         /// @return true -  enable
-        bool         GetStatusPvd();
+        bool GetStatusPvd();
 
         /// @brief Set power voltage detector level
         /// @param v enum VOLTAGE
-        void         SetPvdLevel(VOLTAGE v);
+        void SetPvdLevel(VOLTAGE v);
 
         /// @brief Get power voltage detector level
         /// @return value
         std::uint8_t GetPdvLevel();
 
         /// @brief Enable backup domain write protection
-        void         BackupDomainEnable();
+        void BackupDomainEnable();
 
         /// @brief Disable backup domain write protection
-        void         BackupDomainDisable();
+        void BackupDomainDisable();
 
         /// @brief Get status backup domain write protection
         /// @return true - enable
-        bool         GetStatusBackupDomain();
+        bool GetStatusBackupDomain();
 
         /// @brief Wakeup flag
         /// @return true - set
