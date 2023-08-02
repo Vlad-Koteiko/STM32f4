@@ -3,7 +3,7 @@
 
 namespace drivers::spi
 {
-    SPI::SPI(drivers::clock::ClockControl curClock, ADDRESSES_SPI spi) :
+    SPI::SPI(drivers::clock::ClockControl &curClock, ADDRESSES_SPI spi) :
         clock(curClock), baseAddress(spi)
     {
         switch(spi)
@@ -29,7 +29,7 @@ namespace drivers::spi
         }
     }
 
-    SPI::SPI(drivers::clock::ClockControl curClock, ADDRESSES_SPI spi, std::uint8_t remap, NSS n) :
+    SPI::SPI(drivers::clock::ClockControl &curClock, ADDRESSES_SPI spi, std::uint8_t remap, NSS n) :
         clock(curClock), baseAddress(spi)
     {
         switch(spi)

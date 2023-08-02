@@ -82,6 +82,22 @@ void Bass::main() noexcept
     //    usart2.TransmitDataDma(dma1, buf, 14);
     //    usart2.ReceiveDataDma(dma1, recvDma, 5);
 
+    drivers::spi::SPI spi1(clockControl, drivers::spi::SPI1);
+
+    spi1.RemapSPI1(drivers::spi::SPI1_PA7_PA6_PA5_PA15);
+    spi1.SetClockPhase(drivers::spi::EDGE2);
+    spi1.SetClockPolarity(drivers::spi::HIGH);
+    spi1.SetMode(drivers::spi::MASTER);
+    spi1.SetBaudRatePrescaler(drivers::spi::DIV256);
+    spi1.SetTransferBitOrder(drivers::spi::MSB_FIRST);
+    spi1.SetTransferDirection(drivers::spi::FULL_DUPLEX);
+    spi1.SetDataWidth(drivers::spi::BIT8);
+    spi1.SetNSSMode(drivers::spi::HARD_OUTPUT);
+    spi1.SetStandard(drivers::spi::MOTOROLA);
+    spi1.Enable();
+
+    spi1.TransmitData8(0xAA);
+
     while(1)
     {
         gpioD.TogglePin(drivers::port::PIN_12);
@@ -91,67 +107,7 @@ void Bass::main() noexcept
         gpioD.TogglePin(drivers::port::PIN_14);
         clockControl.mDelay(500);
         gpioD.TogglePin(drivers::port::PIN_15);
-        //            clockControl.mDelay(500);
-        //            gpioA.TogglePin(drivers::port::PIN_1);
-        //            cout << "bufferReceve = " << bufferReceve << cout.ENDL;
-        //
-
-        usart2.sendByte(static_cast<std::byte>('z'));
         clockControl.mDelay(500);
+        spi1.TransmitData8(0xAA);
     }
 }
-
-// void EXTI0_IRQHandler()
-//{
-//     drivers::exti::EXIT_RTSR exitRtsr;
-//     exitRtsr.ClearFlag(exitRtsr.LINE_0);
-//     counter++;
-// }
-//
-// void USART1_IRQHandler()
-//{
-//     //        bufferReceve =
-//     drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
-//     //        uart_p_2->ClearFlag_RXNE();
-//     //        bufferReceve = uart_p_2->ReceiveData();
-// }
-//
-// void USART2_IRQHandler()
-//{
-//     //        bufferReceve =
-//     drivers::usart::USART<drivers::usart::ADDRESSES_USART::USART_1>::ReceiveData();
-//     uart_p_2->ClearFlag(drivers::usart::SR_clear_flag::RXNE);
-//     bufferReceve = uart_p_2->ReceiveData();
-// }
-//
-// void OTG_FS_IRQHandler()
-//{
-//
-// }
-//
-// void TIM6_DAC_IRQHandler()
-//{
-//     portdRef->TogglePin(drivers::port::PIN_12);
-//     //libs::MWR::resetBit(0x40001010, 0);
-//     tim6Pointer->ClearUpdateInterruptFlag();
-//     counter++;
-// }
-//
-// void DMA1_Stream5_IRQHandler()
-//{
-//     globalCout->operator<<("stream5\n\r");
-//     globalDma1->clearFlagInterrupt(drivers::dma::constants::Stream_5,
-//     drivers::dma::constants::TRANSFER_COMPLETE_INTERRUPT);
-// }
-//
-// void DMA1_Stream6_IRQHandler()
-//{
-//     globalCout->operator<<("stream6\n\r");
-//     //libs::MWR::write_register(0x4002600C, 0xFFFFFFFF);
-//     //        libs::MWR::setBit(0x4002600C, 21);
-//     //        globalDma1->disable(drivers::dma::constants::Stream_6);
-//     globalDma1->clearFlagInterrupt(drivers::dma::constants::Stream_6,
-//     drivers::dma::constants::TRANSFER_COMPLETE_INTERRUPT);
-//     //        globalDma1->clearFlagInterrupt(drivers::dma::constants::Stream_6,
-//     drivers::dma::constants::HALF_TRANSFER_INTERRUPT);
-// }

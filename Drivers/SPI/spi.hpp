@@ -14,8 +14,26 @@
 #include "gpio.hpp"
 
 /// @brief Namespace for work with SPI
+/*! Example simple initalization spi:<br>
+    _drivers::spi::SPI spi1(clockControl, drivers::spi::SPI1);_<br>
+    _spi1.RemapSPI1(drivers::spi::SPI1_PA7_PA6_PA5_PA15);_<br>
+    _spi1.SetClockPhase(drivers::spi::EDGE2);_<br>
+    _spi1.SetClockPolarity(drivers::spi::HIGH);_<br>
+    _spi1.SetMode(drivers::spi::MASTER);_<br>
+    _spi1.SetBaudRatePrescaler(drivers::spi::DIV256);_<br>
+    _spi1.SetTransferBitOrder(drivers::spi::MSB_FIRST);_<br>
+    _spi1.SetTransferDirection(drivers::spi::FULL_DUPLEX);_<br>
+    _spi1.SetDataWidth(drivers::spi::BIT8);_<br>
+    _spi1.SetNSSMode(drivers::spi::HARD_OUTPUT);_<br>
+    _spi1.SetStandard(drivers::spi::MOTOROLA);_<br>
+    _spi1.Enable();_<br>
+    _spi1.TransmitData8(0xAA);_<br>
+*/
+
 namespace drivers::spi
 {
+
+
     /// @brief Base addresses SPI
     enum ADDRESSES_SPI : std::uintptr_t
     {
@@ -261,8 +279,8 @@ namespace drivers::spi
         inline void ClearFlag_FRE() noexcept;
 
     public:
-        SPI(drivers::clock::ClockControl curClock, ADDRESSES_SPI spi);
-        SPI(drivers::clock::ClockControl curClock, ADDRESSES_SPI spi, std::uint8_t remap, NSS n);
+        SPI(drivers::clock::ClockControl &curClock, ADDRESSES_SPI spi);
+        SPI(drivers::clock::ClockControl &curClock, ADDRESSES_SPI spi, std::uint8_t remap, NSS n);
 
         void ConfigGpioForSpi(drivers::port::ADDRESSES_PORT     portMOSI,
                               drivers::port::PIN_NUMBER         pinMOSI,
