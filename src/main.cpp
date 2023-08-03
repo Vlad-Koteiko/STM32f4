@@ -10,6 +10,7 @@ std::uint8_t  bufferReceve = 0;
 drivers::timers::BasicTimer *tim6Pointer;
 drivers::usart::Usart       *uart_p_2;
 libs::Cout                  *globalCout;
+drivers::dma::DMA           *dma2Pointer;
 
 std::uint8_t recvDma[5];
 
@@ -23,6 +24,8 @@ void Bass::main() noexcept
     //-----------------------------------------USART INIT---------------------------------
     drivers::usart::Usart usart2(clockControl, drivers::usart::USART2);
     usart2.init();
+    libs::Cout cout(usart2);
+    globalCout = &cout;
     //    uart_p_2 = &usart2;
     //    usart2.EnableInterrupt(drivers::usart::INTERRUPT::RXNEIE);
 
@@ -39,10 +42,10 @@ void Bass::main() noexcept
 
     //------------------------------------------------------------------------------------
     drivers::nvic::NVIC nvic;
-    nvic.NVIC_EnableIRQ(drivers::nvic::TIM6_DAC);
-    nvic.NVIC_EnableIRQ(drivers::nvic::USART2);
-    nvic.NVIC_EnableIRQ(drivers::nvic::DMA1_Stream5);
-    nvic.NVIC_EnableIRQ(drivers::nvic::DMA1_Stream6);
+    // nvic.NVIC_EnableIRQ(drivers::nvic::TIM6_DAC);
+    // nvic.NVIC_EnableIRQ(drivers::nvic::USART2);
+    // nvic.NVIC_EnableIRQ(drivers::nvic::DMA1_Stream5);
+    // nvic.NVIC_EnableIRQ(drivers::nvic::DMA1_Stream6);
 
     //        drivers::timers::BasicTimers timer6(clockControl, drivers::timers::TIM6,
     //        std::chrono::milliseconds(1000), true); drivers::timers::BasicTimers
@@ -78,12 +81,12 @@ void Bass::main() noexcept
     // usart2.InitUsartDma(dma1, true, true);
     // usart2.InitUsartDma(dma1, dmaConf, true, true);
 
-    //    std::uint8_t  buf[] = "Transmit dma\n\r\0";
+    std::uint8_t buf2[] = "Transmit dma\n\r\0";
     //    usart2.TransmitDataDma(dma1, buf, 14);
     //    usart2.ReceiveDataDma(dma1, recvDma, 5);
+    usart2.TransmitString(buf2, 8);
 
     drivers::spi::SPI spi1(clockControl, drivers::spi::SPI1);
-
     spi1.RemapSPI1(drivers::spi::SPI1_PA7_PA6_PA5_PA15);
     spi1.SetClockPhase(drivers::spi::EDGE2);
     spi1.SetClockPolarity(drivers::spi::HIGH);
@@ -96,7 +99,31 @@ void Bass::main() noexcept
     spi1.SetStandard(drivers::spi::MOTOROLA);
     spi1.Enable();
 
-    spi1.TransmitData8(0xAA);
+    drivers::dma::DMA dma2(clockControl, drivers::dma::ADDRESSES_DMA::DMA_2);
+    dma2Pointer = &dma2;
+    drivers::dma::DMA_Config dmaConf;
+
+    dmaConf.directModeErrorInterrupt             = drivers::dma::constants::DISABLE;
+    dmaConf.transferErrorInterrupt               = drivers::dma::constants::DISABLE;
+    dmaConf.halfTransferInterrupt                = drivers::dma::constants::DISABLE;
+    dmaConf.transferCompleteInterrupt            = drivers::dma::constants::ENABLE;
+    dmaConf.peripheralFlowController             = drivers::dma::constants::DISABLE;
+    dmaConf.circularMode                         = drivers::dma::constants::DISABLE;
+    dmaConf.priorityLevel                        = drivers::dma::constants::LOW;
+    dmaConf.doubleBufferMode                     = drivers::dma::constants::DISABLE;
+    dmaConf.currentTarget                        = drivers::dma::constants::MEMORY0;
+    dmaConf.peripheralBurstTransferConfiguration = drivers::dma::constants::SINGLE_TRANSFER;
+    dmaConf.memoryBurstTransferConfiguration     = drivers::dma::constants::SINGLE_TRANSFER;
+    dmaConf.FIFOThresholdSelection               = drivers::dma::constants::FIFO_0_25;
+    dmaConf.directModeDisableInvers              = drivers::dma::constants::ENABLE;
+    dmaConf.fifoErrorInterrupt                   = drivers::dma::constants::DISABLE;
+
+    spi1.InitSpiDma(dma2, dmaConf, true, false, true);
+    nvic.NVIC_EnableIRQ(drivers::nvic::DMA2_Stream3);
+    // nvic.NVIC_EnableIRQ(drivers::nvic::SPI1);
+
+    std::uint8_t buf[] = "Transmit dma\n\r\0";
+    ///   spi1.TransmitDataDma(dma2, drivers::dma::constants::Stream_3, buf, 14);
 
     while(1)
     {
@@ -108,6 +135,15 @@ void Bass::main() noexcept
         clockControl.mDelay(500);
         gpioD.TogglePin(drivers::port::PIN_15);
         clockControl.mDelay(500);
-        spi1.TransmitData8(0xAA);
+        //       spi1.TransmitData8(0xAA);
+
+        spi1.TransmitDataDma(dma2, drivers::dma::constants::Stream_3, buf, 4);
     }
+}
+
+void DMA2_Stream3_IRQHandler()
+{
+    globalCout->operator<<("stream3\n\r");
+    dma2Pointer->clearFlagInterrupt(drivers::dma::constants::Stream_3,
+                                    drivers::dma::constants::TRANSFER_COMPLETE_INTERRUPT);
 }
