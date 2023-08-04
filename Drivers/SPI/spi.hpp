@@ -75,7 +75,6 @@
                                         drivers::dma::constants::TRANSFER_COMPLETE_INTERRUPT);_<br>
      }
 */
-
 namespace drivers::spi
 {
 
