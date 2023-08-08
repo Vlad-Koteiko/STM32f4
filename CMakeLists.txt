@@ -160,6 +160,7 @@ set(SOURCE_CPP src/main.cpp
         Drivers/DMA/dma.cpp
         Drivers/RNG/rng.cpp
         Drivers/SPI/spi.cpp
+        Drivers/TIMERS/generalpurposetimer.cpp
         devices/flash/w25q16.cpp
         devices/display/st7789.cpp
         devices/display/consolas_9pt_bold.cpp

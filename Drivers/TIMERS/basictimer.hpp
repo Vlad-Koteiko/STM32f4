@@ -13,7 +13,7 @@
 #include "clockControl.hpp"
 
 /// @brief Namespace for work with BasicTimer
-namespace drivers::timers
+namespace drivers::timers::basictimers
 {
     /// @brief Enum basic timers
     enum BASIC_TIMERS : std::uintptr_t
@@ -196,6 +196,6 @@ namespace drivers::timers
         /// @return value
         std::uint16_t GetAutoReload() noexcept;
     };
-}    // namespace drivers::timers
+}    // namespace drivers::timers::basictimers
 
 #endif    // BASICTIMERS_H

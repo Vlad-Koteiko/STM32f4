@@ -1,6 +1,6 @@
 #include "basictimer.hpp"
 
-namespace drivers::timers
+namespace drivers::timers::basictimers
 {
     BasicTimer::BasicTimer(clock::ClockControl &curClock, BASIC_TIMERS timer) :
         clockControl(curClock), baseAddress(timer)
@@ -209,4 +209,4 @@ namespace drivers::timers
     {
         return libs::MWR::read_register<std::uint16_t>(baseAddress + ARR);
     }
-}    // namespace drivers::timers
+}    // namespace drivers::timers::basictimers
