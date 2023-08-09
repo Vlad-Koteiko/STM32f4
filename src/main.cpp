@@ -4,18 +4,6 @@
 
 #include "main.hpp"
 
-<<<<<<< HEAD
-std::uint32_t counter      = 0;
-std::uint8_t  bufferReceve = 0;
-
-drivers::timers::BasicTimer *tim6Pointer;
-drivers::usart::Usart       *uart_p_2;
-libs::Cout                  *globalCout;
-
-std::uint8_t recvDma[5];
-
-=======
->>>>>>> b524d145bc0f081d8571a2f03410105f847e369d
 void Bass::main() noexcept
 {
     constexpr drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
