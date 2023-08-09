@@ -1,8 +1,8 @@
 #ifndef AD7705_H
 #define AD7705_H
 
-#include "gpio.h"
-#include "spi.h"
+#include "gpio.hpp"
+#include "spi.hpp"
 
 /*
 drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);

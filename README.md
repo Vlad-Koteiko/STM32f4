@@ -21,3 +21,7 @@ docker run -it --rm -v $(pwd):/build --device /dev/bus/usb/001/007 stm32
 lsusb
 Bus 001 Device 007: ID 0483:3748 STMicroelectronics ST-LINK/V2
 ```
+Generate doxygen documentation
+```
+doxygen Doxygen
+```

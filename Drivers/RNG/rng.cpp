@@ -1,5 +1,5 @@
 
-#include "rng.h"
+#include "rng.hpp"
 
 namespace drivers::rng
 {

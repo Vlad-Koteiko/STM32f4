@@ -387,7 +387,8 @@ namespace drivers::usart
         while(size--)
         {
             while(!ReadFlag(TXE))
-            {}
+            {
+            }
             sendByte(static_cast<std::byte>(*(static_cast<const char *>(value) + temp++)));
         }
     }
@@ -867,7 +868,8 @@ namespace drivers::usart
 
             case USART3:
                 if(usartDma.getBaseAddress() == dma::ADDRESSES_DMA::DMA_1)
-                {}
+                {
+                }
                 break;
         }
         return rezultInit;

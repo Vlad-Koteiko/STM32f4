@@ -12,9 +12,10 @@
 #include "cout.hpp"
 #include "dma.hpp"
 #include "exti.h"
-#include "gpio.h"
+#include "gpio.hpp"
 #include "iwdg.h"
 #include "nvic.h"
+#include "spi.hpp"
 #include "syscfg.h"
 #include "usart.hpp"
 
