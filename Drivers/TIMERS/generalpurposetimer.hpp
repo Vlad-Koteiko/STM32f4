@@ -76,6 +76,34 @@ namespace drivers::timers::generalpurposetimers
         CC1NP = 3     ///< Capture/compare 1 complemntary output Polarity
     };
 
+    /// @brief Status
+    enum STATUS : std::uint8_t
+    {
+        DISABLE = 0,    ///< Disable
+        ENABLE  = 1     ///< Enable
+    };
+
+    /// @brief Clock division
+    enum CLOCK_DIVISION : std::uint8_t
+    {
+        DIV_NOT = 0,    ///< Not division
+        DIV_2   = 1,    ///< Division 2
+        DIV_4   = 2     ///< Division 4
+    };
+
+    /// @brief Capture/Compare
+    enum CAP_COM : std::uint8_t
+    {
+        OUTPUT = 0,    ///< As output
+        INPUT  = 1     ///< As input
+    };
+
+    enum MODE : std::uint8_t
+    {
+        MODE_0,
+        MODE_1
+    };
+
     class GeneralPurposeTimer
     {
     private:
@@ -84,19 +112,19 @@ namespace drivers::timers::generalpurposetimers
 
         enum Registers : std::uintptr_t
         {
-            CR1     = 0x00,     ///< Control register 1
-            SMCR    = 0x08,     ///< Slave mode control register
-            DIER    = 0x0C,     ///< Interrupt enable register
-            SR      = 0x10,     ///< Status register
-            EGR     = 0x14,     ///< Event generation register
-            CCMR1   = 0x18,     ///< Capture/compare mode register 1
-            CCER    = 0x20,     ///< Capture/compare enable register
-            CNT     = 0x24,     ///< Counter
-            PSC     = 0x28,     ///< Prescaler
-            ARR     = 0x2C,     ///< Auto-reload register
-            CCR1    = 0x34,     ///< Capture/compare register 1
-            CCR2    = 0x38,     ///< Capture/compare register 2
-            OR      = 0x50      ///< Option register
+            CR1   = 0x00,    ///< Control register 1
+            SMCR  = 0x08,    ///< Slave mode control register
+            DIER  = 0x0C,    ///< Interrupt enable register
+            SR    = 0x10,    ///< Status register
+            EGR   = 0x14,    ///< Event generation register
+            CCMR1 = 0x18,    ///< Capture/compare mode register 1
+            CCER  = 0x20,    ///< Capture/compare enable register
+            CNT   = 0x24,    ///< Counter
+            PSC   = 0x28,    ///< Prescaler
+            ARR   = 0x2C,    ///< Auto-reload register
+            CCR1  = 0x34,    ///< Capture/compare register 1
+            CCR2  = 0x38,    ///< Capture/compare register 2
+            OR    = 0x50     ///< Option register
         };
 
     public:
@@ -110,6 +138,95 @@ namespace drivers::timers::generalpurposetimers
 
         /// @brief Counter disable
         void disable();
+
+        /// @brief Update disable
+        /// @param s ENABLE/DISABLE
+        void update(STATUS s);
+
+        /// @brief Is update disable
+        /// @return true - Enable
+        bool isUpdate();
+
+        /// @brief Update request source
+        /// @param s ENABLE/DISABLE
+        void updateRequestSource(STATUS s);
+
+        /// @brief Is update request source
+        /// @return true - Enable
+        bool isUpdateRequestSource();
+
+        /// @brief One pulse mode
+        /// @param s ENABLE/DISABLE
+        void onePulseMode(STATUS s);
+
+        /// @brief Is one pulse mode
+        /// @return true - Enable
+        bool isOnePulseMode();
+
+        /// @brief Auto-reload preload enable
+        /// @param s ENABLE/DISABLE
+        void autoReloadPreloadEnable(STATUS s);
+
+        /// @brief Is auto-reload preload enable
+        /// @return true - Enable
+        bool isAutoReloadPreloadEnable();
+
+        /// @brief Set clock division
+        /// @param div enum CLAOCK_DIVISION
+        void clockDivision(CLOCK_DIVISION div);
+
+        /// @brief Get clock division
+        /// @return CLOCK_DIVISION
+        CLOCK_DIVISION getClockDivision();
+
+        /// @brief Enable interrupt
+        /// @param f Source interrupt
+        void enableIT(DIER_poz f);
+
+        /// @brief Disable interrupt
+        /// @param f Source interrupt
+        void disabelIT(DIER_poz f);
+
+        /// @brief Is enabled interrupt
+        /// @param f Source interrupt
+        bool isEnabledIT(DIER_poz f);
+
+        /// @brief Get status flag
+        /// @param f Flag
+        /// @return value
+        bool getStatus(SR_poz f);
+
+        /// @brief Clear status flag
+        /// @param f Flag
+        void clearStatus(SR_poz f);
+
+        /// @brief Event generation
+        /// @param f flag
+        void eventGeneration(EGR_poz f);
+
+        /// @brief Capture/Compare 1 selection
+        /// @param cc
+        void captureCompare1Selection(CAP_COM cc);
+
+        /// @brief Output/Compare 1 fast enable
+        /// @param s
+        void outputCompare1FastEnable(STATUS s);
+
+        /// @brief Is output/compare 1 fast enable
+        /// @return true - Enable
+        bool isOutputCompare1FastEnable();
+
+        /// @brief Output/compare 1 preload enable
+        /// @param s
+        void outputCompare1PreloadEnable(STATUS s);
+
+        /// @brief Is output/compare 1 preload enable
+        /// @return true - Enable
+        bool isOutputCompare1PreloadEnable();
+
+        /// @brief Output compare 1 mode
+        /// @param m
+        void outputCompare1Mode(MODE m);
     };
 }    // namespace drivers::timers::generalpurposetimers
 #endif    // __GENERALPURPOSETIMER_H__
