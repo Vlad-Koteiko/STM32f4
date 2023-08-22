@@ -10,7 +10,7 @@
 #include <tuple>
 
 #include "MWR.hpp"
-#include "base_interface.h"
+#include "base_interface.hpp"
 #include "clockControl.hpp"
 #include "dma.hpp"
 #include "gpio.hpp"
