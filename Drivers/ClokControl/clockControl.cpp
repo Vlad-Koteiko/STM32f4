@@ -12,7 +12,8 @@ namespace drivers::clock
     {
         PLL_Config_Sys(array[0], array[1], array[2], array[3]);
         while(PLL_IsReady())
-        {}
+        {
+        }
         SetAHBPrescaler(prescalerAhb);
         SetAPB1Prescaler(prescalerApb1);
         SetAPB2Prescaler(prescalerApb2);
@@ -24,14 +25,16 @@ namespace drivers::clock
         drivers::flash::Flash flash;
         flash.SetLatency(5);
         while(flash.GetLatency() != 5)
-        {}
+        {
+        }
 
         ReadWriteRegister::write_register(0xE000ED88, 0xF00000);    // support FPU math
 
         HSE_Enable();
 
         while(!HSE_IsReady())
-        {}
+        {
+        }
 
         HSI_Disable();
 

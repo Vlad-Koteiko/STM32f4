@@ -4,7 +4,7 @@
 
 #include "main.hpp"
 
-void Bass::main() noexcept
+int main() noexcept
 {
     constexpr drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
     clockControl.init();

@@ -16,15 +16,15 @@ namespace drivers::exti
         {
             IMR = baseAddress,    // EXTI Interrupt mask register,            Address offset: 0x00
             EMR = baseAddress +
-                  0x04,           // EXTI Event mask register,                Address offset: 0x04
+                  0x04,    // EXTI Event mask register,                Address offset: 0x04
             RTSR = baseAddress +
-                   0x08,          // EXTI Rising trigger selection register,  Address offset: 0x08
+                   0x08,    // EXTI Rising trigger selection register,  Address offset: 0x08
             FTSR = baseAddress +
-                   0x0C,          // EXTI Falling trigger selection register, Address offset: 0x0C
+                   0x0C,    // EXTI Falling trigger selection register, Address offset: 0x0C
             SWIER = baseAddress +
-                    0x10,         // EXTI Software interrupt event register,  Address offset: 0x10
+                    0x10,    // EXTI Software interrupt event register,  Address offset: 0x10
             PR = baseAddress +
-                 0x14,            // EXTI Pending register,                   Address offset: 0x14
+                 0x14,    // EXTI Pending register,                   Address offset: 0x14
         };
 
     public:

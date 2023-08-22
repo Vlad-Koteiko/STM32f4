@@ -217,9 +217,9 @@ namespace drivers::usart
         using BaundRateType = std::tuple<std::uint16_t, std::uint16_t>;
 
         const drivers::clock::ClockControl &clockControl;    ///< Link to class ClockControl
-        std::uintptr_t                      baseAddress;     ///< Base address USART/UART
-        BaundRateType                       baundRateAPB2;
-        BaundRateType                       baundRateAPB1;
+        const std::uintptr_t                baseAddress;     ///< Base address USART/UART
+        const BaundRateType                 baundRateAPB2;
+        const BaundRateType                 baundRateAPB1;
 
         /*! Registers USART/UART*/
         enum RegisterUSART : std::ptrdiff_t

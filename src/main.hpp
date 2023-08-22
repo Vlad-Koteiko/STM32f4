@@ -18,10 +18,4 @@
 #include "syscfg.h"
 #include "usart.hpp"
 
-class Bass
-{
-public:
-    void main() noexcept;
-};
-
 #endif

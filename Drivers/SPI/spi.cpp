@@ -763,14 +763,16 @@ namespace drivers::spi
     void SPI::TransmitData8(std::uint8_t txData) noexcept
     {
         while(IsActiveFlag_TXE() == 0)
-        {}
+        {
+        }
         libs::MWR::write_register(baseAddress + DR, txData);
     }
 
     void SPI::TransmitData16(std::uint16_t txData) noexcept
     {
         while(IsActiveFlag_TXE())
-        {}
+        {
+        }
         libs::MWR::write_register(baseAddress + DR, txData);
     }
 
@@ -780,7 +782,8 @@ namespace drivers::spi
         while(sizeArray--)
         {
             while(!IsActiveFlag_TXE())
-            {}
+            {
+            }
             TransmitData8(txData[temp]);
             temp++;
         }
@@ -792,10 +795,12 @@ namespace drivers::spi
         while(size--)
         {
             while(!IsActiveFlag_TXE())
-            {}
+            {
+            }
             TransmitData8(txData[temp]);
             while(!IsActiveFlag_RXNE())
-            {}
+            {
+            }
             rxData[temp] = ReceiveData8();
             temp++;
         }
@@ -809,7 +814,8 @@ namespace drivers::spi
         while(size--)
         {
             while(!IsActiveFlag_TXE())
-            {}
+            {
+            }
             if(dw == BIT8)
             {
                 TransmitData8(*(static_cast<uint8_t *>(txData) + temp));
@@ -822,7 +828,8 @@ namespace drivers::spi
             }
 
             while(!IsActiveFlag_RXNE())
-            {}
+            {
+            }
 
             if(dw == BIT8)
             {

@@ -22,7 +22,7 @@ namespace drivers::systick
             LOAD =
                 baseRegisterSysTick + 0x04,    // Offset: 0x004 (R/W)  SysTick Reload Value Register
             VAL = baseRegisterSysTick +
-                  0x08,                       // Offset: 0x008 (R/W)  SysTick Current Value Register
+                  0x08,    // Offset: 0x008 (R/W)  SysTick Current Value Register
             CALIB =
                 baseRegisterSysTick + 0x0C    // Offset: 0x00C (R/ )  SysTick Calibration Register
         };

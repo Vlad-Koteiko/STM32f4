@@ -19,7 +19,7 @@ using vector = std::add_pointer<void()>::type; // void (*)(void)
 //extern void __libc_init_array();
 
 // Main program endtry point
-//extern int main();
+extern int main();
 
 //extern void SystemInit();
 
@@ -46,10 +46,7 @@ void Reset_Handler() {
     //__libc_init_array();
 
     // Enter main program
-//    main();
-    Bass bass;
-    bass.main();
-
+    main();
     // Handle the case where main function returns
     while(1);
 }

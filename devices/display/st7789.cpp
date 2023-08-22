@@ -454,7 +454,8 @@ namespace devices::st7789
             }
         }
         else
-        {}
+        {
+        }
     }
 
     void St7789::PrintString(int16_t  x,
