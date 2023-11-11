@@ -65,7 +65,7 @@ namespace drivers::dma
             DOUBLE_BUFFER_MODE                 = 18,    ///< Double buffer mode
             CURRENT_TARGET                     = 19,    ///< Current target
             PERIPHERAL_BURST_TRANSFER_CONFIGURATION =
-                21,    ///< Peripheral burst transfer configuration
+                21,                                     ///< Peripheral burst transfer configuration
             MEMORY_BURST_TRANSFER_CONFIGURATION = 23,    ///< Memory burst transfer configuration
             CHANNEL                             = 25     ///< Channel
         };
@@ -148,7 +148,7 @@ namespace drivers::dma
             FIFO_0_75 = 2,    ///< 3/4 full fifo
             FIFO_FULL = 3     ///< full fifo
         };
-    };    // namespace constants
+    };                        // namespace constants
 
     /// @brief Struct for configuration DMA
     struct DMA_Config
@@ -171,14 +171,14 @@ namespace drivers::dma
         constants::PERIPHERAL_BURST
             peripheralBurstTransferConfiguration;    ///< peripheral burst transfer configuration
         constants::PERIPHERAL_BURST
-            memoryBurstTransferConfiguration;    ///< memory burst transfer configuration
-        constants::CHANNEL_SELECTION channel;    ///< channel
+            memoryBurstTransferConfiguration;        ///< memory burst transfer configuration
+        constants::CHANNEL_SELECTION channel;        ///< channel
 
         constants::FIFO_THRESHOLD FIFOThresholdSelection;     ///< FIFO threshold selection
         constants::STATUS         directModeDisableInvers;    ///< direct mode disable inversion
         constants::STATUS         fifoErrorInterrupt;         ///< FIFO error interrupt
 
-        constants::NUMBER_STREAM stream;    ///< stream
+        constants::NUMBER_STREAM stream;                      ///< stream
     };
 
     /// @brief Namespace for work with DMA
