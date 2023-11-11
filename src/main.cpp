@@ -11,6 +11,8 @@ int main() noexcept
     drivers::usart::Usart usart2(clockControl, drivers::usart::USART2);
     usart2.init();
 
+    drivers::usb::Usb usb(clockControl, usart2);
+    usb.init();
     std::uint8_t string[] = "Start STM32F407\n\r";
 
     while(1)

@@ -122,6 +122,7 @@ set(MAIN_COMMON_DIRS
         devices/display
         devices/adc
         Drivers/DMA
+        Drivers/USB
         src/)
 
 include_directories(${MAIN_COMMON_DIRS})
@@ -161,6 +162,7 @@ set(SOURCE_CPP src/main.cpp
         Drivers/DMA/dma.cpp
         Drivers/RNG/rng.cpp
         Drivers/SPI/spi.cpp
+        Drivers/USB/usb.cpp
         devices/flash/w25q16.cpp
         devices/display/st7789.cpp
         devices/display/consolas_9pt_bold.cpp

@@ -165,15 +165,15 @@ namespace drivers ::clock
             ETHMACTX_MODULE   = 26,
             ETHMACRX_MODULE   = 27,
             ETHMACPTP_MODULE  = 28,
-            OTGHS_MODULE      = 29,
+            USB_OTG_HS_MODULE = 29,
             OTGHSULPI_MODULE  = 30,
 
             // RCC AHB2 peripheral clock enable register
-            DCMI_MODULE  = 0 + 32,
-            CRYP_MODULE  = 4 + 32,
-            HASH_MODULE  = 5 + 32,
-            RNG_MODULE   = 6 + 32,
-            OTGFS_MODULE = 7 + 32,
+            DCMI_MODULE       = 0 + 32,
+            CRYP_MODULE       = 4 + 32,
+            HASH_MODULE       = 5 + 32,
+            RNG_MODULE        = 6 + 32,
+            USB_OTG_FS_MODULE = 7 + 32,
 
             // RCC APB1 peripheral clock enable register
             TIM2_MODULE   = 0 + 64,
@@ -302,7 +302,7 @@ namespace drivers ::clock
             AHB3RSTR   = baseRegisterRCC  + 0x18,    // RCC AHB3 peripheral reset register, Address offset: 0x18
             APB1RSTR   = baseRegisterRCC  + 0x20,    // RCC APB1 peripheral reset register, Address offset: 0x20
             APB2RSTR   = baseRegisterRCC  + 0x24,    // RCC APB2 peripheral reset register, Address offset: 0x24
-            AHB1ENR    =  baseRegisterRCC + 0x30,    // RCC AHB1 peripheral clock register, Address offset: 0x30
+            AHB1ENR    = baseRegisterRCC  + 0x30,    // RCC AHB1 peripheral clock register, Address offset: 0x30
             AHB2ENR    = baseRegisterRCC  + 0x34,    // RCC AHB2 peripheral clock register, Address offset: 0x34
             AHB3ENR    = baseRegisterRCC  + 0x38,    // RCC AHB3 peripheral clock register, Address offset: 0x38
             APB1ENR    = baseRegisterRCC  + 0x40,    // RCC APB1 peripheral clock enable register, Address offset: 0x40
@@ -371,7 +371,7 @@ namespace drivers ::clock
             return freqAPB1;
         }
 
-        [[nodiscard]] constexpr std::uint32_t GetFreqAPB2() const noexcept
+        [[nodiscard]] constexpr std::uint32_t getFreqAPB2() const noexcept
         {
             return freqAPB2;
         }

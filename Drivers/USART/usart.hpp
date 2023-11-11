@@ -278,8 +278,8 @@ namespace drivers::usart
             baseAddress(address),
             baundRateAPB1(setInteget(RATE_115200, clockControlInit.GetFreqAPB1()),
                           setFraction(RATE_115200, clockControlInit.GetFreqAPB1())),
-            baundRateAPB2(setInteget(RATE_115200, clockControlInit.GetFreqAPB2()),
-                          setFraction(RATE_115200, clockControlInit.GetFreqAPB2()))
+            baundRateAPB2(setInteget(RATE_115200, clockControlInit.getFreqAPB2()),
+                          setFraction(RATE_115200, clockControlInit.getFreqAPB2()))
         {}
 
         void init() noexcept;

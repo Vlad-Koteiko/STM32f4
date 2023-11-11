@@ -81,7 +81,7 @@ namespace drivers::nvic
         CAN2_RX0,
         CAN2_RX1,
         CAN2_SCE,
-        OTG_FS,
+        USB_OTG_FS,
         DMA2_Stream5,
         DMA2_Stream6,
         DMA2_Stream7,

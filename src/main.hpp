@@ -18,5 +18,6 @@
 #include "spi.hpp"
 #include "syscfg.h"
 #include "usart.hpp"
+#include "usb.hpp"
 
 #endif
