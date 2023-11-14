@@ -33,7 +33,7 @@ namespace drivers::can
             DBF     = 16        ///< Debug freeze [rw]
         };
 
-        /// @brief CAN mater status register
+        /// @brief CAN master status register
         enum CAN_MSR
         {
             INAK    = 0,        ///< Initialization acknowledge [r]
@@ -83,7 +83,7 @@ namespace drivers::can
             RFOM0   = 5         ///< Release FIFO 0 output mailbox [rs]
         };
 
-        /// @brief CAN receive FIFO 0 register
+        /// @brief CAN receive FIFO 1 register
         enum CAN_RF1R
         {
             FMP1    = 0,        ///< FIFO 1 message pending [1:0] [r]
@@ -285,8 +285,9 @@ namespace drivers::can
         }
 
     public:
-        Can(/* args */);
-        
+        Can(ADDRESSES_CAN address);
+        bool start();
+        bool stop();
     }; 
 }
 
