@@ -79,3 +79,4 @@ fabric.properties
 *.log
 #.clang-format
 .PVS-Studio
+cmake-*

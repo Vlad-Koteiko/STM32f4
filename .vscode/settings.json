@@ -1,6 +1,5 @@
 {
     "cmake.useCMakePresets": "always",
-
     "cmake.generator": "MinGW Makefiles",
     "cmake.parallelJobs": 4,
     "cmake.configureSettings": {
