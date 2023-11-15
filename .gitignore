@@ -1,7 +1,6 @@
 Debug*/
 Release*/
 build/
-.vscode
 DocumentationBuild
 
 ### JetBrains template
@@ -80,3 +79,4 @@ fabric.properties
 *.log
 #.clang-format
 .PVS-Studio
+cmake-*

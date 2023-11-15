@@ -1,0 +1,38 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "openocd",
+            "request": "launch",
+            "type": "cortex-debug",
+            "cwd": "${workspaceRoot}",
+            "servertype": "openocd",
+            "executable": "cmake-pr-debug/stm32f4.elf",
+            "svdFile": "STM32F407.svd",
+            "configFiles": [
+                "E:\\Programm Files\\OpenOCD-20230621-0.12.0\\share\\openocd\\scripts\\target\\stm32f4x.cfg"
+            ]
+        },
+        
+        {
+            "name": "STM32F407 Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "cmake-pr-debug/STM32F4.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "showDevDebugOutput": "raw",
+          //  "preLaunchTask": "Build Debug",
+            "device": "STM32F407",
+            "svdFile": "STM32F407.svd",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32f4x.cfg"
+            ]
+        }
+
+    ]
+}
