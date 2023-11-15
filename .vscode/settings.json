@@ -1,12 +1,13 @@
 {
+    "cmake.useCMakePresets": "always",
+
     "cmake.generator": "MinGW Makefiles",
     "cmake.parallelJobs": 4,
-    "cmake.exportCompileCommandsFile": "true",
     "cmake.configureSettings": {
       "CMAKE_TRY_COMPILE_TARGET_TYPE" : "STATIC_LIBRARY",
     },
     "cmake.configureEnvironment": {
-      
+      "CMAKE_EXPORT_COMPILE_COMMANDS": "on"
     },
     "C_Cpp.default.intelliSenseMode": "gcc-arm",
     "cortex-debug.gdbPath": "arm-none-eabi-gdb",
@@ -63,5 +64,6 @@
         "cstring": "cpp",
         "exceptio": "cpp",
         "stdexcep": "cpp"
-    }
+    },
+    "cmake.options.statusBarVisibility": "visible"
 }
