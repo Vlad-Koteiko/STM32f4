@@ -11,7 +11,7 @@
             "name": "configure-cmake-release",
             "displayName": "Configure-release",
             "generator": "MinGW Makefiles",
-
+            
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             },
@@ -22,9 +22,9 @@
             "name": "configure-cmake-debug",
             "displayName": "Configure-debug",
             "generator": "MinGW Makefiles",
-
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "true"
             },
             "toolchainFile": "cmake\\toolchain.cmake",
             "binaryDir": "cmake-pr-debug"
