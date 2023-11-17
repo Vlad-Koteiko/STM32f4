@@ -5,6 +5,7 @@
 #ifndef STM32F4_USB_HPP
 #define STM32F4_USB_HPP
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 
@@ -13,6 +14,7 @@
 #include "cout.hpp"
 #include "gpio.hpp"
 #include "nvic.h"
+#include "shared.h"
 #include "usart.hpp"
 
 namespace drivers::usb
@@ -20,9 +22,12 @@ namespace drivers::usb
 
     class Usb
     {
-        static constexpr std::uintptr_t     baseAddress = 0x50000000;
-        const drivers::clock::ClockControl& clockControl;
-        libs::Cout                          cout;
+        static constexpr std::uintptr_t               baseAddress = 0x50000000;
+        static constexpr std::array<std::uint8_t, 18> deviceDesc  = { 0x12, 0x01, 0x00, 0x02, 0x00,
+                                                                      0x00, 0x00, 0x40, 0x83, 0x04,
+                                                                      0x50, 0x57, 0x00, 0x02, 0x01,
+                                                                      0x02, 0x03, 0x01 };
+        const drivers::clock::ClockControl&           clockControl;
 
         // clang-format off
         enum RegisterGlobal : std::uintptr_t
@@ -70,22 +75,48 @@ namespace drivers::usb
             libs::MWR::setBit(address, numberBit);
         }
 
+        void resetBit(std::uintptr_t address, std::uint8_t numberBit) noexcept
+        {
+            libs::MWR::resetBit(address, numberBit);
+        }
+
         [[nodiscard]] bool readBit(std::uintptr_t address, std::uint8_t numberBit) noexcept
         {
             return libs::MWR::readBit<std::uint32_t>(address, numberBit);
+        }
+
+        [[nodiscard]] std::uint32_t readRegister(std::uintptr_t address) noexcept
+        {
+            return libs::MWR::read_register<std::uint32_t>(address);
+        }
+
+        void writeRegister(std::uintptr_t address, std::uint32_t data) noexcept
+        {
+            libs::MWR::write_register(address, data);
         }
 
         void gpioInit() const noexcept;
         void nvicEnable() const noexcept;
         void coreInit() noexcept;
         void coreReset() noexcept;
+        void currentMode() noexcept;
+        void devInit() noexcept;
+        void flushTxFIFO(std::uint8_t numberDevice) noexcept;
+        void flushRxFifo() noexcept;
+        void interruptsDevice() noexcept;
+        void devDisconnect() noexcept;
 
     public:
         Usb(const drivers::clock::ClockControl& clockControlInit,
             drivers::usart::Usart&              usartInst) :
-            clockControl(clockControlInit), cout(usartInst)
+            clockControl(clockControlInit)
         {}
-        void init() noexcept;
+
+        void                init() noexcept;
+        void                registerClass() noexcept;
+        void                usbCustomHidInterface() noexcept;
+        void                usbStart() noexcept;
+        const std::uint8_t* getPtrDeviceDesc() const noexcept;
     };
 }    // namespace drivers::usb
 

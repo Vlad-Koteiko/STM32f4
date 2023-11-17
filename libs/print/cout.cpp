@@ -15,6 +15,20 @@ namespace libs
         return *this;
     }
 
+    Cout& Cout::operator<<(std::size_t value) noexcept
+    {
+        std::fill_n(buff.begin(), 11, 0);
+        std::size_t index = 10;
+        do
+        {
+            index--;
+            buff[index] = (value % 10 + '0');
+            value /= 10;
+        } while(value != 0);
+        pritnValue();
+        return *this;
+    }
+
     Cout& Cout::operator<<(std::uint32_t value) noexcept
     {
         std::fill_n(buff.begin(), 11, 0);

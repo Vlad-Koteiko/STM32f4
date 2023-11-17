@@ -15,6 +15,7 @@
 #include "gpio.hpp"
 #include "iwdg.h"
 #include "nvic.h"
+#include "shared.h"
 #include "spi.hpp"
 #include "syscfg.h"
 #include "usart.hpp"

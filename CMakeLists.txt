@@ -168,8 +168,7 @@ set(SOURCE_CPP src/main.cpp
         devices/display/consolas_9pt_bold.cpp
         libs/print/printf.c
         devices/adc/ad7705.cpp
-        libs/uartbuf/uartbuf.hpp
-        libs/uartbuf/uartbuf.cpp libs/logger/format_check.hpp libs/logger/logger.hpp)
+        libs/uartbuf/uartbuf.cpp)
 
 add_executable(${PROJECT_NAME_CPP}.elf ${SOURCE_CPP} ${LINKER_SCRIPT})
 

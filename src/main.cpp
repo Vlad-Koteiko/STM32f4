@@ -4,6 +4,8 @@
 
 #include "main.hpp"
 
+
+
 int main() noexcept
 {
     constexpr drivers::clock::ClockControl clockControl(drivers::clock::FREQ_168000000);
@@ -11,14 +13,21 @@ int main() noexcept
     drivers::usart::Usart usart2(clockControl, drivers::usart::USART2);
     usart2.init();
 
+    libs::Cout cout(usart2);
+
+    sharedData.cout = &cout;
+
+    cout << "Hello 1\n\r";
+
     drivers::usb::Usb usb(clockControl, usart2);
     usb.init();
+    //    usb.usbStart();
+
     std::uint8_t string[] = "Start STM32F407\n\r";
 
     while(1)
     {
         usart2.TransmitString(string, sizeof(string));
-
         clockControl.mDelay(1000);
     }
 }

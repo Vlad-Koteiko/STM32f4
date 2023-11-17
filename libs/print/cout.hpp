@@ -52,6 +52,8 @@ namespace libs
 
         Cout& operator<<(std::string string) noexcept;
 
+        Cout& operator<<(std::size_t value) noexcept;
+
         Cout& operator<<(std::uint32_t value) noexcept;
 
         Cout& operator<<(std::uint16_t value) noexcept;
