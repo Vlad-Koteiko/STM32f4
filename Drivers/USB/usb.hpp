@@ -14,7 +14,7 @@
 #include "cout.hpp"
 #include "gpio.hpp"
 #include "nvic.h"
-#include "shared.h"
+#include "shared.hpp"
 #include "usart.hpp"
 
 namespace drivers::usb

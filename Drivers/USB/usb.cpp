@@ -8,14 +8,15 @@ namespace drivers::usb
 
     void Usb::init() noexcept
     {
-                clockControl.EnablePeripherals(drivers::clock::constants::USB_OTG_FS_MODULE);
-                gpioInit();
-                nvicEnable();
-                coreInit();
-                currentMode();
-                devInit();
-                devDisconnect();
-        sharedData.cout->operator<<("Hello 2\n\r");
+        clockControl.EnablePeripherals(drivers::clock::constants::USB_OTG_FS_MODULE);
+        gpioInit();
+        nvicEnable();
+        coreInit();
+        currentMode();
+        devInit();
+        devDisconnect();
+
+        shared::Data::getCout()->operator<<("Hello 2\n\r");
     }
 
     void Usb::gpioInit() const noexcept
@@ -155,6 +156,18 @@ namespace drivers::usb
     }
 
     void OTG_FS_IRQHandler()
-    {}
+    {
+        shared::Data::getCout()->operator<<("Hello 4\n\r");
+    }
+
+    void Reset_Handler()
+    {
+        shared::Data::getCout()->operator<<("Hello 5\n\r");
+    }
+
+    void OTG_FS_WKUP_IRQHandler()
+    {
+        shared::Data::getCout()->operator<<("Hello 6\n\r");
+    }
 
 }    // namespace drivers::usb
