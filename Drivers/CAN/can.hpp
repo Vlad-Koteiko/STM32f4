@@ -288,8 +288,40 @@ namespace drivers::can
         std::uintptr_t                      baseAddress;
         const uint8_t                       delayCan = 10;
 
+        enum ModeCan : std::uint8_t
+        {
+            M_Normal,
+            M_Loopback,
+            M_Silent,
+            M_Silent_Loopback
+        };
+
+        struct CanInit
+        {
+            std::uint16_t prescaler;
+            ModeCan       mode;
+            std::uint8_t  syncJumpWidth;
+            std::uint8_t  timeSeg1;
+            std::uint8_t  timeSeg2;
+            bool          timeTriggeredMode;
+            bool          autoBusOff;
+            bool          autoWakeUp;
+            bool          autoRetransmission;
+            bool          receiveFifoLocked;
+            bool          transmitFifoPriority;
+        };
+
     public:
         Can(ADDRESSES_CAN address, drivers::clock::ClockControl& clockCl);
+
+        void init(CanInit ci);
+        void deinit();
+        void configGpioForCan(drivers::port::ADDRESSES_PORT     portTX,
+                              drivers::port::ADDRESSES_PORT     portRX,
+                              drivers::port::PIN_NUMBER         pinTX,
+                              drivers::port::PIN_NUMBER         pinRX,
+                              drivers::port::ALTERNATE_FUNCTION af);
+
         bool start();
         bool stop();
     };
