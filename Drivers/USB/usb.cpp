@@ -144,7 +144,7 @@ namespace drivers::usb
     void Usb::usbCustomHidInterface() noexcept
     {}
 
-    void Usb::usbStart() noexcept
+    void Usb::start() noexcept
     {
         setBit(RegisterGlobal::GAHBCFG, 0);    // global interrupt mask
         resetBit(RegisterDevice::DCTL, 1);     // device is reconnected
@@ -159,15 +159,4 @@ namespace drivers::usb
     {
         shared::Data::getCout()->operator<<("Hello 4\n\r");
     }
-
-    void Reset_Handler()
-    {
-        shared::Data::getCout()->operator<<("Hello 5\n\r");
-    }
-
-    void OTG_FS_WKUP_IRQHandler()
-    {
-        shared::Data::getCout()->operator<<("Hello 6\n\r");
-    }
-
 }    // namespace drivers::usb

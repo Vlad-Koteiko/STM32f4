@@ -21,7 +21,7 @@ int main() noexcept
 
     drivers::usb::Usb usb(clockControl, usart2);
     usb.init();
-    usb.usbStart();
+    usb.start();
 
     shared::Data::getCout()->operator<<("Hello 3\n\r");
 

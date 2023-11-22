@@ -115,7 +115,7 @@ namespace drivers::usb
         void                init() noexcept;
         void                registerClass() noexcept;
         void                usbCustomHidInterface() noexcept;
-        void                usbStart() noexcept;
+        void                start() noexcept;
         const std::uint8_t* getPtrDeviceDesc() const noexcept;
     };
 }    // namespace drivers::usb
