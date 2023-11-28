@@ -155,8 +155,83 @@ namespace drivers::usb
         return deviceDesc.data();
     }
 
-    void OTG_FS_IRQHandler()
+    std::uint32_t Usb::readFIFO(std::uint8_t count) noexcept
     {
-        shared::Data::getCout()->operator<<("Hello 4\n\r");
+        return readRegister(RegisterGlobal::FIFO_BASE + (count * 4));
     }
+
+    void Usb::readPacket(std::uint8_t* dest, std::uint16_t len)
+    {
+        std::uint8_t* pDest           = dest;
+        std::uint32_t count32b        = static_cast<std::uint32_t>(len) >> 2U;
+        std::uint16_t remaining_bytes = len % 4U;
+        std::uint32_t i;
+        std::uint32_t pData;
+
+        for(i = 0; i < count32b; i++)
+        {
+            pData = readRegister(RegisterGlobal::FIFO_BASE + (i * sizeof(std::uint32_t)));
+            std::copy_n(reinterpret_cast<std::uint8_t*>(&pData), sizeof(pData), pDest);
+            pDest = pDest + sizeof(std::uint32_t);
+        }
+
+        if(remaining_bytes != 0U)
+        {
+            std::uint8_t i = 0U;
+            pData = libs::MWR::read_register<std::uint32_t>(RegisterGlobal::FIFO_BASE + (i * 4));
+
+            do
+            {
+                *pDest = (uint8_t)(pData >> (8U * (uint8_t)(i)));
+                i++;
+                pDest++;
+                remaining_bytes--;
+            } while(remaining_bytes != 0U);
+        }
+    }
+
 }    // namespace drivers::usb
+
+void OTG_FS_IRQHandler()
+{
+    std::uint32_t regVal = drivers::usb::Usb::readRegister(drivers::usb::RegisterGlobal::GRXSTSP);
+    std::uint32_t mask_GRXSTSP_PKTSTS   = 0xF << 17;
+    std::uint32_t mask_OTG_GRXSTSP_BCNT = 0x7FF << 4;
+
+    std::uint8_t STS_DATA_UPDT  = 2;
+    std::uint8_t STS_SETUP_UPDT = 6;
+
+    std::array<std::uint8_t, 20> data;
+
+    if(((regVal & mask_GRXSTSP_PKTSTS) >> 17) == STS_DATA_UPDT)
+    {
+        if((regVal & mask_OTG_GRXSTSP_BCNT) != 0)
+        {
+            //            shared::Data::getCout()->operator<<("COUNT = ")
+            //                << ((regVal & mask_OTG_GRXSTSP_BCNT) >> 4) << libs::Cout::ENDL;
+        }
+    }
+    else if(((regVal & mask_GRXSTSP_PKTSTS) >> 17) == STS_SETUP_UPDT)
+    {
+        //        shared::Data::getCout()->operator<<("STS_SETUP_UPDT = ")
+        //            << drivers::usb::Usb::readRegister(drivers::usb::RegisterGlobal::GRXSTSP)
+        //            << libs::Cout::ENDL;
+
+        //        shared::Data::getCout()->operator<<("STS_SETUP_UPDT 1 = ")
+        //            <<
+        //            libs::MWR::read_register<std::uint32_t>(drivers::usb::RegisterGlobal::FIFO_BASE)
+        //            << libs::Cout::ENDL;
+        //        shared::Data::getCout()->operator<<("STS_SETUP_UPDT 2 = ")
+        //            <<
+        //            libs::MWR::read_register<std::uint32_t>(drivers::usb::RegisterGlobal::FIFO_BASE
+        //            + 4)
+        //            << libs::Cout::ENDL;
+
+        data.fill(0);
+        drivers::usb::Usb::readPacket(data.data(), 8);
+        for(std::uint8_t i = 0; i < 8; i++)
+        {
+            shared::Data::getCout()->operator<<(i) << (" = ") << data[i] << libs::Cout::ENDL;
+        }
+    }
+}

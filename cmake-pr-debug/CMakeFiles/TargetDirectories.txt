@@ -1,0 +1,4 @@
+D:/STM/407/stm32F4/cmake-pr-debug/CMakeFiles/stm32f4.elf.dir
+D:/STM/407/stm32F4/cmake-pr-debug/CMakeFiles/stm32f4.elfFormatter.dir
+D:/STM/407/stm32F4/cmake-pr-debug/CMakeFiles/edit_cache.dir
+D:/STM/407/stm32F4/cmake-pr-debug/CMakeFiles/rebuild_cache.dir

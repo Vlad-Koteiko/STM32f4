@@ -1,0 +1,77 @@
+{
+    "version": 7,
+    
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 27,
+        "patch": 1
+    },
+    "configurePresets": [
+        {
+            "name": "configure-cmake-release",
+            "displayName": "Configure-release",
+            "generator": "MinGW Makefiles",
+            
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "toolchainFile": "cmake\\toolchain.cmake",
+            "binaryDir": "cmake-pr-release"
+        },
+        {
+            "name": "configure-cmake-debug",
+            "displayName": "Configure-debug",
+            "generator": "MinGW Makefiles",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "true"
+            },
+            "toolchainFile": "cmake\\toolchain.cmake",
+            "binaryDir": "cmake-pr-debug"
+        },
+        {
+            "name": "configure-cmake-release-lin",
+            "displayName": "Configure-release-linux",
+            "generator": "Unix Makefiles",
+
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "toolchainFile": "cmake\\toolchain.cmake",
+            "binaryDir": "cmake-pr-release-lin"
+        },
+        {
+            "name": "configure-cmake-debug-lin",
+            "displayName": "Configure-debug-linux",
+            "generator": "Unix Makefiles",
+
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "toolchainFile": "cmake\\toolchain.cmake",
+            "binaryDir": "cmake-pr-debug-lin"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Build-release",
+            "configurePreset": "configure-cmake-release",
+            "jobs": 4
+        },
+        {
+            "name": "Build-debug",
+            "configurePreset": "Configure-cmake-debug",
+            "jobs": 4
+        },
+        {
+            "name": "Build-release-lin",
+            "configurePreset": "configure-cmake-release-lin",
+            "jobs": 4
+        },
+        {
+            "name": "Build-debug-lin",
+            "configurePreset": "Configure-cmake-debug-lin",
+            "jobs": 4
+        }
+    ]
+}
