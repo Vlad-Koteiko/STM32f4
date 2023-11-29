@@ -208,3 +208,21 @@ if(UPLOADER)
     add_dependencies(upload ${PROJECT_NAME_CPP}.elf )
 
 endif()
+
+find_program(UPLOADER_WIN ST-LINK_CLI.exe)
+
+if(UPLOADER_WIN)
+    add_custom_target(upload
+            WORKING_DIRECTORY
+            ${CMAKE_BINARY_DIR}
+            COMMAND
+            ${UPLOADER_WIN} -P ${BIN_FILE} 0x08000000 -Rst
+            DEPENDS
+            ${BIN_FILE}
+            COMMENT
+            "upload via ST-LINK_CLI.exe"
+            VERBATIM)
+
+    add_dependencies(upload ${PROJECT_NAME_CPP}.elf )
+
+endif()

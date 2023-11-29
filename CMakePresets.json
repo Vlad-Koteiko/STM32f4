@@ -1,6 +1,5 @@
 {
     "version": 7,
-    
     "cmakeMinimumRequired": {
         "major": 3,
         "minor": 27,
@@ -11,7 +10,6 @@
             "name": "configure-cmake-release",
             "displayName": "Configure-release",
             "generator": "MinGW Makefiles",
-            
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             },
@@ -33,7 +31,6 @@
             "name": "configure-cmake-release-lin",
             "displayName": "Configure-release-linux",
             "generator": "Unix Makefiles",
-
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             },
@@ -44,7 +41,6 @@
             "name": "configure-cmake-debug-lin",
             "displayName": "Configure-debug-linux",
             "generator": "Unix Makefiles",
-
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             },

@@ -99,32 +99,32 @@ int main() noexcept
 
     std::uint8_t string[] = "Start STM32F407\n\r";
 
-    etl::vector data { 0, 1, 2, 70, 70, 5, 6, 7, 8, 9 };
+    // etl::vector data { 0, 1, 2, 70, 70, 5, 6, 7, 8, 9 };
 
-    etl::string<100> str;
-    // etl::to_string<etl::string>(data, str);
-    // usart2.TransmitString(&str[0], 10);
+    // etl::string<100> str;
+    // // etl::to_string<etl::string>(data, str);
+    // // usart2.TransmitString(&str[0], 10);
 
-    //    usart2.sendByte(static_cast<std::byte>(data[4]));
+    // //    usart2.sendByte(static_cast<std::byte>(data[4]));
 
-    Task1 task1(1, &usart2);
-    Task2 task2(1, &usart2);
+    // Task1 task1(1, &usart2);
+    // Task2 task2(1, &usart2);
 
-    Scheduler scheduler;
+    // Scheduler scheduler;
 
-    Idle idleHandler(scheduler);
+    // Idle idleHandler(scheduler);
 
-    etl::function_mv<Idle, &Idle::IdleCallback> idleCallback(
-        idleHandler);        // Member function, no parameters, returning void.
-    etl::function_fv<WatchdogCallback>
-        watchdogCallback;    // Global function, no parameters, returning void.
+    // etl::function_mv<Idle, &Idle::IdleCallback> idleCallback(
+    //     idleHandler);        // Member function, no parameters, returning void.
+    // etl::function_fv<WatchdogCallback>
+    //     watchdogCallback;    // Global function, no parameters, returning void.
 
-    scheduler.add_task(task1);
-    scheduler.add_task(task2);
-    scheduler.set_idle_callback(idleCallback);
-    scheduler.set_watchdog_callback(watchdogCallback);
+    // scheduler.add_task(task1);
+    // scheduler.add_task(task2);
+    // scheduler.set_idle_callback(idleCallback);
+    // scheduler.set_watchdog_callback(watchdogCallback);
 
-    scheduler.start();
+    // scheduler.start();
 
     while(1)
     {

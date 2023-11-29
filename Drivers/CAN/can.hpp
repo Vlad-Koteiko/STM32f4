@@ -15,6 +15,47 @@ namespace drivers::can
         CAN2 = 0x4000'6800     ///< CAN2
     };
 
+    // auto-clang off
+    struct CanConfig
+    {
+        std::uint16_t prescaler;
+        std::uint8_t  mode;
+        std::uint8_t  SJW;
+        std::uint8_t  BS1;
+        std::uint8_t  BS2;
+        bool          TimeTriggeredMode;
+        bool          AutoBusOff;
+        bool          AutoWakeUp;
+        bool          AutoRetransmission;
+        bool          ReceiveFifoLocked;
+        bool          TransmitFifoPriority;
+    };
+
+    // auto-clang on
+
+    struct CanTxMsg
+    {
+        std::uint32_t stdId;
+        std::uint32_t extId;
+        std::uint8_t  IDE;
+        std::uint8_t  RTR;
+        std::uint8_t  DLC;
+        std::uint8_t  data[8];
+    };
+
+    struct CanRxMsg
+    {
+        std::uint32_t stdId;
+        std::uint32_t extId;
+        std::uint8_t  IDE;
+        std::uint8_t  RTR;
+        std::uint8_t  DLC;
+        std::uint8_t  data[8];
+        std::uint8_t  FMI;
+        std::uint32_t timestamp;
+        std::uint32_t filterMatchIndex;
+    };
+
     class Can
     {
     public:
@@ -284,10 +325,6 @@ namespace drivers::can
             CAN_F0R2 = 0x244
         };
 
-        const drivers::clock::ClockControl& clockControl;
-        std::uintptr_t                      baseAddress;
-        const uint8_t                       delayCan = 10;
-
         enum ModeCan : std::uint8_t
         {
             M_Normal,
@@ -311,10 +348,14 @@ namespace drivers::can
             bool          transmitFifoPriority;
         };
 
+        const drivers::clock::ClockControl& clockControl;
+        std::uintptr_t                      baseAddress;
+        const uint8_t                       delayCan = 10;
+
     public:
         Can(ADDRESSES_CAN address, drivers::clock::ClockControl& clockCl);
 
-        void init(CanInit ci);
+        bool init(CanInit ci);
         void deinit();
         void configGpioForCan(drivers::port::ADDRESSES_PORT     portTX,
                               drivers::port::ADDRESSES_PORT     portRX,
