@@ -8,6 +8,7 @@
 
 #include "MWR.hpp"
 #include "basictimer.hpp"
+#include "can.hpp"
 #include "clockControl.hpp"
 #include "cout.hpp"
 #include "dma.hpp"

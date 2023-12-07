@@ -15,20 +15,28 @@ namespace drivers::can
         CAN2 = 0x4000'6800     ///< CAN2
     };
 
+    enum ModeCan : std::uint8_t
+    {
+        M_Normal,
+        M_Loopback,
+        M_Silent,
+        M_Silent_Loopback
+    };
+
     // auto-clang off
-    struct CanConfig
+    struct CanInitStruct
     {
         std::uint16_t prescaler;
-        std::uint8_t  mode;
-        std::uint8_t  SJW;
-        std::uint8_t  BS1;
-        std::uint8_t  BS2;
-        bool          TimeTriggeredMode;
-        bool          AutoBusOff;
-        bool          AutoWakeUp;
-        bool          AutoRetransmission;
-        bool          ReceiveFifoLocked;
-        bool          TransmitFifoPriority;
+        ModeCan       mode;
+        std::uint8_t  syncJumpWidth;
+        std::uint8_t  timeSeg1;
+        std::uint8_t  timeSeg2;
+        bool          timeTriggeredMode;
+        bool          autoBusOff;
+        bool          autoWakeUp;
+        bool          autoRetransmission;
+        bool          receiveFifoLocked;
+        bool          transmitFifoPriority;
     };
 
     // auto-clang on
@@ -41,6 +49,7 @@ namespace drivers::can
         std::uint8_t  RTR;
         std::uint8_t  DLC;
         std::uint8_t  data[8];
+        bool          transmitGlobalTime;
     };
 
     struct CanRxMsg
@@ -54,6 +63,70 @@ namespace drivers::can
         std::uint8_t  FMI;
         std::uint32_t timestamp;
         std::uint32_t filterMatchIndex;
+    };
+
+    enum TxMailbox : std::uint8_t
+    {
+        TxMailbox_0,
+        TxMailbox_1,
+        TxMailbox_2
+    };
+
+    enum RxFifo : std::uint8_t
+    {
+        RxFifo_0,
+        RxFifo_1
+    };
+
+    enum Flags : std::uint8_t
+    {
+        F_TX_RQCP0,
+        F_TX_TXOK0,
+        F_TX_ALST0,
+        F_TX_TERR0,
+        F_TX_RQCP1,
+        F_TX_TXOK1,
+        F_TX_ALST1,
+        F_TX_TERR1,
+        F_TX_RQCP2,
+        F_TX_TXOK2,
+        F_TX_ALST2,
+        F_TX_TERR2,
+        F_TX_TME0,
+        F_TX_TME1,
+        F_TX_TME2,
+        F_TX_LOW0,
+        F_TX_LOW1,
+        F_TX_LOW2,
+
+        F_RX_FF0,
+        F_RX_FOV0,
+        F_RX_FF1,
+        F_RX_FOV1,
+
+        F_M_INAK,
+        F_M_SLAK,
+        F_M_ERRI,
+        F_M_WKU,
+        F_M_SLAKI,
+    };
+
+    enum IRQ : std::uint8_t
+    {
+        TX_MAILBOX_EMPTY,
+        RX_FIFO0_MSG_PENDING,
+        RX_FIFO0_FULL,
+        RX_FIFO0_OVERRUN,
+        RX_FIFO1_MSG_PENDING,
+        RX_FIFO1_FULL,
+        RX_FIFO1_OVERRUN,
+        WAKEUP,
+        SLEEP_ACK,
+        ERROR_WARNING,
+        ERROR_PASSIVE,
+        BUSOFF,
+        LAST_ERROR_CODE,
+        ERROR
     };
 
     class Can
@@ -174,7 +247,8 @@ namespace drivers::can
             SILM = 31     ///< Silent mode [rw]
         };
 
-        enum CAN_TIxR_Offset
+        /// @brief Offsets CAN TX mailboxes
+        enum CAN_TIxR_Offset : std::uintptr_t
         {
             CAN_TI0XR = 0x180,
             CAN_TI1XR = 0x190,
@@ -191,6 +265,7 @@ namespace drivers::can
             T_STID_EXID = 21    ///< Standard identifier or extended identifier [10:0]/[28:18] [rw]
         };
 
+        /// @brief Offsets CAN mailbox data length control and time stamp register x=0..2
         enum CAN_TDTxR_Offset
         {
             CAN_TDT0R = 0x184,
@@ -203,9 +278,10 @@ namespace drivers::can
         {
             T_DLC  = 0,    ///< Data length code [3:0] [rw]
             T_TGT  = 8,    ///< Transmit global time [rw]
-            T_TIME = 15    ///< Message time stamp [15:0] [rw]
+            T_TIME = 16    ///< Message time stamp [15:0] [rw]
         };
 
+        /// @brief Offests CAN mailbox data low register x=0..2
         enum CAN_TDLxR_Offset
         {
             CAN_TDL0R = 0x188,
@@ -222,6 +298,7 @@ namespace drivers::can
             T_DATA3 = 24     ///< Data byte 3 [rw]
         };
 
+        /// @brief Offsets CAN mailbox data high register x=0..2
         enum CAN_TDHxR_Offset
         {
             CAN_TDH0R = 0x18C,
@@ -291,10 +368,10 @@ namespace drivers::can
         /// @brief CAN receive FIFO mailbox data high register
         enum CAN_RDHxR
         {
-            DATA4 = 0,     ///< Data byte 4 [7:0] [rw]
-            DATA5 = 8,     ///< Data byte 5 [7:0] [rw]
-            DATA6 = 16,    ///< Data byte 6 [7:0] [rw]
-            DATA7 = 24,    ///< Data byte 7 [7:0] [rw]
+            R_DATA4 = 0,     ///< Data byte 4 [7:0] [rw]
+            R_DATA5 = 8,     ///< Data byte 5 [7:0] [rw]
+            R_DATA6 = 16,    ///< Data byte 6 [7:0] [rw]
+            R_DATA7 = 24,    ///< Data byte 7 [7:0] [rw]
         };
 
         /// @brief CAN filter master register
@@ -325,37 +402,24 @@ namespace drivers::can
             CAN_F0R2 = 0x244
         };
 
-        enum ModeCan : std::uint8_t
-        {
-            M_Normal,
-            M_Loopback,
-            M_Silent,
-            M_Silent_Loopback
-        };
-
-        struct CanInit
-        {
-            std::uint16_t prescaler;
-            ModeCan       mode;
-            std::uint8_t  syncJumpWidth;
-            std::uint8_t  timeSeg1;
-            std::uint8_t  timeSeg2;
-            bool          timeTriggeredMode;
-            bool          autoBusOff;
-            bool          autoWakeUp;
-            bool          autoRetransmission;
-            bool          receiveFifoLocked;
-            bool          transmitFifoPriority;
-        };
-
         const drivers::clock::ClockControl& clockControl;
         std::uintptr_t                      baseAddress;
         const uint8_t                       delayCan = 10;
 
-    public:
-        Can(ADDRESSES_CAN address, drivers::clock::ClockControl& clockCl);
+        using mwr = libs::MWR;
 
-        bool init(CanInit ci);
+        const std::uintptr_t CAN_TIxR[3]  = { CAN_TI0XR, CAN_TI1XR, CAN_TI2XR };
+        const std::uintptr_t CAN_TDTxR[3] = { CAN_TDT0R, CAN_TDT1R, CAN_TDT2R };
+        const std::uintptr_t CAN_TDLxR[3] = { CAN_TDL0R, CAN_TDL1R, CAN_TDL2R };
+        const std::uintptr_t CAN_TDHxR[3] = { CAN_TDH0R, CAN_TDH1R, CAN_TDH2R };
+        const std::uintptr_t CAN_RIxR[2]  = { CAN_RI0R, CAN_RI1R };
+        const std::uintptr_t CAN_RDTxR[2] = { CAN_RDT0R, CAN_RDT0R };
+        const std::uintptr_t CAN_RDLxR[2] = { CAN_RDL0R, CAN_RDL1R };
+
+    public:
+        Can(ADDRESSES_CAN address, const drivers::clock::ClockControl& clockCl);
+
+        bool init(CanInitStruct ci);
         void deinit();
         void configGpioForCan(drivers::port::ADDRESSES_PORT     portTX,
                               drivers::port::ADDRESSES_PORT     portRX,
@@ -363,8 +427,19 @@ namespace drivers::can
                               drivers::port::PIN_NUMBER         pinRX,
                               drivers::port::ALTERNATE_FUNCTION af);
 
-        bool start();
-        bool stop();
+        bool          start();
+        bool          stop();
+        bool          addTxMessage(CanTxMsg txMsg, TxMailbox* tmb);
+        void          abortTxRequest(TxMailbox mailBox);
+        std::uint8_t  getTxMailboxesFreeLevel();
+        bool          isTxMessagePending(TxMailbox mailBox);
+        std::uint16_t getTxTimestamp(TxMailbox mailBox);
+        bool          getRxMessage(CanRxMsg* msg);
+        bool          getRxMessage(CanRxMsg* msg, RxFifo rf);
+        std::uint8_t  getRxFifoFillLevel(RxFifo rf);
+        void          configureIrq(CAN_IER_REG flag, bool isActive);
+        bool          readFlag(Flags f);
+        void          clearFlag(Flags f);
     };
 }    // namespace drivers::can
 
