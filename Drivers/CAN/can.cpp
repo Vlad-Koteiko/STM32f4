@@ -557,6 +557,18 @@ namespace drivers::can
                 statusFlag = mwr::readBit<std::uint32_t>(baseAddress + CAN_MSR, SLAKI);
                 break;
 
+            case F_E_EWG:
+                statusFlag = mwr::readBit<std::uint32_t>(baseAddress + CAN_ESR, EWGF);
+                break;
+
+            case F_E_EPV:
+                statusFlag = mwr::readBit<std::uint32_t>(baseAddress + CAN_ESR, EPVF);
+                break;
+
+            case F_E_BOF:
+                statusFlag = mwr::readBit<std::uint32_t>(baseAddress + CAN_ESR, BOFF);
+                break;
+
             default:
                 break;
         }
@@ -649,6 +661,127 @@ namespace drivers::can
         }
     }
 
-    
+    void Can::configIrq(IRQ irq, bool status)
+    {
+        switch(irq)
+        {
+            case TX_MAILBOX_EMPTY:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, TMEIE);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, TMEIE);
+            }
+            break;
+
+            case RX_FIFO0_MSG_PENDING:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, FMPIE0);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, FMPIE0);
+            }
+            break;
+
+            case RX_FIFO0_FULL:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, FFIE0);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, FFIE0);
+            }
+            break;
+
+            case RX_FIFO0_OVERRUN:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, FOVIE0);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, FOVIE0);
+            }
+            break;
+
+            case RX_FIFO1_MSG_PENDING:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, FMPIE1);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, FMPIE1);
+            }
+            break;
+
+            case RX_FIFO1_FULL:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, FFIE1);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, FFIE1);
+            }
+            break;
+
+            case RX_FIFO1_OVERRUN:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, FOVIE0);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, FOVIE0);
+            }
+            break;
+
+            case WAKEUP:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, WKUIE);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, WKUIE);
+            }
+            break;
+
+            case SLEEP_ACK:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, SLKIE);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, SLKIE);
+            }
+            break;
+
+            case BUSOFF:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, BOFIE);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, BOFIE);
+            }
+            break;
+
+            case LAST_ERROR_CODE:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, LECIE);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, LECIE);
+            }
+            break;
+
+            case ERROR:
+            {
+                if(status)
+                    mwr::setBit(baseAddress + CAN_IER, EPVIE);
+                else
+                    mwr::resetBit(baseAddress + CAN_IER, EPVIE);
+            }
+            break;
+
+            default:
+                break;
+        }
+    }
+
+    LastErrorCode Can::getErrorCode()
+    {
+        std::uint32_t reg = mwr::read_register<std::uint32_t>(baseAddress + CAN_ESR);
+        return static_cast<LastErrorCode>(reg & 0x70 >> LEC);
+    }
 
 }    // namespace drivers::can

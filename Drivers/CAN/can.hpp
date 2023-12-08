@@ -109,6 +109,10 @@ namespace drivers::can
         F_M_ERRI,
         F_M_WKU,
         F_M_SLAKI,
+
+        F_E_EWG,
+        F_E_EPV,
+        F_E_BOF
     };
 
     enum IRQ : std::uint8_t
@@ -127,6 +131,18 @@ namespace drivers::can
         BUSOFF,
         LAST_ERROR_CODE,
         ERROR
+    };
+
+    enum LastErrorCode : std::uint8_t
+    {
+        NO,
+        STUFF,
+        FORM,
+        ACKNOWLEDGMENT,
+        BIT_RECESSIVE,
+        BIT_DOMINANT,
+        CRC,
+        SET_SOFTWARE
     };
 
     class Can
@@ -404,7 +420,7 @@ namespace drivers::can
 
         const drivers::clock::ClockControl& clockControl;
         std::uintptr_t                      baseAddress;
-        const uint8_t                       delayCan = 10;
+        static constexpr uint8_t            delayCan = 10;
 
         using mwr = libs::MWR;
 
@@ -440,6 +456,8 @@ namespace drivers::can
         void          configureIrq(CAN_IER_REG flag, bool isActive);
         bool          readFlag(Flags f);
         void          clearFlag(Flags f);
+        void          configIrq(IRQ irq, bool status);
+        LastErrorCode getErrorCode();
     };
 }    // namespace drivers::can
 
