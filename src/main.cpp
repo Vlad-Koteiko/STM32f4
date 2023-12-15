@@ -17,13 +17,9 @@ int main() noexcept
 
     shared::Data::setCout(&cout);
 
-    shared::Data::getCout()->operator<<("Hello 1\n\r");
-
     drivers::usb::Usb usb(clockControl, usart2);
     usb.init();
     usb.start();
-
-    shared::Data::getCout()->operator<<("Hello 3\n\r");
 
     std::uint8_t string[] = "Start STM32F407\n\r";
 

@@ -15,8 +15,6 @@ namespace drivers::usb
         currentMode();
         devInit();
         devDisconnect();
-
-        shared::Data::getCout()->operator<<("Hello 2\n\r");
     }
 
     void Usb::gpioInit() const noexcept
@@ -80,11 +78,11 @@ namespace drivers::usb
         setBit(RegisterGlobal::GCCFG, 21);      // VBUS sensing not available by hardware
         resetBit(RegisterGlobal::GCCFG, 19);    //  VBUS sensing “B” disabled
         resetBit(RegisterGlobal::GCCFG, 18);    //  VBUS sensing “A” disabled
-        writeRegister(RegisterDevice::DCFG, 0);
-        writeRegister(RegisterDevice::DCFG,
-                      0x03);    //  Full speed (USB 1.1 transceiver clock is 48 MHz)
-        flushTxFIFO(0x10);      // Flush the TxFIFOs
-        flushRxFifo();          // Flush the RxFIFOs
+                                                //        writeRegister(RegisterDevice::DCFG, 0);
+        libs::MWR::modifySetRegister(RegisterDevice::DCFG,
+                                     0x03);    //  Full speed (USB 1.1 transceiver clock is 48 MHz)
+        flushTxFIFO(0x10);                     // Flush the TxFIFOs
+        flushRxFifo();                         // Flush the RxFIFOs
         interruptsDevice();
     }
 
@@ -150,7 +148,7 @@ namespace drivers::usb
         resetBit(RegisterDevice::DCTL, 1);     // device is reconnected
     }
 
-    const std::uint8_t* Usb::getPtrDeviceDesc() const noexcept
+    const std::uint8_t* Usb::getPtrDeviceDesc() noexcept
     {
         return deviceDesc.data();
     }
@@ -190,48 +188,133 @@ namespace drivers::usb
         }
     }
 
+    void Usb::writePacket(const std::uint8_t* dest, std::uint16_t len)
+    {
+        const std::uint8_t* pSrc  = dest;
+        std::uint32_t       count = (static_cast<std::uint32_t>(len) + 3) / 4;
+        std::uint32_t       i;
+
+        for(int i = 0; i < count; i++)
+        {
+            writeRegister(RegisterGlobal::FIFO_BASE, *reinterpret_cast<const std::uint32_t*>(pSrc));
+            pSrc++;
+            pSrc++;
+            pSrc++;
+            pSrc++;
+        }
+
+        //        std::uint32_t testData = 0x11223344;
+        //        libs::MWR::write_register(RegisterGlobal::FIFO_BASE, testData);
+    }
+
+    bool Usb::getFlagInterruptMask(std::uint8_t numberBit)
+    {
+        std::uint32_t tmpreg;
+        tmpreg = readRegister(drivers::usb::RegisterGlobal::GINTSTS);
+        tmpreg &= readRegister(drivers::usb::RegisterGlobal::GINTMSK);
+        return (tmpreg & (1 << numberBit));
+    }
+
+    void Usb::transmit() noexcept
+    {
+        startEP0();
+    }
+
+    void Usb::startEP0() noexcept
+    {
+        libs::MWR::write_register(drivers::usb::RegisterDevice::DIEPTSIZ, 0);
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPTSIZ, 19);
+        libs::MWR::modifySetRegister(drivers::usb::RegisterDevice::DIEPTSIZ, 18);
+
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPCTL, 26);
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPCTL, 31);
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPEMPMSK, 0);
+    }
+
+    void Usb::startEP() noexcept
+    {}
+
+    void Usb::resetCallback() noexcept
+    {}
+
 }    // namespace drivers::usb
 
 void OTG_FS_IRQHandler()
 {
-    std::uint32_t regVal = drivers::usb::Usb::readRegister(drivers::usb::RegisterGlobal::GRXSTSP);
-    std::uint32_t mask_GRXSTSP_PKTSTS   = 0xF << 17;
-    std::uint32_t mask_OTG_GRXSTSP_BCNT = 0x7FF << 4;
+    std::uint32_t                 mask_GRXSTSP_PKTSTS   = 0xF << 17;
+    std::uint32_t                 mask_OTG_GRXSTSP_BCNT = 0x7FF << 4;
+    std::uint8_t                  STS_DATA_UPDT         = 2;
+    std::uint8_t                  STS_SETUP_UPDT        = 6;
+    std::array<std::uint8_t, 20>  dataSetup;
+    std::array<std::uint8_t, 256> dataBuffer;
+    std::uint32_t                 xferCount = 0;
+    std::uint32_t                 xferBuff  = 0;
 
-    std::uint8_t STS_DATA_UPDT  = 2;
-    std::uint8_t STS_SETUP_UPDT = 6;
-
-    std::array<std::uint8_t, 20> data;
-
-    if(((regVal & mask_GRXSTSP_PKTSTS) >> 17) == STS_DATA_UPDT)
+    if(drivers::usb::Usb::getFlagInterruptMask(4))
     {
-        if((regVal & mask_OTG_GRXSTSP_BCNT) != 0)
+        //        drivers::usb::Usb::resetBit(drivers::usb::RegisterGlobal::GINTMSK, 4);
+        //
+        std::uint32_t regVal =
+            drivers::usb::Usb::readRegister(drivers::usb::RegisterGlobal::GRXSTSP);
+
+        if(((regVal & mask_GRXSTSP_PKTSTS) >> 17) == STS_DATA_UPDT)
         {
-            //            shared::Data::getCout()->operator<<("COUNT = ")
-            //                << ((regVal & mask_OTG_GRXSTSP_BCNT) >> 4) << libs::Cout::ENDL;
+            //            if((regVal & mask_OTG_GRXSTSP_BCNT) != 0)
+            //            {
+            //                //                drivers::usb::Usb::readPacket(
+            //                //                    dataBuffer.data(),
+            //                //                    static_cast<std::uint16_t>(regVal &
+            //                mask_OTG_GRXSTSP_BCNT) >>
+            //                //                    4);
+            //                //                xferBuff += ((regVal & mask_OTG_GRXSTSP_BCNT) >> 4);
+            //                //                xferCount += ((regVal & mask_OTG_GRXSTSP_BCNT) >>
+            //                4);
+            //            }
+        }
+        else if(((regVal & mask_GRXSTSP_PKTSTS) >> 17) == STS_SETUP_UPDT)
+        {
+            dataSetup.fill(0);
+            drivers::usb::Usb::readPacket(dataSetup.data(), 8);
+            //            xferCount += ((regVal & mask_OTG_GRXSTSP_BCNT) >> 4);
+            //        }
+            //        for(std::uint8_t i = 0; i < 8; i++)
+            //        {
+        }
+
+        drivers::usb::Usb::setBit(drivers::usb::RegisterGlobal::GINTMSK, 4);
+    }
+
+    if(drivers::usb::Usb::getFlagInterruptMask(19))
+    {
+        drivers::usb::Usb::transmit();
+    }
+
+    if(drivers::usb::Usb::getFlagInterruptMask(18))
+    {
+        if((libs::MWR::read_register<std::uint32_t>(drivers::usb::RegisterDevice::DTXFSTS)) >= 18)
+        {
+            drivers::usb::Usb::writePacket(drivers::usb::Usb::getPtrDeviceDesc(), 18);
         }
     }
-    else if(((regVal & mask_GRXSTSP_PKTSTS) >> 17) == STS_SETUP_UPDT)
+
+    if(drivers::usb::Usb::getFlagInterruptMask(12))
     {
-        //        shared::Data::getCout()->operator<<("STS_SETUP_UPDT = ")
-        //            << drivers::usb::Usb::readRegister(drivers::usb::RegisterGlobal::GRXSTSP)
-        //            << libs::Cout::ENDL;
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DOEPMSK, 3);
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DOEPMSK, 0);
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DOEPMSK, 1);
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DOEPMSK, 5);
 
-        //        shared::Data::getCout()->operator<<("STS_SETUP_UPDT 1 = ")
-        //            <<
-        //            libs::MWR::read_register<std::uint32_t>(drivers::usb::RegisterGlobal::FIFO_BASE)
-        //            << libs::Cout::ENDL;
-        //        shared::Data::getCout()->operator<<("STS_SETUP_UPDT 2 = ")
-        //            <<
-        //            libs::MWR::read_register<std::uint32_t>(drivers::usb::RegisterGlobal::FIFO_BASE
-        //            + 4)
-        //            << libs::Cout::ENDL;
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPMSK, 3);
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPMSK, 0);
+        libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPMSK, 1);
 
-        data.fill(0);
-        drivers::usb::Usb::readPacket(data.data(), 8);
-        for(std::uint8_t i = 0; i < 8; i++)
-        {
-            shared::Data::getCout()->operator<<(i) << (" = ") << data[i] << libs::Cout::ENDL;
-        }
+        //        shared::Data::getCout()->operator<<(" DOEPMSK = ")
+        //            << libs::MWR::read_register<std::uint32_t>(0x50000814) << libs::Cout::ENDL;
+    }
+
+    if(drivers::usb::Usb::getFlagInterruptMask(13))
+    {
+        //        libs::MWR::setBit(drivers::usb::RegisterDevice::DAINTMSK, 16);
+        //        libs::MWR::setBit(drivers::usb::RegisterDevice::DAINTMSK, 0);
     }
 }

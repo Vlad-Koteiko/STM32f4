@@ -20,7 +20,7 @@
 
 namespace drivers::usb
 {
-    static constexpr std::uintptr_t baseAddress = 0x50000000;
+    static constexpr std::uintptr_t baseAddress = 0x50'000'000;
 
     // clang-format off
     enum RegisterGlobal : std::uintptr_t
@@ -61,8 +61,15 @@ namespace drivers::usb
         DEACHINT   = baseAddress + 0x838, /*!< dedicated EP interrupt       838h */
         DEACHMSK   = baseAddress + 0x83C, /*!< dedicated EP msk             83Ch */
         DINEP1MSK  = baseAddress + 0x844, /*!< dedicated EP mask            844h */
-        DOUTEP1MSK = baseAddress + 0x848, /*!< dedicated EP msk                  */
+        DOUTEP1MSK = baseAddress + 0x884, /*!< dedicated EP msk                  */
+        DIEPINT    = baseAddress + 0x908, /*!< device endpoint-x interrupt       */
+        DIEPTSIZ   = baseAddress + 0x910,
+        DIEPCTL    = baseAddress + 0x900,
+        D0EPTSIZ   = baseAddress + 0xB10,
+        DTXFSTS    = baseAddress + 0x918,
+
     };
+
     // clang-format on
 
     class Usb
@@ -84,6 +91,8 @@ namespace drivers::usb
         void                 interruptsDevice() noexcept;
         void                 devDisconnect() noexcept;
         static std::uint32_t readFIFO(std::uint8_t count) noexcept;
+        static void          startEP0() noexcept;
+        static void          startEP() noexcept;
 
     public:
         Usb(const drivers::clock::ClockControl& clockControlInit,
@@ -116,13 +125,23 @@ namespace drivers::usb
             libs::MWR::write_register(address, data);
         }
 
-        void                init() noexcept;
-        void                registerClass() noexcept;
-        void                usbCustomHidInterface() noexcept;
-        void                start() noexcept;
-        const std::uint8_t* getPtrDeviceDesc() const noexcept;
-        static void         readPacket(std::uint8_t* dest, std::uint16_t len);
+        void                       init() noexcept;
+        void                       registerClass() noexcept;
+        void                       usbCustomHidInterface() noexcept;
+        void                       start() noexcept;
+        static const std::uint8_t* getPtrDeviceDesc() noexcept;
+        static void                readPacket(std::uint8_t* dest, std::uint16_t len);
+        static void                writePacket(const std::uint8_t* dest, std::uint16_t len);
+        static bool                getFlagInterruptMask(std::uint8_t numberBit);
+        static void                transmit() noexcept;
+        static void                resetCallback() noexcept;
+    };
+
+    // clang-format off
+
+    enum RegisterUsbInep : std::uintptr_t
+    {
+//        DIEPCTL       = baseAddress + 0x900,
     };
 }    // namespace drivers::usb
-
 #endif    // STM32F4_USB_HPP
