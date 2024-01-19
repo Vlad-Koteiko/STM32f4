@@ -65,10 +65,31 @@ namespace drivers::usb
         DIEPINT    = baseAddress + 0x908, /*!< device endpoint-x interrupt       */
         DIEPTSIZ   = baseAddress + 0x910,
         DIEPCTL    = baseAddress + 0x900,
+        DOEPCTL    = baseAddress + 0xB00,
         D0EPTSIZ   = baseAddress + 0xB10,
-        DTXFSTS    = baseAddress + 0x918,
-
+        DOEPINT    = baseAddress + 0xB08,
+        DTXFSTS    = baseAddress + 0x918
     };
+
+    struct SetupRequest
+    {
+        std::uint8_t bmRequest;
+        std::uint8_t bRequest;
+        std::uint16_t wValue;
+        std::uint16_t wIndex;
+        std::uint16_t wLength;
+    };
+
+    struct GlobalConfig
+    {
+        SetupRequest setupRequest;
+        const std::uint8_t *pointerWrite;
+        std::size_t sizeWrite;
+        std::size_t count;
+    };
+
+    static bool sink = true;
+    static drivers::usb::GlobalConfig globalConfig;
 
     // clang-format on
 
@@ -78,7 +99,14 @@ namespace drivers::usb
                                                                      0x00, 0x00, 0x40, 0x83, 0x04,
                                                                      0x50, 0x57, 0x00, 0x02, 0x01,
                                                                      0x02, 0x03, 0x01 };
-        const drivers::clock::ClockControl&           clockControl;
+
+        static constexpr std::array<std::uint8_t, 41> costomHidDescriptor = {
+            0x09, 0x02, 41,   0,    1,    1,    0,    0xC0, 0x09, 0x04, 0,   0,    0x02, 0x03,
+            0,    0,    0,    0x09, 0x21, 0x11, 0x01, 0x00, 0x01, 0x22, 108, 0x00, 0x07, 0x05,
+            0x81, 0x03, 0x02, 0,    0x05, 0x07, 0x05, 0x01, 0x03, 0x02, 0,   0x5
+        };
+
+        const drivers::clock::ClockControl& clockControl;
 
         void                 gpioInit() const noexcept;
         void                 nvicEnable() const noexcept;
@@ -91,8 +119,11 @@ namespace drivers::usb
         void                 interruptsDevice() noexcept;
         void                 devDisconnect() noexcept;
         static std::uint32_t readFIFO(std::uint8_t count) noexcept;
-        static void          startEP0() noexcept;
+        static void          startEP0(std::size_t size, bool flag) noexcept;
         static void          startEP() noexcept;
+        static void          getDescriptor(drivers::usb::GlobalConfig& globalConfig) noexcept;
+        static void          setAddress(drivers::usb::GlobalConfig& globalConfig) noexcept;
+        static void          setConfig(drivers::usb::GlobalConfig& globalConfig) noexcept;
 
     public:
         Usb(const drivers::clock::ClockControl& clockControlInit,
@@ -130,11 +161,19 @@ namespace drivers::usb
         void                       usbCustomHidInterface() noexcept;
         void                       start() noexcept;
         static const std::uint8_t* getPtrDeviceDesc() noexcept;
+        static const std::uint8_t* getPtrCostomHidDescriptor() noexcept;
+        static std::size_t         getSizeCostomHidDescriptor() noexcept;
         static void                readPacket(std::uint8_t* dest, std::uint16_t len);
+        static void                readSetupConfig(drivers::usb::GlobalConfig& globalConfig);
         static void                writePacket(const std::uint8_t* dest, std::uint16_t len);
         static bool                getFlagInterruptMask(std::uint8_t numberBit);
-        static void                transmit() noexcept;
+        static void                transmit(std::size_t size, bool flag) noexcept;
         static void                resetCallback() noexcept;
+        static void                setupStage(drivers::usb::GlobalConfig& globalConfig) noexcept;
+        static void                stdDevReg(drivers::usb::GlobalConfig& globalConfig) noexcept;
+        static void                stdItfReg(drivers::usb::GlobalConfig& globalConfig) noexcept;
+        static std::uint32_t       USB_ReadDevInEPInterrupt() noexcept;
+        static std::uint32_t       USB_ReadDevOutEPInterrupt() noexcept;
     };
 
     // clang-format off
