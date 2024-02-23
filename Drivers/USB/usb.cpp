@@ -176,7 +176,7 @@ namespace drivers::usb
 
         if(remaining_bytes != 0U)
         {
-            std::uint8_t i = 0U;
+            i     = 0U;
             pData = libs::MWR::read_register<std::uint32_t>(RegisterGlobal::FIFO_BASE + (i * 4));
 
             do
@@ -192,10 +192,12 @@ namespace drivers::usb
     void Usb::writePacket(const std::uint8_t* dest, std::uint16_t len)
     {
         const std::uint8_t* pSrc  = dest;
-        std::uint32_t       count = (static_cast<std::uint32_t>(len) + 3) / 4;
+        std::uint32_t       count = ((static_cast<std::uint32_t>(len) + 3) / 4);
         std::uint32_t       i;
 
-        for(int i = 0; i < count; i++)
+        //        shared::Data::getCout()->operator<<(" len = ") << len << libs::Cout::ENDL;
+
+        for(i = 0; i < count; i++)
         {
             writeRegister(RegisterGlobal::FIFO_BASE, *reinterpret_cast<const std::uint32_t*>(pSrc));
             pSrc++;
@@ -283,12 +285,42 @@ namespace drivers::usb
                 //                libs::Cout::ENDL;
                 globalConfig.pointerWrite = drivers::usb::Usb::getPtrDeviceDesc();
                 globalConfig.sizeWrite    = 18;
+                globalConfig.send         = true;
                 break;
             case 0x02:
                 //                shared::Data::getCout()->operator<<(" kyky 2 = ") <<
                 //                libs::Cout::ENDL;
                 globalConfig.pointerWrite = drivers::usb::Usb::getPtrCostomHidDescriptor();
                 globalConfig.sizeWrite    = drivers::usb::Usb::getSizeCostomHidDescriptor();
+                globalConfig.send         = true;
+                break;
+            case 0x03:
+                switch((std::uint8_t)globalConfig.setupRequest.wValue)
+                {
+                    case 0:
+                        globalConfig.pointerWrite = drivers::usb::Usb::getLANGID_STR();
+                        globalConfig.sizeWrite    = drivers::usb::Usb::getSizeLANGID_STR();
+                        globalConfig.send         = true;
+                        break;
+                    case 0x02:
+                        globalConfig.pointerWrite = drivers::usb::Usb::getPRODUCT_STR();
+                        globalConfig.sizeWrite    = drivers::usb::Usb::getSizePRODUCT_STR();
+                        globalConfig.send         = true;
+                        break;
+                    case 0x03:
+                        globalConfig.pointerWrite = drivers::usb::Usb::getPtrSERIAL_STR();
+                        globalConfig.sizeWrite    = drivers::usb::Usb::getSizeSERIAL_STR();
+                        globalConfig.send         = true;
+                        break;
+                }
+                break;
+
+            case 0x06:
+                //                shared::Data::getCout()->operator<<(" kyky 2 = ") <<
+                //                libs::Cout::ENDL;
+                globalConfig.pointerWrite = drivers::usb::Usb::getQUALIFIER();
+                globalConfig.sizeWrite    = drivers::usb::Usb::getSizeQUALIFIER();
+                globalConfig.send         = true;
                 break;
         }
     }
@@ -326,6 +358,7 @@ namespace drivers::usb
                 stdDevReg(globalConfig);
                 break;
             case 1:
+                shared::Data::getCout()->operator<<(" kyky 1 = ") << libs::Cout::ENDL;
                 //                stdItfReg(globalConfig);
                 break;
             default:
@@ -390,6 +423,45 @@ namespace drivers::usb
         return tmpreg;
     }
 
+    const std::uint8_t* Usb::getPtrSERIAL_STR() noexcept
+    {
+        return SERIAL_STR.data();
+    }
+
+    std::size_t Usb::getSizeSERIAL_STR() noexcept
+    {
+        return SERIAL_STR.size();
+    }
+
+    const std::uint8_t* Usb::getQUALIFIER() noexcept
+    {
+        return QUALIFIER.data();
+    }
+
+    std::size_t Usb::getSizeQUALIFIER() noexcept
+    {
+        return QUALIFIER.size();
+    }
+
+    const std::uint8_t* Usb::getLANGID_STR() noexcept
+    {
+        return LANGID_STR.data();
+    }
+
+    std::size_t Usb::getSizeLANGID_STR() noexcept
+    {
+        return LANGID_STR.size();
+    }
+
+    const std::uint8_t* Usb::getPRODUCT_STR() noexcept
+    {
+        return PRODUCT_STR.data();
+    }
+
+    std::size_t Usb::getSizePRODUCT_STR() noexcept
+    {
+        return PRODUCT_STR.size();
+    }
 }    // namespace drivers::usb
 
 void OTG_FS_IRQHandler()
@@ -482,9 +554,12 @@ void OTG_FS_IRQHandler()
         //        shared::Data::getCout()->operator<<(" kyky 2 = ") << libs::Cout::ENDL;
 
         std::size_t len = drivers::usb::globalConfig.sizeWrite - drivers::usb::globalConfig.count;
-        drivers::usb::Usb::writePacket(drivers::usb::globalConfig.pointerWrite, len);
+        if(drivers::usb::globalConfig.send)
+        {
+            drivers::usb::Usb::writePacket(drivers::usb::globalConfig.pointerWrite, len);
+            drivers::usb::globalConfig.send = false;
+        }
         drivers::usb::globalConfig.count += len;
-
         //        }
     }
 
@@ -499,8 +574,7 @@ void OTG_FS_IRQHandler()
         libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPMSK, 0);
         libs::MWR::setBit(drivers::usb::RegisterDevice::DIEPMSK, 1);
 
-        //        shared::Data::getCout()->operator<<(" DOEPMSK = ")
-        //            << libs::MWR::read_register<std::uint32_t>(0x50000814) << libs::Cout::ENDL;
+        drivers::usb::Usb::setBit(drivers::usb::RegisterGlobal::GINTMSK, 12);
     }
 
     if(drivers::usb::Usb::getFlagInterruptMask(13))
@@ -510,5 +584,6 @@ void OTG_FS_IRQHandler()
 
         //        libs::MWR::setBit(drivers::usb::RegisterDevice::DAINTMSK, 16);
         //        libs::MWR::setBit(drivers::usb::RegisterDevice::DAINTMSK, 0);
+        drivers::usb::Usb::setBit(drivers::usb::RegisterGlobal::GINTMSK, 13);
     }
 }

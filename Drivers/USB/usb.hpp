@@ -86,6 +86,7 @@ namespace drivers::usb
         const std::uint8_t *pointerWrite;
         std::size_t sizeWrite;
         std::size_t count;
+        bool send = false;
     };
 
     static bool sink = true;
@@ -104,6 +105,24 @@ namespace drivers::usb
             0x09, 0x02, 41,   0,    1,    1,    0,    0xC0, 0x09, 0x04, 0,   0,    0x02, 0x03,
             0,    0,    0,    0x09, 0x21, 0x11, 0x01, 0x00, 0x01, 0x22, 108, 0x00, 0x07, 0x05,
             0x81, 0x03, 0x02, 0,    0x05, 0x07, 0x05, 0x01, 0x03, 0x02, 0,   0x5
+        };
+
+        static constexpr std::array<std::uint8_t, 26> SERIAL_STR = {
+            0x1A, 0x03, 0x33, 0x00, 0x33, 0x00, 0x35, 0x00, 0x34, 0x00, 0x33, 0x00, 0x32,
+            0x00, 0x36, 0x00, 0x45, 0x00, 0x33, 0x00, 0x33, 0x00, 0x33, 0x00, 0x39, 0x00
+        };
+
+        static constexpr std::array<std::uint8_t, 10> QUALIFIER = { 0x0A, 0x06, 0x00, 0x02, 0x00,
+                                                                    0x00, 0x00, 0x40, 0x01, 0x00 };
+
+        static constexpr std::array<std::uint8_t, 4> LANGID_STR = { 0x04, 0x03, 0x09, 0x04 };
+
+        static constexpr std::array<std::uint8_t, 58> PRODUCT_STR = {
+            0x3A, 0x03, 0x53, 0x00, 0x54, 0x00, 0x4D, 0x00, 0x33, 0x00, 0x32, 0x00,
+            0x20, 0x00, 0x43, 0x00, 0x75, 0x00, 0x73, 0x00, 0x74, 0x00, 0x6F, 0x00,
+            0x6D, 0x00, 0x20, 0x00, 0x48, 0x00, 0x75, 0x00, 0x6D, 0x00, 0x61, 0x00,
+            0x6E, 0x00, 0x20, 0x00, 0x69, 0x00, 0x6E, 0x00, 0x74, 0x00, 0x65, 0x00,
+            0x72, 0x00, 0x66, 0x00, 0x61, 0x00, 0x63, 0x00, 0x65, 0x00
         };
 
         const drivers::clock::ClockControl& clockControl;
@@ -163,6 +182,14 @@ namespace drivers::usb
         static const std::uint8_t* getPtrDeviceDesc() noexcept;
         static const std::uint8_t* getPtrCostomHidDescriptor() noexcept;
         static std::size_t         getSizeCostomHidDescriptor() noexcept;
+        static const std::uint8_t* getPtrSERIAL_STR() noexcept;
+        static std::size_t         getSizeSERIAL_STR() noexcept;
+        static const std::uint8_t* getQUALIFIER() noexcept;
+        static std::size_t         getSizeQUALIFIER() noexcept;
+        static const std::uint8_t* getLANGID_STR() noexcept;
+        static std::size_t         getSizeLANGID_STR() noexcept;
+        static const std::uint8_t* getPRODUCT_STR() noexcept;
+        static std::size_t         getSizePRODUCT_STR() noexcept;
         static void                readPacket(std::uint8_t* dest, std::uint16_t len);
         static void                readSetupConfig(drivers::usb::GlobalConfig& globalConfig);
         static void                writePacket(const std::uint8_t* dest, std::uint16_t len);
