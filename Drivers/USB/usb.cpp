@@ -260,6 +260,16 @@ namespace drivers::usb
         return costomHidDescriptor.size();
     }
 
+    const std::uint8_t* Usb::getSETUP() noexcept
+    {
+        return SETUP.data();
+    }
+
+    std::size_t Usb::getSizeSETUP() noexcept
+    {
+        return SETUP.size();
+    }
+
     void Usb::startEP() noexcept
     {}
 
@@ -278,51 +288,75 @@ namespace drivers::usb
     {
         //        shared::Data::getCout()->operator<<(" kyky 3 = ")
         //            << globalConfig.setupRequest.wValue << libs::Cout::ENDL;
+
+        std::uint16_t sizeDescriptor = globalConfig.setupRequest.wLength;
+
         switch(globalConfig.setupRequest.wValue >> 8)
         {
             case 0x01:
-                //                shared::Data::getCout()->operator<<(" kyky 1 = ") <<
-                //                libs::Cout::ENDL;
                 globalConfig.pointerWrite = drivers::usb::Usb::getPtrDeviceDesc();
                 globalConfig.sizeWrite    = 18;
                 globalConfig.send         = true;
                 break;
             case 0x02:
-                //                shared::Data::getCout()->operator<<(" kyky 2 = ") <<
-                //                libs::Cout::ENDL;
+                if(sizeDescriptor > drivers::usb::Usb::getSizeCostomHidDescriptor())
+                {
+                    sizeDescriptor = drivers::usb::Usb::getSizeCostomHidDescriptor();
+                }
                 globalConfig.pointerWrite = drivers::usb::Usb::getPtrCostomHidDescriptor();
-                globalConfig.sizeWrite    = drivers::usb::Usb::getSizeCostomHidDescriptor();
+                globalConfig.sizeWrite    = sizeDescriptor;
                 globalConfig.send         = true;
                 break;
             case 0x03:
                 switch((std::uint8_t)globalConfig.setupRequest.wValue)
                 {
                     case 0:
+                        if(sizeDescriptor > drivers::usb::Usb::getSizeLANGID_STR())
+                        {
+                            sizeDescriptor = drivers::usb::Usb::getSizeLANGID_STR();
+                        }
                         globalConfig.pointerWrite = drivers::usb::Usb::getLANGID_STR();
-                        globalConfig.sizeWrite    = drivers::usb::Usb::getSizeLANGID_STR();
+                        globalConfig.sizeWrite    = sizeDescriptor;
                         globalConfig.send         = true;
                         break;
                     case 0x02:
+                        if(sizeDescriptor > drivers::usb::Usb::getSizePRODUCT_STR())
+                        {
+                            sizeDescriptor = drivers::usb::Usb::getSizePRODUCT_STR();
+                        }
                         globalConfig.pointerWrite = drivers::usb::Usb::getPRODUCT_STR();
-                        globalConfig.sizeWrite    = drivers::usb::Usb::getSizePRODUCT_STR();
+                        globalConfig.sizeWrite    = sizeDescriptor;
                         globalConfig.send         = true;
                         break;
                     case 0x03:
+                        if(sizeDescriptor > drivers::usb::Usb::getSizeSERIAL_STR())
+                        {
+                            sizeDescriptor = drivers::usb::Usb::getSizeSERIAL_STR();
+                        }
                         globalConfig.pointerWrite = drivers::usb::Usb::getPtrSERIAL_STR();
-                        globalConfig.sizeWrite    = drivers::usb::Usb::getSizeSERIAL_STR();
+                        globalConfig.sizeWrite    = sizeDescriptor;
                         globalConfig.send         = true;
                         break;
                 }
                 break;
 
             case 0x06:
-                //                shared::Data::getCout()->operator<<(" kyky 2 = ") <<
-                //                libs::Cout::ENDL;
+                if(sizeDescriptor > drivers::usb::Usb::getSizeQUALIFIER())
+                {
+                    sizeDescriptor = drivers::usb::Usb::getSizeQUALIFIER();
+                }
                 globalConfig.pointerWrite = drivers::usb::Usb::getQUALIFIER();
-                globalConfig.sizeWrite    = drivers::usb::Usb::getSizeQUALIFIER();
+                globalConfig.sizeWrite    = sizeDescriptor;
                 globalConfig.send         = true;
                 break;
         }
+    }
+
+    void Usb::setConfig(drivers::usb::GlobalConfig& globalConfig) noexcept
+    {
+        globalConfig.pointerWrite = drivers::usb::Usb::getPtrDeviceDesc();    // TODO empty array
+        globalConfig.sizeWrite    = 0;
+        globalConfig.send         = true;
     }
 
     void Usb::stdDevReg(drivers::usb::GlobalConfig& globalConfig) noexcept
@@ -343,9 +377,35 @@ namespace drivers::usb
                         setAddress(globalConfig);
                         break;
                     case 0x9:
-                        //                                                setConfig(globalConfig);
+                        setConfig(globalConfig);
                         break;
                 }
+                break;
+        }
+    }
+
+    void Usb::stdItfReg(drivers::usb::GlobalConfig& globalConfig) noexcept
+    {
+        std::uint16_t sizeDescriptor = globalConfig.setupRequest.wLength;
+        switch(globalConfig.setupRequest.bmRequest)
+        {
+            case 0x03:
+                //                globalConfig.pointerWrite =
+                //                    drivers::usb::Usb::getPtrDeviceDesc();    // TODO empty array
+                //                globalConfig.sizeWrite = 0;
+                //                globalConfig.send      = true;
+                break;
+            case 0x21:
+                globalConfig.pointerWrite =
+                    drivers::usb::Usb::getPtrDeviceDesc();    // TODO empty array
+                globalConfig.sizeWrite = sizeDescriptor;
+                globalConfig.send      = true;
+                break;
+            case 0x81:
+                globalConfig.pointerWrite          = drivers::usb::Usb::getSETUP();
+                globalConfig.sizeWrite             = 64;
+                globalConfig.send                  = true;
+                drivers::usb::globalConfig.twoSend = true;
                 break;
         }
     }
@@ -358,8 +418,7 @@ namespace drivers::usb
                 stdDevReg(globalConfig);
                 break;
             case 1:
-                shared::Data::getCout()->operator<<(" kyky 1 = ") << libs::Cout::ENDL;
-                //                stdItfReg(globalConfig);
+                stdItfReg(globalConfig);
                 break;
             default:
                 break;
@@ -535,11 +594,24 @@ void OTG_FS_IRQHandler()
     if(drivers::usb::Usb::getFlagInterruptMask(18))
     {
         std::uint32_t epint = drivers::usb::Usb::USB_ReadDevInEPInterrupt();
+        bool          send  = false;
 
         if((epint & 0x1) == 1)
         {
             libs::MWR::write_register(drivers::usb::RegisterDevice::DIEPINT, 1);
-            drivers::usb::Usb::transmit(drivers::usb::globalConfig.sizeWrite, false);
+            if(drivers::usb::globalConfig.FlagTwoSend)
+            {
+                drivers::usb::globalConfig.pointerWrite = drivers::usb::Usb::getSETUP() + 64;
+                drivers::usb::globalConfig.sizeWrite    = 44;
+                drivers::usb::globalConfig.send         = true;
+                drivers::usb::globalConfig.twoSend      = false;
+                drivers::usb::globalConfig.FlagTwoSend  = false;
+                drivers::usb::Usb::transmit(drivers::usb::globalConfig.sizeWrite, true);
+            }
+            else
+            {
+                drivers::usb::Usb::transmit(0, false);
+            }
         }
 
         //        if(drivers::usb::sink)
@@ -553,14 +625,21 @@ void OTG_FS_IRQHandler()
         //        {
         //        shared::Data::getCout()->operator<<(" kyky 2 = ") << libs::Cout::ENDL;
 
-        std::size_t len = drivers::usb::globalConfig.sizeWrite - drivers::usb::globalConfig.count;
+        std::int16_t len = drivers::usb::globalConfig.sizeWrite - drivers::usb::globalConfig.count;
         if(drivers::usb::globalConfig.send)
         {
-            drivers::usb::Usb::writePacket(drivers::usb::globalConfig.pointerWrite, len);
+            drivers::usb::Usb::writePacket(drivers::usb::globalConfig.pointerWrite,
+                                           drivers::usb::globalConfig.sizeWrite);
             drivers::usb::globalConfig.send = false;
         }
+        if(drivers::usb::globalConfig.twoSend)
+        {
+            drivers::usb::globalConfig.FlagTwoSend = true;
+            drivers::usb::globalConfig.twoSend     = false;
+        }
+
+        drivers::usb::globalConfig.pointerWrite += len;
         drivers::usb::globalConfig.count += len;
-        //        }
     }
 
     if(drivers::usb::Usb::getFlagInterruptMask(12))
