@@ -91,7 +91,6 @@ namespace drivers::usb
         bool FlagTwoSend = false;
     };
 
-    static bool sink = true;
     static drivers::usb::GlobalConfig globalConfig;
 
     // clang-format on
@@ -136,6 +135,12 @@ namespace drivers::usb
             0x04, 0x15, 0x00, 0x25, 0x01, 0x75, 0x08, 0x95, 0x01, 0xB1, 0x82, 0x85, 0x04, 0x09,
             0x04, 0x91, 0x82, 0x85, 0x05, 0x09, 0x05, 0x75, 0x08, 0x95, 0x04, 0x81, 0x82, 0x85,
             0x06, 0x09, 0x06, 0x75, 0x08, 0x95, 0x04, 0x81, 0x82, 0xC0
+        };
+
+        static constexpr std::array<std::uint8_t, 38> PRODUCT_STR_NEW = {
+            0x26, 0x03, 0x53, 0x00, 0x54, 0x00, 0x4D, 0x00, 0x69, 0x00, 0x63, 0x00, 0x72,
+            0x00, 0x6F, 0x00, 0x65, 0x00, 0x6C, 0x00, 0x65, 0x00, 0x63, 0x00, 0x74, 0x00,
+            0x72, 0x00, 0x6F, 0x00, 0x6E, 0x00, 0x69, 0x00, 0x63, 0x00, 0x73, 0x00
         };
 
         const drivers::clock::ClockControl& clockControl;
@@ -205,6 +210,8 @@ namespace drivers::usb
         static std::size_t         getSizePRODUCT_STR() noexcept;
         static const std::uint8_t* getSETUP() noexcept;
         static std::size_t         getSizeSETUP() noexcept;
+        static const std::uint8_t* getPRODUCT_STR_NEW() noexcept;
+        static std::size_t         getSizePRODUCT_STR_NEW() noexcept;
         static void                readPacket(std::uint8_t* dest, std::uint16_t len);
         static void                readSetupConfig(drivers::usb::GlobalConfig& globalConfig);
         static void                writePacket(const std::uint8_t* dest, std::uint16_t len);
